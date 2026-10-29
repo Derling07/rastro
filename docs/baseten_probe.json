@@ -1,0 +1,60 @@
+{
+  "default_model": "meta-models/muse-spark-open-1026",
+  "fallback_model": "meta-models/muse-spark-open",
+  "results": {
+    "text": {
+      "ok": true,
+      "model": "meta-models/muse-spark-open-1026",
+      "text": "hola",
+      "usage": {
+        "prompt_tokens": 166,
+        "completion_tokens": 127,
+        "total_tokens": 293
+      },
+      "s": 1.4
+    },
+    "image": {
+      "ok": true,
+      "model": "meta-models/muse-spark-open-1026",
+      "text": "Veo un gran rectángulo verde como forma y color dominante, con un óvalo marrón en el centro y un pequeño cuadrado rojo en la esquina superior izquierda.",
+      "usage": {
+        "prompt_tokens": 267,
+        "completion_tokens": 760,
+        "total_tokens": 1027
+      },
+      "s": 4.58
+    },
+    "audio": {
+      "ok": true,
+      "model": "meta-models/muse-spark-open-1026",
+      "text": "Se oye la famosa frase de John F. Kennedy en su discurso inaugural de 1961:\n\n**\"And so, my fellow Americans: ask not what your country can do for you — ask what you can do for your country.\"**\n\nEn español: *\"Y así, compatriotas americanos, no preguntéis qué puede hacer vuestro país por vosotros, pre",
+      "usage": {
+        "prompt_tokens": 300,
+        "completion_tokens": 517,
+        "total_tokens": 817
+      },
+      "s": 6.13
+    },
+    "json": {
+      "ok": true,
+      "model": "meta-models/muse-spark-open-1026",
+      "data": {
+        "saludo": "hola",
+        "n": 1
+      },
+      "usage": {
+        "prompt_tokens": 186,
+        "completion_tokens": 510,
+        "total_tokens": 696
+      },
+      "s": 1.84
+    },
+    "tools": {
+      "ok": true,
+      "model": "meta-models/muse-spark-open-1026",
+      "text": "",
+      "tool_calls": "[ChatCompletionMessageFunctionToolCall(id='chatcmpl-tool-f6334c36f16441eeb4e069cd85435043', function=Function(arguments='{\"run_id\": \"demo-1\"}', name='get_counts'), type='function')]",
+      "s": 0.83
+    }
+  }
+}

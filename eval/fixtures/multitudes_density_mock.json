@@ -1,0 +1,217 @@
+{
+  "schema_version": "1.1",
+  "run_id": "multitudes-demo",
+  "source_video_id": "mock-plaza",
+  "created_at": "2026-10-26T00:00:00Z",
+  "is_mock": true,
+  "pack": {
+    "id": "multitudes-densidad",
+    "version": "0.1.0"
+  },
+  "sampling_mode": "image_sample",
+  "video": {
+    "fps": 1,
+    "url": null,
+    "annotated_url": null,
+    "poster": null
+  },
+  "naive_count": 48,
+  "unique_count": 48,
+  "detections_total": 48,
+  "by_class": {
+    "persona": 48
+  },
+  "counts": {
+    "naive": 48,
+    "unique": 48,
+    "by_class": {
+      "persona": 48
+    }
+  },
+  "zones": [
+    {
+      "id": "zona_1",
+      "polygon": [
+        [
+          0.1,
+          0.4
+        ],
+        [
+          0.9,
+          0.4
+        ],
+        [
+          0.9,
+          0.95
+        ],
+        [
+          0.1,
+          0.95
+        ]
+      ],
+      "area_m2": 25
+    },
+    {
+      "id": "zona_sin_area",
+      "polygon": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "area_m2": null
+    }
+  ],
+  "density": [
+    {
+      "t_s": 0,
+      "zone": "zona_1",
+      "persons": 40,
+      "density_per_m2": 1.6
+    },
+    {
+      "t_s": 5,
+      "zone": "zona_1",
+      "persons": 72,
+      "density_per_m2": 2.88
+    },
+    {
+      "t_s": 10,
+      "zone": "zona_1",
+      "persons": 95,
+      "density_per_m2": 3.8
+    },
+    {
+      "t_s": 15,
+      "zone": "zona_1",
+      "persons": 110,
+      "density_per_m2": 4.4
+    },
+    {
+      "t_s": 20,
+      "zone": "zona_1",
+      "persons": 130,
+      "density_per_m2": 5.2
+    },
+    {
+      "t_s": 25,
+      "zone": "zona_1",
+      "persons": 155,
+      "density_per_m2": 6.2
+    },
+    {
+      "t_s": 30,
+      "zone": "zona_1",
+      "persons": 140,
+      "density_per_m2": 5.6
+    },
+    {
+      "t_s": 35,
+      "zone": "zona_1",
+      "persons": 100,
+      "density_per_m2": 4.0
+    },
+    {
+      "t_s": 40,
+      "zone": "zona_1",
+      "persons": 70,
+      "density_per_m2": 2.8
+    },
+    {
+      "t_s": 40.0,
+      "zone": "zona_1",
+      "persons": 97,
+      "density_per_m2": 3.88
+    },
+    {
+      "t_s": 41.0,
+      "zone": "zona_1",
+      "persons": 100,
+      "density_per_m2": 4.0
+    },
+    {
+      "t_s": 42.0,
+      "zone": "zona_1",
+      "persons": 149,
+      "density_per_m2": 5.96
+    },
+    {
+      "t_s": 43.0,
+      "zone": "zona_1",
+      "persons": 150,
+      "density_per_m2": 6.0
+    }
+  ],
+  "peak_density": {
+    "zone": "zona_1",
+    "t_s": 25,
+    "persons": 155,
+    "density_per_m2": 6.2
+  },
+  "persons_per_zone": {
+    "zona_1": 155,
+    "zona_sin_area": 12
+  },
+  "partial": true,
+  "max_objects_hit": [
+    10.5,
+    22.0
+  ],
+  "tracks": [],
+  "frames": [],
+  "events": [
+    {
+      "t_s": 15,
+      "kind": "densidad_media",
+      "class": "persona"
+    },
+    {
+      "t_s": 25,
+      "kind": "densidad_alta",
+      "class": "persona"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "densidad_media",
+      "severity": "media",
+      "message": "Densidad 4.4 personas/m² en zona_1 (ejemplo)",
+      "t_s": 15,
+      "zone": "zona_1"
+    },
+    {
+      "id": "densidad_alta",
+      "severity": "alta",
+      "message": "Densidad crítica 6.2 personas/m² en zona_1 (ejemplo)",
+      "t_s": 25,
+      "zone": "zona_1"
+    }
+  ],
+  "voice": null,
+  "agent_log": [],
+  "report": {
+    "titulo": "Multitudes · plaza (ejemplo)",
+    "resumen": "Fixture de desarrollo bajo web/mock. No es una corrida medida.",
+    "limites": "is_mock=true · área supuesta del pack"
+  },
+  "artifacts": {
+    "annotated_video": null,
+    "blurred_video": null
+  },
+  "cost_usd": 0,
+  "_mock": true,
+  "_note": "eval Round5 fixture derived from web/mock/multitudes-demo; not served from public/runs",
+  "_eval_fixture": true
+}

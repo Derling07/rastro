@@ -1,0 +1,11 @@
+[
+  {
+    "kind": "individual",
+    "t_s": 3.4,
+    "track_id": "coyote-1",
+    "class": "coyote",
+    "start_frame": 17,
+    "end_frame": 50,
+    "dwell_s": 6.8
+  }
+]

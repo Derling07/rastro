@@ -1,0 +1,44 @@
+{
+  "pack_id": "fauna-camtrap",
+  "video": "data/lila5fps/DSCF0104.mp4",
+  "fps": 5.0,
+  "naive_count": 1,
+  "unique_count": 1,
+  "by_class": {
+    "persona": 1
+  },
+  "events": [
+    {
+      "kind": "individual",
+      "t_s": 1.0,
+      "track_id": "persona-1",
+      "class": "persona",
+      "start_frame": 5,
+      "end_frame": 60,
+      "dwell_s": 11.2
+    }
+  ],
+  "alerts": [
+    {
+      "id": "persona_noche",
+      "severity": "alta",
+      "message": "Persona detectada de noche en la estación norte",
+      "local_hour": 23,
+      "t_s": 1.0
+    }
+  ],
+  "tracks": [
+    {
+      "track_id": "persona-1",
+      "class": "persona",
+      "start_frame": 5,
+      "end_frame": 60,
+      "n_dets": 56
+    }
+  ],
+  "notes": [],
+  "mock": true,
+  "est_usd_sam": 0.0,
+  "est_usd_voice": 0.0,
+  "sam_calls": 1
+}

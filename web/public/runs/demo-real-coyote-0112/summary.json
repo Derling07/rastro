@@ -1,0 +1,59 @@
+{
+  "pack_id": "fauna-camtrap",
+  "video": "data/lila5fps/DSCF0112.mp4",
+  "fps": 5.0,
+  "naive_count": 2,
+  "unique_count": 2,
+  "by_class": {
+    "coyote": 2
+  },
+  "events": [
+    {
+      "kind": "individual",
+      "t_s": 1.2,
+      "track_id": "coyote-1",
+      "class": "coyote",
+      "start_frame": 6,
+      "end_frame": 50,
+      "dwell_s": 9.0
+    },
+    {
+      "kind": "individual",
+      "t_s": 1.2,
+      "track_id": "coyote-2",
+      "class": "coyote",
+      "start_frame": 6,
+      "end_frame": 50,
+      "dwell_s": 9.0
+    }
+  ],
+  "alerts": [
+    {
+      "id": "especie_objetivo",
+      "severity": "info",
+      "message": "Registro de coyote: 2 individuos",
+      "t_s": 1.2
+    }
+  ],
+  "tracks": [
+    {
+      "track_id": "coyote-1",
+      "class": "coyote",
+      "start_frame": 6,
+      "end_frame": 50,
+      "n_dets": 45
+    },
+    {
+      "track_id": "coyote-2",
+      "class": "coyote",
+      "start_frame": 6,
+      "end_frame": 50,
+      "n_dets": 45
+    }
+  ],
+  "notes": [],
+  "mock": false,
+  "est_usd_sam": 0.0,
+  "est_usd_voice": 0.0,
+  "sam_calls": 1
+}

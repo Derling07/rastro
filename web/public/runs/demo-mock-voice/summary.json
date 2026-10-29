@@ -1,0 +1,77 @@
+{
+  "pack_id": "fauna-camtrap",
+  "video": "data/lila5fps/DSCF0104.mp4",
+  "fps": 5.0,
+  "naive_count": 4,
+  "unique_count": 3,
+  "by_class": {
+    "coyote": 3
+  },
+  "events": [
+    {
+      "kind": "individual",
+      "t_s": 0.0,
+      "track_id": "coyote-1",
+      "class": "coyote",
+      "start_frame": 0,
+      "end_frame": 90,
+      "dwell_s": 18.2
+    },
+    {
+      "kind": "individual",
+      "t_s": 4.0,
+      "track_id": "coyote-2",
+      "class": "coyote",
+      "start_frame": 20,
+      "end_frame": 70,
+      "dwell_s": 10.2
+    },
+    {
+      "kind": "individual",
+      "t_s": 15.0,
+      "track_id": "coyote-3",
+      "class": "coyote",
+      "start_frame": 75,
+      "end_frame": 100,
+      "dwell_s": 5.2
+    }
+  ],
+  "alerts": [
+    {
+      "id": "especie_objetivo",
+      "severity": "info",
+      "message": "Registro de coyote: 3 individuos",
+      "t_s": 0.0
+    }
+  ],
+  "tracks": [
+    {
+      "track_id": "coyote-1",
+      "class": "coyote",
+      "start_frame": 0,
+      "end_frame": 90,
+      "n_dets": 77
+    },
+    {
+      "track_id": "coyote-2",
+      "class": "coyote",
+      "start_frame": 20,
+      "end_frame": 70,
+      "n_dets": 51
+    },
+    {
+      "track_id": "coyote-3",
+      "class": "coyote",
+      "start_frame": 75,
+      "end_frame": 100,
+      "n_dets": 26
+    }
+  ],
+  "notes": [
+    "[estación=norte hora=14:00] Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro."
+  ],
+  "mock": true,
+  "est_usd_sam": 0.0,
+  "est_usd_voice": 0.0,
+  "sam_calls": 1
+}

@@ -1,0 +1,110 @@
+{
+  "created_at": "2026-10-27T04:24:54.193092+00:00",
+  "run_id": "demo-real-coyote",
+  "pack": "fauna-camtrap",
+  "pack_path": "/workspace/rastro/packs/fauna.json",
+  "video": "data/lila5fps/DSCF0104.mp4",
+  "native_fps": 5.0,
+  "track_fps": 5.0,
+  "sam": [
+    {
+      "concept": "coyote",
+      "class": "coyote",
+      "n_detections": 34,
+      "mock": false,
+      "elapsed_s": 0.0004508495330810547,
+      "usage": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "cache_write_tokens": null,
+          "cached_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 0,
+        "video_frames_processed": 51,
+        "cached": true
+      },
+      "est_usd": 0.0,
+      "chosen": true
+    }
+  ],
+  "summary": {
+    "pack_id": "fauna-camtrap",
+    "video": "data/lila5fps/DSCF0104.mp4",
+    "fps": 5.0,
+    "naive_count": 1,
+    "unique_count": 1,
+    "by_class": {
+      "coyote": 1
+    },
+    "events": [
+      {
+        "kind": "individual",
+        "t_s": 3.4,
+        "track_id": "coyote-1",
+        "class": "coyote",
+        "start_frame": 17,
+        "end_frame": 50,
+        "dwell_s": 6.8
+      }
+    ],
+    "alerts": [
+      {
+        "id": "especie_objetivo",
+        "severity": "info",
+        "message": "Registro de coyote: 1 individuos",
+        "t_s": 3.4
+      }
+    ],
+    "tracks": [
+      {
+        "track_id": "coyote-1",
+        "class": "coyote",
+        "start_frame": 17,
+        "end_frame": 50,
+        "n_dets": 34
+      }
+    ],
+    "notes": [],
+    "mock": false,
+    "est_usd_sam": 0.0,
+    "est_usd_voice": 0.0,
+    "sam_calls": 1
+  },
+  "report": {
+    "titulo": "Registro de fauna - 1 coyote confirmado en DSCF0104.mp4",
+    "resumen": "Se analizó el video DSCF0104.mp4 a 5 FPS y Rastro confirmó 1 individuo único de coyote (coyote-1) visible durante 6.8 segundos desde el segundo 3.4. El conteo ingenuo por detecciones (1) coincide con el conteo único (1), por lo que no hubo doble conteo ni reingresos. Se trata de un registro limpio de un solo animal en tránsito.",
+    "especies": [
+      {
+        "clase": "coyote",
+        "individuos": 1
+      }
+    ],
+    "alertas": [
+      {
+        "id": "especie_objetivo",
+        "severidad": "info",
+        "mensaje": "Registro de coyote: 1 individuos"
+      }
+    ],
+    "recomendaciones": [
+      "Mantener el monitoreo en este punto para determinar si es un tránsito ocasional o parte de su territorio.",
+      "Resguardar el registro como evidencia de presencia de coyote en el área protegida.",
+      "Verificar manejo de residuos y cercas cercanas para evitar atracción o conflicto con fauna doméstica."
+    ],
+    "gancho_demo": "1, no 1 — conteo único confirmado",
+    "_spark_model": "meta-models/muse-spark-open-1026",
+    "_spark_usage": {
+      "prompt_tokens": 650,
+      "completion_tokens": 1884,
+      "total_tokens": 2534
+    },
+    "_source": "baseten-spark"
+  },
+  "est_usd_sam": 0.0,
+  "est_usd_voice": 0.0,
+  "est_usd_total": 0.0
+}

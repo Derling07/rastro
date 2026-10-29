@@ -1,0 +1,6 @@
+# Extracted frames for hand-labeling (regenerate with ffmpeg; see LABELING.md)
+frames/
+__pycache__/
+.pytest_cache/
+*.pyc
+last_score*.json

@@ -1,0 +1,30 @@
+{
+  "est_usd_sam": 0.0,
+  "est_usd_voice": 0.0,
+  "est_usd_total": 0.0,
+  "sam": [
+    {
+      "concept": "coyote",
+      "class": "coyote",
+      "n_detections": 90,
+      "mock": false,
+      "elapsed_s": 0.0005133152008056641,
+      "usage": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "cache_write_tokens": null,
+          "cached_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 0,
+        "video_frames_processed": 51,
+        "cached": true
+      },
+      "est_usd": 0.0,
+      "chosen": true
+    }
+  ]
+}

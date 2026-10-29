@@ -1,0 +1,99 @@
+{
+  "pack_id": "transito-giros",
+  "naive_count": 5,
+  "unique_count": 4,
+  "by_class": {
+    "auto": 2,
+    "bus": 1,
+    "moto": 1
+  },
+  "alerts": [
+    {
+      "id": "cola_larga",
+      "severity": "media",
+      "message": "Cola de más de 15 vehículos en el acceso N (simulado)"
+    }
+  ],
+  "events": [
+    {
+      "kind": "turn",
+      "t_s": 2.0,
+      "track_id": "auto-1",
+      "class": "auto",
+      "movement": "N->S",
+      "label": "recto"
+    },
+    {
+      "kind": "turn",
+      "t_s": 3.5,
+      "track_id": "auto-2",
+      "class": "auto",
+      "movement": "O->E",
+      "label": "recto"
+    },
+    {
+      "kind": "turn",
+      "t_s": 4.0,
+      "track_id": "bus-1",
+      "class": "bus",
+      "movement": "E->O",
+      "label": "recto"
+    },
+    {
+      "kind": "turn",
+      "t_s": 5.5,
+      "track_id": "moto-1",
+      "class": "moto",
+      "movement": "S->N",
+      "label": "recto"
+    },
+    {
+      "kind": "turn",
+      "t_s": 6.0,
+      "track_id": "auto-3",
+      "class": "auto",
+      "movement": "N->E",
+      "label": "izquierda"
+    }
+  ],
+  "tracks": [
+    {
+      "track_id": "auto-1",
+      "class": "auto",
+      "start_frame": 0,
+      "end_frame": 40,
+      "n_dets": 41
+    },
+    {
+      "track_id": "auto-2",
+      "class": "auto",
+      "start_frame": 5,
+      "end_frame": 45,
+      "n_dets": 41
+    },
+    {
+      "track_id": "bus-1",
+      "class": "bus",
+      "start_frame": 10,
+      "end_frame": 50,
+      "n_dets": 41
+    },
+    {
+      "track_id": "moto-1",
+      "class": "moto",
+      "start_frame": 15,
+      "end_frame": 55,
+      "n_dets": 41
+    },
+    {
+      "track_id": "auto-3",
+      "class": "auto",
+      "start_frame": 20,
+      "end_frame": 60,
+      "n_dets": 41
+    }
+  ],
+  "notes": [],
+  "mock": true,
+  "fps": 10
+}

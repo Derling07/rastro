@@ -1,0 +1,26 @@
+{
+  "titulo": "Reporte Rastro — fauna-camtrap",
+  "resumen": "Video data/lila5fps/DSCF0104.mp4: conteo ingenuo 1, individuos únicos 1. Clases: persona=1.",
+  "especies": [
+    {
+      "clase": "persona",
+      "individuos": 1
+    }
+  ],
+  "alertas": [
+    {
+      "id": "persona_noche",
+      "severity": "alta",
+      "message": "Persona detectada de noche en la estación norte",
+      "local_hour": 23,
+      "t_s": 1.0
+    }
+  ],
+  "notas_campo": [],
+  "recomendaciones": [
+    "Revisar clips con alerta alta.",
+    "Confirmar reentradas en el borde del frame si el conteo parece bajo."
+  ],
+  "gancho_demo": "1, no 1",
+  "_source": "local"
+}

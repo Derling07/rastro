@@ -1,0 +1,97 @@
+{
+  "created_at": "2026-10-27T04:11:47.460173+00:00",
+  "run_id": "demo-mock-persona",
+  "pack": "fauna-camtrap",
+  "pack_path": "/workspace/rastro/packs/fauna.json",
+  "video": "data/lila5fps/DSCF0104.mp4",
+  "native_fps": 5.0,
+  "track_fps": 5.0,
+  "sam": [
+    {
+      "concept": "person",
+      "class": "persona",
+      "n_detections": 56,
+      "mock": true,
+      "elapsed_s": 0.0001442432403564453,
+      "usage": {
+        "video_frames_processed": 0,
+        "mock": true
+      },
+      "est_usd": 0.0,
+      "chosen": true
+    }
+  ],
+  "summary": {
+    "pack_id": "fauna-camtrap",
+    "video": "data/lila5fps/DSCF0104.mp4",
+    "fps": 5.0,
+    "naive_count": 1,
+    "unique_count": 1,
+    "by_class": {
+      "persona": 1
+    },
+    "events": [
+      {
+        "kind": "individual",
+        "t_s": 1.0,
+        "track_id": "persona-1",
+        "class": "persona",
+        "start_frame": 5,
+        "end_frame": 60,
+        "dwell_s": 11.2
+      }
+    ],
+    "alerts": [
+      {
+        "id": "persona_noche",
+        "severity": "alta",
+        "message": "Persona detectada de noche en la estación norte",
+        "local_hour": 23,
+        "t_s": 1.0
+      }
+    ],
+    "tracks": [
+      {
+        "track_id": "persona-1",
+        "class": "persona",
+        "start_frame": 5,
+        "end_frame": 60,
+        "n_dets": 56
+      }
+    ],
+    "notes": [],
+    "mock": true,
+    "est_usd_sam": 0.0,
+    "est_usd_voice": 0.0,
+    "sam_calls": 1
+  },
+  "report": {
+    "titulo": "Reporte Rastro — fauna-camtrap",
+    "resumen": "Video data/lila5fps/DSCF0104.mp4: conteo ingenuo 1, individuos únicos 1. Clases: persona=1.",
+    "especies": [
+      {
+        "clase": "persona",
+        "individuos": 1
+      }
+    ],
+    "alertas": [
+      {
+        "id": "persona_noche",
+        "severity": "alta",
+        "message": "Persona detectada de noche en la estación norte",
+        "local_hour": 23,
+        "t_s": 1.0
+      }
+    ],
+    "notas_campo": [],
+    "recomendaciones": [
+      "Revisar clips con alerta alta.",
+      "Confirmar reentradas en el borde del frame si el conteo parece bajo."
+    ],
+    "gancho_demo": "1, no 1",
+    "_source": "local"
+  },
+  "est_usd_sam": 0.0,
+  "est_usd_voice": 0.0,
+  "est_usd_total": 0.0
+}

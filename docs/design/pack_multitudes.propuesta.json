@@ -1,0 +1,49 @@
+{
+  "id": "multitudes-densidad",
+  "version": "0.1.0-propuesta",
+  "locale": "es-CR",
+  "jurisdiction": "global",
+  "description": "PROPUESTA NOVA. Densidad de personas por zona en frames muestreados (modo imagen de SAM, devuelve todas las instancias, sin límite de 16). No sigue individuos ni reconoce caras: solo cuántos, no quiénes.",
+  "targets": [{ "prompt": "person", "class": "persona" }],
+  "sampling": { "fps": 1, "mode": "image_sample" },
+  "geometry": {
+    "zones": [
+      { "id": "zona_1", "polygon": [[0.1,0.4],[0.9,0.4],[0.9,0.95],[0.1,0.95]], "area_m2": null }
+    ],
+    "lines": []
+  },
+  "metrics": ["persons_per_zone", "density_per_m2", "peak_density"],
+  "density": {
+    "point": "bbox_bottom_center",
+    "smoothing_window_s": 5,
+    "sustain_s": 10
+  },
+  "alerts": [
+    {
+      "id": "densidad_media",
+      "when": "density_per_m2 >= 4 SUSTAINED sustain_s",
+      "severity": "media",
+      "message": "Densidad de {density_per_m2} personas/m² en {zone} durante {sustain_s} s"
+    },
+    {
+      "id": "densidad_alta",
+      "when": "density_per_m2 >= 6 SUSTAINED sustain_s",
+      "severity": "alta",
+      "message": "Densidad crítica de {density_per_m2} personas/m² en {zone}: abrir salida o frenar el ingreso"
+    }
+  ],
+  "voice": { "languages": ["es", "en"], "link_by": ["timestamp", "station"] },
+  "report": {
+    "template": "multitudes_evento_v1",
+    "sections": ["resumen", "pico_por_zona", "alertas", "notas_campo", "limites"]
+  },
+  "privacy": {
+    "blur": ["persona"],
+    "blur_target": "full_bbox",
+    "store": "aggregates_only",
+    "identity": false,
+    "tracking": false,
+    "blur_radius": 28
+  },
+  "output": { "annotated_video": true, "blurred_video": true, "heatmap": true }
+}

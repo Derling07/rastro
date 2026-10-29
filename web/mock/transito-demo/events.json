@@ -1,0 +1,42 @@
+[
+  {
+    "kind": "turn",
+    "t_s": 2.0,
+    "track_id": "auto-1",
+    "class": "auto",
+    "movement": "N->S",
+    "label": "recto"
+  },
+  {
+    "kind": "turn",
+    "t_s": 3.5,
+    "track_id": "auto-2",
+    "class": "auto",
+    "movement": "O->E",
+    "label": "recto"
+  },
+  {
+    "kind": "turn",
+    "t_s": 4.0,
+    "track_id": "bus-1",
+    "class": "bus",
+    "movement": "E->O",
+    "label": "recto"
+  },
+  {
+    "kind": "turn",
+    "t_s": 5.5,
+    "track_id": "moto-1",
+    "class": "moto",
+    "movement": "S->N",
+    "label": "recto"
+  },
+  {
+    "kind": "turn",
+    "t_s": 6.0,
+    "track_id": "auto-3",
+    "class": "auto",
+    "movement": "N->E",
+    "label": "izquierda"
+  }
+]

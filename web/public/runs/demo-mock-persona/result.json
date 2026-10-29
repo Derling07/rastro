@@ -1,0 +1,1039 @@
+{
+  "schema_version": "1.1",
+  "run_id": "demo-mock-persona",
+  "source_video_id": "DSCF0104",
+  "created_at": "2026-10-27T04:11:47.460173+00:00",
+  "pack": {
+    "id": "fauna-camtrap",
+    "version": "0.4.0",
+    "path": "/workspace/rastro/packs/fauna.json"
+  },
+  "video": {
+    "path": "data/lila5fps/DSCF0104.mp4",
+    "fps": 5,
+    "native_fps": 5,
+    "annotated_url": "/runs/demo-mock-persona/annotated.mp4",
+    "url": "/runs/demo-mock-persona/annotated.mp4",
+    "poster": "/frames/DSCF0104_t1.jpg"
+  },
+  "station": "norte",
+  "local_hour": 23,
+  "naive_count": 1,
+  "unique_count": 1,
+  "by_class": {
+    "persona": 1
+  },
+  "cost_usd": 0,
+  "counts": {
+    "naive": 1,
+    "unique": 1,
+    "by_class": {
+      "persona": 1
+    }
+  },
+  "tracks": [
+    {
+      "track_id": "persona-1",
+      "class": "persona",
+      "start_frame": 5,
+      "end_frame": 60,
+      "dwell_s": 11.2,
+      "n_dets": 56
+    }
+  ],
+  "frames": [
+    {
+      "frame": 5,
+      "t_s": 1,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            700,
+            300,
+            820,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 6,
+      "t_s": 1.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            703.6363636363636,
+            300,
+            823.6363636363636,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "t_s": 1.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            707.2727272727273,
+            300,
+            827.2727272727273,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 8,
+      "t_s": 1.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            710.9090909090909,
+            300,
+            830.9090909090909,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 9,
+      "t_s": 1.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            714.5454545454545,
+            300,
+            834.5454545454545,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "t_s": 2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            718.1818181818181,
+            300,
+            838.1818181818181,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 11,
+      "t_s": 2.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            721.8181818181819,
+            300,
+            841.8181818181819,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 12,
+      "t_s": 2.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            725.4545454545455,
+            300,
+            845.4545454545455,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 13,
+      "t_s": 2.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            729.0909090909091,
+            300,
+            849.0909090909091,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 14,
+      "t_s": 2.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            732.7272727272727,
+            300,
+            852.7272727272727,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "t_s": 3,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            736.3636363636364,
+            300,
+            856.3636363636364,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 16,
+      "t_s": 3.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            740,
+            300,
+            860,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 17,
+      "t_s": 3.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            743.6363636363636,
+            300,
+            863.6363636363636,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 18,
+      "t_s": 3.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            747.2727272727273,
+            300,
+            867.2727272727273,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 19,
+      "t_s": 3.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            750.9090909090909,
+            300,
+            870.9090909090909,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "t_s": 4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            754.5454545454545,
+            300,
+            874.5454545454545,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 21,
+      "t_s": 4.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            758.1818181818181,
+            300,
+            878.1818181818181,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 22,
+      "t_s": 4.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            761.8181818181818,
+            300,
+            881.8181818181818,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 23,
+      "t_s": 4.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            765.4545454545455,
+            300,
+            885.4545454545455,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 24,
+      "t_s": 4.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            769.0909090909091,
+            300,
+            889.0909090909091,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "t_s": 5,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            772.7272727272727,
+            300,
+            892.7272727272727,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 26,
+      "t_s": 5.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            776.3636363636364,
+            300,
+            896.3636363636364,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 27,
+      "t_s": 5.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            780,
+            300,
+            900,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 28,
+      "t_s": 5.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            783.6363636363636,
+            300,
+            903.6363636363636,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 29,
+      "t_s": 5.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            787.2727272727273,
+            300,
+            907.2727272727273,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "t_s": 6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            790.9090909090909,
+            300,
+            910.9090909090909,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 31,
+      "t_s": 6.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            794.5454545454545,
+            300,
+            914.5454545454545,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 32,
+      "t_s": 6.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            798.1818181818182,
+            300,
+            918.1818181818182,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 33,
+      "t_s": 6.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            801.8181818181818,
+            300,
+            921.8181818181818,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 34,
+      "t_s": 6.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            805.4545454545455,
+            300,
+            925.4545454545455,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "t_s": 7,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            809.0909090909091,
+            300,
+            929.0909090909091,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 36,
+      "t_s": 7.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            812.7272727272727,
+            300,
+            932.7272727272727,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 37,
+      "t_s": 7.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            816.3636363636364,
+            300,
+            936.3636363636364,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 38,
+      "t_s": 7.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            820,
+            300,
+            940,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 39,
+      "t_s": 7.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            823.6363636363636,
+            300,
+            943.6363636363636,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 40,
+      "t_s": 8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            827.2727272727273,
+            300,
+            947.2727272727273,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 41,
+      "t_s": 8.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            830.9090909090909,
+            300,
+            950.9090909090909,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 42,
+      "t_s": 8.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            834.5454545454545,
+            300,
+            954.5454545454545,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 43,
+      "t_s": 8.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            838.1818181818182,
+            300,
+            958.1818181818182,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 44,
+      "t_s": 8.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            841.8181818181818,
+            300,
+            961.8181818181818,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 45,
+      "t_s": 9,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            845.4545454545455,
+            300,
+            965.4545454545455,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 46,
+      "t_s": 9.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            849.0909090909091,
+            300,
+            969.0909090909091,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 47,
+      "t_s": 9.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            852.7272727272727,
+            300,
+            972.7272727272727,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 48,
+      "t_s": 9.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            856.3636363636364,
+            300,
+            976.3636363636364,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 49,
+      "t_s": 9.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            860,
+            300,
+            980,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 50,
+      "t_s": 10,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            863.6363636363636,
+            300,
+            983.6363636363636,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 51,
+      "t_s": 10.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            867.2727272727273,
+            300,
+            987.2727272727273,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 52,
+      "t_s": 10.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            870.9090909090909,
+            300,
+            990.9090909090909,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 53,
+      "t_s": 10.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            874.5454545454545,
+            300,
+            994.5454545454545,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 54,
+      "t_s": 10.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            878.1818181818182,
+            300,
+            998.1818181818182,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 55,
+      "t_s": 11,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            881.8181818181818,
+            300,
+            1001.8181818181818,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 56,
+      "t_s": 11.2,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            885.4545454545455,
+            300,
+            1005.4545454545455,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 57,
+      "t_s": 11.4,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            889.0909090909091,
+            300,
+            1009.0909090909091,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 58,
+      "t_s": 11.6,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            892.7272727272727,
+            300,
+            1012.7272727272727,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 59,
+      "t_s": 11.8,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            896.3636363636364,
+            300,
+            1016.3636363636364,
+            390
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 60,
+      "t_s": 12,
+      "objects": [
+        {
+          "track_id": "persona-1",
+          "class": "persona",
+          "bbox": [
+            900,
+            300,
+            1020,
+            390
+          ]
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "kind": "individual",
+      "t_s": 1,
+      "track_id": "persona-1",
+      "class": "persona",
+      "start_frame": 5,
+      "end_frame": 60,
+      "dwell_s": 11.2
+    }
+  ],
+  "alerts": [
+    {
+      "id": "persona_noche",
+      "severity": "alta",
+      "message": "Persona detectada de noche en la estación norte",
+      "local_hour": 23,
+      "t_s": 1
+    }
+  ],
+  "voice": null,
+  "agent_log": [
+    {
+      "step": 1,
+      "tool": "sam.segment_video",
+      "detail": "concept=person n=56 chosen=True est_usd=0.0"
+    },
+    {
+      "step": 2,
+      "tool": "tracking.count_unique",
+      "detail": "unique=1 naive=1"
+    },
+    {
+      "step": 3,
+      "tool": "agent.build_report",
+      "detail": "pack=fauna-camtrap unique=1"
+    },
+    {
+      "step": 4,
+      "tool": "agent.local_report",
+      "detail": "source=local"
+    }
+  ],
+  "report": {
+    "titulo": "Reporte Rastro — fauna-camtrap",
+    "resumen": "Video data/lila5fps/DSCF0104.mp4: conteo ingenuo 1, individuos únicos 1. Clases: persona=1.",
+    "especies": [
+      {
+        "clase": "persona",
+        "individuos": 1
+      }
+    ],
+    "alertas": [
+      {
+        "id": "persona_noche",
+        "severity": "alta",
+        "message": "Persona detectada de noche en la estación norte",
+        "local_hour": 23,
+        "t_s": 1
+      }
+    ],
+    "notas_campo": [],
+    "recomendaciones": [
+      "Revisar clips con alerta alta.",
+      "Confirmar reentradas en el borde del frame si el conteo parece bajo."
+    ],
+    "gancho_demo": "1, no 1",
+    "_source": "local"
+  },
+  "artifacts": {
+    "annotated_video": "annotated.mp4",
+    "blurred_video": "blurred.mp4",
+    "voice_json": null,
+    "cost_json": "cost.json",
+    "tracks_json": "tracks.json"
+  },
+  "cost": {
+    "est_usd_sam": 0,
+    "est_usd_voice": 0,
+    "est_usd_total": 0
+  },
+  "sam": [
+    {
+      "concept": "person",
+      "class": "persona",
+      "n_detections": 56,
+      "mock": true,
+      "elapsed_s": 0.0001442432403564453,
+      "usage": {
+        "video_frames_processed": 0,
+        "mock": true
+      },
+      "est_usd": 0,
+      "chosen": true
+    }
+  ],
+  "is_mock": true
+}

@@ -1,0 +1,107 @@
+{
+  "id": "transito-giros",
+  "version": "0.1.0",
+  "locale": "es-CR",
+  "jurisdiction": "global",
+  "description": "Matriz de giros N/S/E/O en intersección. SAM por recorte de acceso (tope 16 objs/frame). budget_usd 0.50. Encudre calibrado para data/transit/wicker_park_intersection (vista cenital). Conteos NOT VERIFIED hasta QA.",
+  "targets": [
+    { "prompt": "car", "class": "car", "fallbacks": ["vehicle", "automobile"] },
+    { "prompt": "motorcycle", "class": "motorcycle", "fallbacks": ["motorbike", "scooter"] },
+    { "prompt": "bus", "class": "bus" },
+    { "prompt": "truck", "class": "truck", "fallbacks": ["van", "pickup"] },
+    { "prompt": "bicycle", "class": "bicycle", "fallbacks": ["bike", "cyclist"] },
+    { "prompt": "person", "class": "person", "fallbacks": ["pedestrian", "people"] }
+  ],
+  "sampling": {
+    "fps": 5,
+    "mode": "video_track",
+    "chunk_s": 60,
+    "overlap_s": 2
+  },
+  "budget_usd": 0.5,
+  "access_crops": true,
+  "geometry": {
+    "approaches": [
+      {
+        "id": "acceso_N",
+        "line": [[0.30, 0.34], [0.70, 0.34]],
+        "roi": [0.28, 0.0, 0.72, 0.36]
+      },
+      {
+        "id": "acceso_S",
+        "line": [[0.30, 0.66], [0.70, 0.66]],
+        "roi": [0.28, 0.64, 0.72, 1.0]
+      },
+      {
+        "id": "acceso_E",
+        "line": [[0.66, 0.30], [0.66, 0.70]],
+        "roi": [0.64, 0.28, 1.0, 0.72]
+      },
+      {
+        "id": "acceso_O",
+        "line": [[0.34, 0.30], [0.34, 0.70]],
+        "roi": [0.0, 0.28, 0.36, 0.72]
+      }
+    ],
+    "lines": [],
+    "zones": []
+  },
+  "metrics": [
+    "turning_movements",
+    "unique_count",
+    "dwell"
+  ],
+  "turning_rules": {
+    "_": "por_orientacion"
+  },
+  "dedup": {
+    "iou_stitch": 0.3,
+    "reentry_window_s": 15,
+    "reentry_edge_px": 80,
+    "center_dist_factor": 2.0,
+    "edge_dist_factor": 4.0
+  },
+  "alerts": [
+    {
+      "id": "flujo_alto_autos",
+      "when": "class == 'car' AND unique_count >= 20",
+      "severity": "media",
+      "message": "Flujo alto de autos en {station}: {unique_count} únicos"
+    },
+    {
+      "id": "presencia_peatones",
+      "when": "class == 'person' AND unique_count >= 5",
+      "severity": "info",
+      "message": "Peatones en intersección {station}: {unique_count}"
+    },
+    {
+      "id": "motos_presentes",
+      "when": "class == 'motorcycle' AND unique_count >= 3",
+      "severity": "info",
+      "message": "Motos detectadas en {station}: {unique_count}"
+    }
+  ],
+  "voice": {
+    "languages": ["es", "en"],
+    "link_by": ["timestamp", "station"]
+  },
+  "report": {
+    "template": "transito_interseccion_v1",
+    "sections": ["resumen", "matriz_giros", "por_clase", "alertas", "limites"]
+  },
+  "privacy": {
+    "blur": ["person"],
+    "blur_target": "full_bbox",
+    "store": "aggregates_and_blurred_clips",
+    "identity": false,
+    "blur_radius": 28
+  },
+  "station_defaults": {
+    "station": "wicker-park",
+    "local_tz_offset_hours": -5
+  },
+  "output": {
+    "annotated_video": true,
+    "blurred_video": true
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "titulo": "Reporte Rastro - Conteo de giros (MOCK)",
+  "resumen": "Datos de ejemplo. En 60 s de intersección se contaron 4 vehículos únicos (el conteo ingenuo marcó 5 por una re-entrada). Matriz de giros de demostración.",
+  "especies": [
+    {
+      "clase": "auto",
+      "individuos": 2
+    },
+    {
+      "clase": "bus",
+      "individuos": 1
+    },
+    {
+      "clase": "moto",
+      "individuos": 1
+    }
+  ],
+  "alertas": [
+    {
+      "id": "cola_larga",
+      "severidad": "media",
+      "mensaje": "Cola simulada en acceso N"
+    }
+  ],
+  "recomendaciones": [
+    "Reemplazar este mock con un video real de San José cuando esté listo.",
+    "Dibujar líneas de acceso N/S/E/O sobre el primer frame."
+  ],
+  "gancho_demo": "4 vehículos, no 5",
+  "matriz_giros": {
+    "N->S": 1,
+    "N->E": 1,
+    "O->E": 1,
+    "E->O": 1,
+    "S->N": 1
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "pack_id": "multitudes-densidad",
+  "naive_count": 32,
+  "unique_count": 8,
+  "by_class": {
+    "persona": 8
+  },
+  "alerts": [
+    {
+      "id": "densidad_alta",
+      "severity": "alta",
+      "message": "Densidad 4.5/m² en porton_3 por más de 30 s (dato de ejemplo)"
+    },
+    {
+      "id": "densidad_critica",
+      "severity": "critica",
+      "message": "Umbral crítico simulado en porton_3: avisar a seguridad"
+    }
+  ],
+  "events": [
+    {
+      "kind": "density",
+      "t_s": 0.0,
+      "zone": "porton_3",
+      "value": 3.2,
+      "unit": "per_m2"
+    },
+    {
+      "kind": "density",
+      "t_s": 2.0,
+      "zone": "porton_3",
+      "value": 4.5,
+      "unit": "per_m2"
+    },
+    {
+      "kind": "density",
+      "t_s": 3.0,
+      "zone": "escenario",
+      "value": 2.1,
+      "unit": "per_m2"
+    }
+  ],
+  "mock": true,
+  "fps": 1
+}

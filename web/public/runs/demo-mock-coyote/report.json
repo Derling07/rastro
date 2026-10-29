@@ -1,0 +1,25 @@
+{
+  "titulo": "Reporte Rastro — fauna-camtrap",
+  "resumen": "Video data/lila5fps/DSCF0104.mp4: conteo ingenuo 4, individuos únicos 3. Clases: coyote=3.",
+  "especies": [
+    {
+      "clase": "coyote",
+      "individuos": 3
+    }
+  ],
+  "alertas": [
+    {
+      "id": "especie_objetivo",
+      "severity": "info",
+      "message": "Registro de coyote: 3 individuos",
+      "t_s": 0.0
+    }
+  ],
+  "notas_campo": [],
+  "recomendaciones": [
+    "Revisar clips con alerta alta.",
+    "Confirmar reentradas en el borde del frame si el conteo parece bajo."
+  ],
+  "gancho_demo": "3, no 4",
+  "_source": "local"
+}

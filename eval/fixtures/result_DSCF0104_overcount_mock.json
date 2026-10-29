@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.1",
+  "run_id": "mock-fauna-DSCF0104-overcount",
+  "created_at": "2026-10-26T00:00:00+00:00",
+  "pack": {
+    "id": "fauna-camtrap",
+    "version": "0.3.0",
+    "path": "packs/fauna.json"
+  },
+  "video": {
+    "path": "data/lila5fps/DSCF0104.mp4",
+    "fps": 5.0,
+    "native_fps": 5.0
+  },
+  "station": "norte",
+  "local_hour": 22,
+  "counts": {
+    "naive": 11,
+    "unique": 3,
+    "by_class": {
+      "coyote": 3
+    }
+  },
+  "tracks": [],
+  "events": [],
+  "alerts": [],
+  "voice": null,
+  "report": {
+    "titulo": "MOCK",
+    "resumen": "intentional FAIL fixture",
+    "_source": "mock"
+  },
+  "artifacts": {},
+  "cost": {
+    "est_usd_sam": 0.0,
+    "est_usd_voice": 0.0,
+    "est_usd_total": 0.0
+  },
+  "sam": [],
+  "mock": true,
+  "_fixture_note": "MOCK \u2014 not a real API run; unique=3 vs GT=1 for FAIL test",
+  "source_video_id": "DSCF0104",
+  "unique_count": 3,
+  "naive_count": 11,
+  "by_class": {
+    "coyote": 3
+  },
+  "cost_usd": 0.0,
+  "is_mock": true,
+  "frames": [],
+  "agent_log": []
+}

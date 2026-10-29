@@ -1,0 +1,81 @@
+{
+  "runs": [
+    {
+      "id": "demo-real-coyote-0112",
+      "label": "Coyote DSCF0112 real (90→2)",
+      "pack": "fauna",
+      "pack_file": "fauna.json",
+      "source_video_id": "DSCF0112",
+      "is_mock": false,
+      "naive_count": 2,
+      "unique_count": 2,
+      "detections_total": 90,
+      "path": "/runs/demo-real-coyote-0112"
+    },
+    {
+      "id": "demo-real-coyote",
+      "label": "Coyote DSCF0104 real",
+      "pack": "fauna",
+      "pack_file": "fauna.json",
+      "source_video_id": "DSCF0104",
+      "is_mock": false,
+      "naive_count": 1,
+      "unique_count": 1,
+      "detections_total": 34,
+      "path": "/runs/demo-real-coyote"
+    },
+    {
+      "id": "demo-mock-coyote",
+      "label": "Coyote · datos de ejemplo",
+      "pack": "fauna",
+      "pack_file": "fauna.json",
+      "source_video_id": "DSCF0104",
+      "is_mock": true,
+      "naive_count": 4,
+      "unique_count": 3,
+      "detections_total": null,
+      "path": "/runs/demo-mock-coyote"
+    },
+    {
+      "id": "demo-mock-persona",
+      "label": "Persona noche · datos de ejemplo",
+      "pack": "fauna",
+      "pack_file": "fauna.json",
+      "source_video_id": "DSCF0104",
+      "is_mock": true,
+      "naive_count": 1,
+      "unique_count": 1,
+      "detections_total": null,
+      "path": "/runs/demo-mock-persona"
+    },
+    {
+      "id": "demo-mock-voice",
+      "label": "Con nota de voz · datos de ejemplo",
+      "pack": "fauna",
+      "pack_file": "fauna.json",
+      "source_video_id": "DSCF0104",
+      "is_mock": true,
+      "naive_count": 4,
+      "unique_count": 3,
+      "detections_total": null,
+      "path": "/runs/demo-mock-voice"
+    }
+  ],
+  "packs": {
+    "fauna": {
+      "pack_file": "fauna.json",
+      "has_run": true
+    },
+    "transito": {
+      "pack_file": "transito.json",
+      "has_run": false,
+      "_sin_corrida": true
+    },
+    "multitudes": {
+      "pack_file": "multitudes.json",
+      "has_run": false,
+      "_sin_corrida": true
+    }
+  },
+  "default_run_id": "demo-real-coyote-0112"
+}

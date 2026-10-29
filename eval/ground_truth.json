@@ -1,0 +1,314 @@
+{
+  "schema_version": "0.1",
+  "labeled_by": "QA",
+  "labeled_at": "2026-10-26T22:40:00-06:00",
+  "timezone": "America/Costa_Rica",
+  "method": "ffmpeg frame extract + visual inspection via Read (no SAM labels used as GT)",
+  "protocol": "LABELING.md",
+  "clips": [
+    {
+      "id": "DSCF0104",
+      "file": "data/lila/coyote/DSCF0104.MP4",
+      "file_5fps": "data/lila5fps/DSCF0104.mp4",
+      "lila_path": "converted_camera_trap_videos/2021.03.21/location-03/coyote/DSCF0104.MP4",
+      "class": "coyote",
+      "true_unique_count": 1,
+      "status": "VERIFIED",
+      "confidence": "high",
+      "naive_notes": "Single coyote walks L→R across clearing for ~10s. Eyeshine visible in several frames. Left-side shape in first second looks like foliage/branch, not a second body across later frames. Max simultaneous animals verified in-frame: 1.",
+      "how_labeled": "ffmpeg -vf fps=1 → 10 frames; also sampled n={0,5,10,15,20,30,45,60,90,120,150,180,210,240,270,300}; inspected each with Read",
+      "frames_checked": [
+        "eval/frames/DSCF0104/f01.jpg",
+        "eval/frames/DSCF0104/f02.jpg",
+        "eval/frames/DSCF0104/f03.jpg",
+        "eval/frames/DSCF0104/f04.jpg",
+        "eval/frames/DSCF0104/f05.jpg",
+        "eval/frames/DSCF0104/f06.jpg",
+        "eval/frames/DSCF0104/f07.jpg",
+        "eval/frames/DSCF0104/f08.jpg",
+        "eval/frames/DSCF0104/f09.jpg",
+        "eval/frames/DSCF0104/f10.jpg",
+        "eval/frames/DSCF0104_start/n001.jpg",
+        "eval/frames/DSCF0104_start/n008.jpg",
+        "eval/frames/DSCF0104_start/n016.jpg"
+      ],
+      "overlay_timestamp_span": "01/13/2021 11:14:29 PM – 11:14:38 PM",
+      "duration_s": 10.2,
+      "pack": "fauna"
+    },
+    {
+      "id": "DSCF0112",
+      "file": "data/lila/coyote/DSCF0112.MP4",
+      "file_5fps": "data/lila5fps/DSCF0112.mp4",
+      "lila_path": "converted_camera_trap_videos/2021.03.21/location-03/coyote/DSCF0112.MP4",
+      "class": "coyote",
+      "true_unique_count": 2,
+      "status": "VERIFIED",
+      "confidence": "high",
+      "naive_notes": "Two coyotes visible together in early frames (foreground right + mid-ground). Later frames often show only one (second occluded/exited brush). Unique individuals across the clip: 2. Not the same as max simultaneous in every frame.",
+      "how_labeled": "ffmpeg -vf fps=1 (10 frames) + fps=3 dense (31 frames); inspected key frames with Read including f01 and dense f02 where both are clear",
+      "frames_checked": [
+        "eval/frames/DSCF0112/f01.jpg",
+        "eval/frames/DSCF0112/f03.jpg",
+        "eval/frames/DSCF0112/f05.jpg",
+        "eval/frames/DSCF0112/f07.jpg",
+        "eval/frames/DSCF0112/f10.jpg",
+        "eval/frames/DSCF0112_dense/f02.jpg",
+        "eval/frames/DSCF0112_dense/f08.jpg",
+        "eval/frames/DSCF0112_dense/f15.jpg"
+      ],
+      "overlay_timestamp_span": "01/25/2021 12:20:59 AM – 12:21:08 AM",
+      "duration_s": 10.2,
+      "pack": "fauna"
+    },
+    {
+      "id": "DSCF0840",
+      "file": "data/lila/coyote/DSCF0840.MP4",
+      "file_5fps": "data/lila5fps/DSCF0840.mp4",
+      "lila_path": "converted_camera_trap_videos/2021.06.06/location-03/coyote/DSCF0840.MP4",
+      "class": "coyote",
+      "true_unique_count": null,
+      "status": "NOT VERIFIED",
+      "confidence": "low",
+      "naive_notes": "Heavy IR fog/glare washes the mid-ground. Early frames show at least one blurry quadruped / eyeshine; many mid/late frames look empty. Cannot confidently assert unique count of 1 vs 2 across the clip. Camera overlay clock says PM while image is IR night — absolute clock unreliable (known LILA Seattleish caveat).",
+      "how_labeled": "ffmpeg fps=1 (10) + fps=3 dense (31); inspected f01–f10 and dense f01,f05,f08,f12,f16,f20,f24 with Read",
+      "frames_checked": [
+        "eval/frames/DSCF0840/f01.jpg",
+        "eval/frames/DSCF0840/f03.jpg",
+        "eval/frames/DSCF0840/f05.jpg",
+        "eval/frames/DSCF0840/f07.jpg",
+        "eval/frames/DSCF0840/f09.jpg",
+        "eval/frames/DSCF0840_dense/f01.jpg",
+        "eval/frames/DSCF0840_dense/f05.jpg",
+        "eval/frames/DSCF0840_dense/f08.jpg",
+        "eval/frames/DSCF0840_dense/f12.jpg",
+        "eval/frames/DSCF0840_dense/f16.jpg",
+        "eval/frames/DSCF0840_dense/f20.jpg",
+        "eval/frames/DSCF0840_dense/f24.jpg"
+      ],
+      "observed_min_individuals": 1,
+      "overlay_timestamp_span": "03/12/2020 01:12:48 PM – 01:12:56 PM (clock likely wrong AM/PM)",
+      "duration_s": 10.2,
+      "pack": "fauna"
+    },
+    {
+      "id": "DSCF0004",
+      "file": "data/lila/person/DSCF0004.MP4",
+      "file_5fps": "data/lila5fps/DSCF0004.mp4",
+      "lila_path": "converted_camera_trap_videos/2021.03.21/location-03/dan/DSCF0004.MP4",
+      "class": "person",
+      "true_unique_count": 1,
+      "status": "VERIFIED",
+      "confidence": "high",
+      "naive_notes": "Daylight color video. One adult male (LILA label 'dan', dataset owner with consent) walks through clearing holding a white object. No second person visible in sampled frames.",
+      "how_labeled": "ffmpeg -vf fps=1 → 10 frames; inspected f01, f05, f10 with Read",
+      "frames_checked": [
+        "eval/frames/DSCF0004/f01.jpg",
+        "eval/frames/DSCF0004/f05.jpg",
+        "eval/frames/DSCF0004/f10.jpg"
+      ],
+      "overlay_timestamp_span": "01/10/2021 12:47:30 PM – 12:47:39 PM",
+      "duration_s": 10.2,
+      "pack": "fauna"
+    },
+    {
+      "id": "repod-rondo-fordonskie-example",
+      "file": null,
+      "dataset": "RepOD doi:10.18150/BAI5PS",
+      "dataset_url": "https://repod.icm.edu.pl/dataset.xhtml?persistentId=doi:10.18150/BAI5PS",
+      "remote_file": "04_09_Example of Rondo Fordońskie (HEVC 3840x2160).MP4",
+      "remote_size_bytes": 3760351145,
+      "codec": "HEVC (H.265) 3840x2160 — convertible to H.264 MP4/MOV",
+      "intersection": "Rondo Fordońskie (Bydgoszcz)",
+      "class": "vehicle",
+      "pack": "transit",
+      "true_unique_count": null,
+      "turning_movement_counts": null,
+      "by_class": null,
+      "status": "NOT VERIFIED",
+      "confidence": "none",
+      "download_status": "NOT DOWNLOADED",
+      "download_reason": "File is 3.5 GB (>200MB QA cap). CC BY 4.0 permits redistribution with attribution, but size rule blocks local copy into data/transit/.",
+      "license": "CC BY 4.0 (per-file on RepOD listing)",
+      "license_quote": "License: CC BY - Creative Commons Attribution 4.0",
+      "naive_notes": "Public example drone clip over signalized roundabout — suitable for turning-movement counting once a short H.264 cut exists. No frames inspected (not downloaded).",
+      "how_labeled": "Listing only — no frame inspection",
+      "frames_checked": []
+    },
+    {
+      "id": "repod-kamienna-wyszynskiego",
+      "file": null,
+      "dataset": "RepOD doi:10.18150/BAI5PS",
+      "dataset_url": "https://repod.icm.edu.pl/dataset.xhtml?persistentId=doi:10.18150/BAI5PS",
+      "remote_file": "video for intersection 01_04 Kamienna–Wyszyńskiego (paired with SQL e.g. 01_04_Kamienna - Wyszyńskiego_18_05do18_37_29m.sql)",
+      "remote_size_bytes": null,
+      "codec": "unknown (full video corpus ~1.5 TB; available on request)",
+      "intersection": "Kamienna – Wyszyńskiego (signalized)",
+      "class": "vehicle",
+      "pack": "transit",
+      "true_unique_count": null,
+      "turning_movement_counts": null,
+      "by_class": null,
+      "status": "NOT VERIFIED",
+      "confidence": "none",
+      "download_status": "NOT DOWNLOADED",
+      "download_reason": "Dataset page: 'Video available only upon request' / 'Materiał wideo dostępny wyłącznie na prośbę'. Only trajectories (.sql) are public for this intersection; no public MP4 under 200MB.",
+      "license": "CC BY 4.0 expected for video files (dataset uses per-file licenses; SQL siblings are CC BY 4.0)",
+      "license_quote": "Different licenses for individual files",
+      "naive_notes": "Signalized 4-leg intersection with published trajectory SQL — ideal for turning-movement counts once video is obtained. Counts NOT VERIFIED (no video).",
+      "how_labeled": "Listing only — no frame inspection",
+      "frames_checked": []
+    },
+    {
+      "id": "chiang-mai-jak-krok-siwilai",
+      "file": "data/transit/chiang_mai_intersection.mp4",
+      "file_original": "data/transit/chiang_mai_intersection.ogv",
+      "source_url": "https://commons.wikimedia.org/wiki/File:A_intersection_with_traffic_in_Chiang_Mai,_Thailand.ogv",
+      "author": "Amada44",
+      "license": "CC BY-SA 4.0",
+      "attribution": "A intersection with traffic in Chiang Mai, Thailand by Amada44, Wikimedia Commons, CC BY-SA 4.0. Converted to H.264 720p (audio removed) for Rastro QA.",
+      "class": "vehicle",
+      "true_unique_count": null,
+      "by_class": null,
+      "status": "NOT VERIFIED",
+      "confidence": "low",
+      "naive_notes": "Street-level view of Jak-Krok Siwilai intersection (Chiang Mai). Red-light queue + multiple motorcycles/cars/trucks entering and turning. Across 14×1fps + 29×2fps frames, distinct vehicle IDs cannot be asserted without track continuity — many enter/exit FOV. Observed classes present: motorcycle, car/sedan, pickup, van; possible bus far left. Counting lines proposed: stop_cam (near crosswalk bottom), stop_opp (far gantry red), turn_right_cam (vehicles exiting right of FOV).",
+      "counting_lines": [
+        {
+          "id": "stop_cam",
+          "points": [
+            [
+              0.05,
+              0.85
+            ],
+            [
+              0.95,
+              0.85
+            ]
+          ],
+          "role": "near stop / crosswalk"
+        },
+        {
+          "id": "stop_opp",
+          "points": [
+            [
+              0.2,
+              0.35
+            ],
+            [
+              0.8,
+              0.35
+            ]
+          ],
+          "role": "opposing approach under gantry"
+        },
+        {
+          "id": "turn_right_cam",
+          "points": [
+            [
+              0.7,
+              0.55
+            ],
+            [
+              0.98,
+              0.75
+            ]
+          ],
+          "role": "right-turn exit toward camera-right"
+        }
+      ],
+      "how_labeled": "ffmpeg fps=1 (14 frames) + fps=2 dense (29 frames); inspected key frames with Read (f01,f04,f07,f10,f14 + dense f05,f15)",
+      "frames_checked": [
+        "eval/frames/chiang_mai_intersection/f01.jpg",
+        "eval/frames/chiang_mai_intersection/f04.jpg",
+        "eval/frames/chiang_mai_intersection/f07.jpg",
+        "eval/frames/chiang_mai_intersection/f10.jpg",
+        "eval/frames/chiang_mai_intersection/f14.jpg",
+        "eval/frames/chiang_mai_intersection_dense/f05.jpg",
+        "eval/frames/chiang_mai_intersection_dense/f15.jpg"
+      ],
+      "duration_s": 14.5,
+      "pack": "transito",
+      "downloaded": true
+    },
+    {
+      "id": "wicker-park-milwaukee-north-damen",
+      "file": "data/transit/wicker_park_intersection.mp4",
+      "file_original": "data/transit/wicker_park_intersection.webm",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Wicker_Park_intersection_changes.webm",
+      "author": "Steven Vance",
+      "license": "CC BY 3.0",
+      "attribution": "Wicker Park intersection changes by Steven Vance, Wikimedia Commons (from Vimeo), CC BY 3.0. Converted to H.264 720p (audio removed) for Rastro QA.",
+      "class": "vehicle",
+      "true_unique_count": null,
+      "by_class": null,
+      "status": "NOT VERIFIED",
+      "confidence": "low",
+      "naive_notes": "Aerial/drone of Wicker Park six-corners (Milwaukee/North/Damen, Chicago). ~25–40 vehicles visible per frame including parked; CTA elevated 'L' occludes street below. Camera path changes viewpoint across 30s (intersection redesign overview), so unique-ID stitch across frames is unreliable. Observed: passenger cars, SUVs, van, elevated train (out of vehicle count scope). Counting lines proposed on main grid approaches once pack geometry is fixed.",
+      "counting_lines": [
+        {
+          "id": "stop_milwaukee",
+          "points": [
+            [
+              0.35,
+              0.55
+            ],
+            [
+              0.55,
+              0.75
+            ]
+          ],
+          "role": "Milwaukee Ave approach (approx; viewpoint shifts)"
+        },
+        {
+          "id": "stop_north",
+          "points": [
+            [
+              0.45,
+              0.25
+            ],
+            [
+              0.7,
+              0.4
+            ]
+          ],
+          "role": "North Ave approach (approx)"
+        },
+        {
+          "id": "stop_damen",
+          "points": [
+            [
+              0.55,
+              0.55
+            ],
+            [
+              0.8,
+              0.7
+            ]
+          ],
+          "role": "Damen Ave approach (approx)"
+        }
+      ],
+      "how_labeled": "ffmpeg fps=1 (30 frames); inspected f01,f10,f20,f30 with Read",
+      "frames_checked": [
+        "eval/frames/wicker_park_intersection/f01.jpg",
+        "eval/frames/wicker_park_intersection/f10.jpg",
+        "eval/frames/wicker_park_intersection/f20.jpg",
+        "eval/frames/wicker_park_intersection/f30.jpg"
+      ],
+      "duration_s": 30.4,
+      "pack": "transito",
+      "downloaded": true
+    }
+  ],
+  "excluded_from_metrics": [
+    "DSCF0840",
+    "repod-kamienna-wyszynskiego",
+    "repod-rondo-fordonskie-example"
+  ],
+  "notes": [
+    "LILA category labels are species tags, not unique individual counts — GT is visual only.",
+    "true_unique_count = distinct individuals across the whole clip, not sum of per-frame counts.",
+    "RepOD transit: 2 clips listed only (NOT DOWNLOADED). Example MP4 is 3.5GB CC BY 4.0; other videos on request. Counts NOT VERIFIED."
+  ]
+}

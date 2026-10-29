@@ -1,0 +1,21 @@
+{
+  "transcript": "Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro.",
+  "audio_duration_ms": 8000,
+  "session_id": "mock-nota_campo_es",
+  "mock": true,
+  "est_usd": 0.0,
+  "turns": [
+    {
+      "turn_id": 1,
+      "start_ms": 0,
+      "end_ms": 8000,
+      "start_s": 0.0,
+      "end_s": 8.0,
+      "transcript": "Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro.",
+      "speaker": "A"
+    }
+  ],
+  "station": "norte",
+  "local_hour": 14,
+  "linked_note": "[estación=norte hora=14:00] Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro."
+}

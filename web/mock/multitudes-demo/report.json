@@ -1,0 +1,27 @@
+{
+  "titulo": "Reporte Rastro - Seguridad de evento (MOCK)",
+  "resumen": "Datos de ejemplo. Densidad estimada por zona con modo imagen (sin seguimiento individual). Caras se difuminarían antes de guardar.",
+  "especies": [
+    {
+      "clase": "persona",
+      "individuos": 8
+    }
+  ],
+  "alertas": [
+    {
+      "id": "densidad_alta",
+      "severidad": "alta",
+      "mensaje": "Densidad 4.5/m² en porton_3 por más de 30 s (dato de ejemplo)"
+    },
+    {
+      "id": "densidad_critica",
+      "severidad": "critica",
+      "mensaje": "Umbral crítico simulado en porton_3: avisar a seguridad"
+    }
+  ],
+  "recomendaciones": [
+    "Cerrar temporalmente el portón 3 hasta bajar la densidad.",
+    "Este mock no usa video real; sustituir por MOT20 o grabación propia con consentimiento."
+  ],
+  "gancho_demo": "densidad 4.5/m², no rostros"
+}

@@ -1,0 +1,29 @@
+{
+  "titulo": "Reporte Rastro — fauna-camtrap",
+  "resumen": "Video data/lila5fps/DSCF0104.mp4: conteo ingenuo 4, individuos únicos 3. Clases: coyote=3. Nota de campo: [estación=norte hora=14:00] Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro.",
+  "especies": [
+    {
+      "clase": "coyote",
+      "individuos": 3
+    }
+  ],
+  "alertas": [
+    {
+      "id": "especie_objetivo",
+      "severity": "info",
+      "message": "Registro de coyote: 3 individuos",
+      "t_s": 0.0
+    }
+  ],
+  "notas_campo": [
+    "[estación=norte hora=14:00] Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro."
+  ],
+  "recomendaciones": [
+    "Revisar clips con alerta alta.",
+    "Confirmar reentradas en el borde del frame si el conteo parece bajo."
+  ],
+  "gancho_demo": "3, no 4",
+  "_source": "local",
+  "estacion": "norte",
+  "hora_local": 14
+}

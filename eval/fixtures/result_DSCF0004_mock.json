@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.1",
+  "run_id": "mock-fauna-DSCF0004",
+  "created_at": "2026-10-26T00:00:00+00:00",
+  "pack": {
+    "id": "fauna-camtrap",
+    "version": "0.3.0",
+    "path": "packs/fauna.json"
+  },
+  "video": {
+    "path": "data/lila5fps/DSCF0004.mp4",
+    "fps": 5.0,
+    "native_fps": 5.0
+  },
+  "station": "norte",
+  "local_hour": 12,
+  "counts": {
+    "naive": 1,
+    "unique": 1,
+    "by_class": {
+      "persona": 1
+    }
+  },
+  "tracks": [],
+  "events": [],
+  "alerts": [],
+  "voice": null,
+  "report": {
+    "titulo": "MOCK",
+    "resumen": "fixture only",
+    "_source": "mock"
+  },
+  "artifacts": {},
+  "cost": {
+    "est_usd_sam": 0.0,
+    "est_usd_voice": 0.0,
+    "est_usd_total": 0.0
+  },
+  "sam": [],
+  "mock": true,
+  "_fixture_note": "MOCK \u2014 not a real API run",
+  "source_video_id": "DSCF0004",
+  "unique_count": 1,
+  "naive_count": 1,
+  "by_class": {
+    "persona": 1
+  },
+  "cost_usd": 0.0,
+  "is_mock": true,
+  "frames": [],
+  "agent_log": []
+}

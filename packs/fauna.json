@@ -1,0 +1,115 @@
+{
+  "id": "fauna-camtrap",
+  "version": "0.4.0",
+  "locale": "es-CR",
+  "jurisdiction": "global",
+  "description": "Paquete cámaras trampa (LILA CDLA). Prompt primario 'coyote' con fallbacks ['animal','fox','dog'] si SAM no detecta. Persona se difumina por caja SAM (sin face ID). Dedup de reentrada configurable.",
+  "targets": [
+    {
+      "prompt": "coyote",
+      "class": "coyote",
+      "fallbacks": [
+        "animal",
+        "fox",
+        "dog"
+      ]
+    },
+    {
+      "prompt": "person",
+      "class": "persona"
+    }
+  ],
+  "sampling": {
+    "fps": 5,
+    "mode": "video_track",
+    "chunk_s": 60,
+    "overlap_s": 2
+  },
+  "geometry": {
+    "zones": [
+      {
+        "id": "frame_completo",
+        "polygon": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    ],
+    "lines": []
+  },
+  "metrics": [
+    "unique_count",
+    "dwell"
+  ],
+  "dedup": {
+    "iou_stitch": 0.3,
+    "reentry_window_s": 20,
+    "reentry_edge_px": 80,
+    "center_dist_factor": 2.0,
+    "edge_dist_factor": 4.0
+  },
+  "alerts": [
+    {
+      "id": "persona_noche",
+      "when": "class == 'persona' AND local_hour NOT IN 6..18",
+      "severity": "alta",
+      "message": "Persona detectada de noche en la estación {station}"
+    },
+    {
+      "id": "especie_objetivo",
+      "when": "class == 'coyote' AND unique_count >= 1",
+      "severity": "info",
+      "message": "Registro de {class}: {unique_count} individuos"
+    }
+  ],
+  "voice": {
+    "languages": [
+      "es",
+      "en"
+    ],
+    "link_by": [
+      "timestamp",
+      "station"
+    ]
+  },
+  "report": {
+    "template": "fauna_estacion_v1",
+    "sections": [
+      "resumen",
+      "especies",
+      "eventos",
+      "notas_campo",
+      "alertas"
+    ]
+  },
+  "privacy": {
+    "blur": [
+      "persona"
+    ],
+    "store": "aggregates_and_blurred_clips",
+    "identity": false,
+    "blur_radius": 28
+  },
+  "station_defaults": {
+    "station": "demo-seattleish",
+    "local_tz_offset_hours": -8
+  },
+  "output": {
+    "annotated_video": true,
+    "blurred_video": true
+  }
+}

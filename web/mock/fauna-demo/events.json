@@ -1,0 +1,38 @@
+[
+  {
+    "kind": "individual",
+    "t_s": 0.0,
+    "track_id": "coyote-1",
+    "class": "coyote",
+    "start_frame": 0,
+    "end_frame": 90,
+    "dwell_s": 9.1
+  },
+  {
+    "kind": "individual",
+    "t_s": 0.5,
+    "track_id": "persona-1",
+    "class": "persona",
+    "start_frame": 5,
+    "end_frame": 60,
+    "dwell_s": 5.6
+  },
+  {
+    "kind": "individual",
+    "t_s": 2.0,
+    "track_id": "coyote-2",
+    "class": "coyote",
+    "start_frame": 20,
+    "end_frame": 70,
+    "dwell_s": 5.1
+  },
+  {
+    "kind": "individual",
+    "t_s": 7.5,
+    "track_id": "coyote-3",
+    "class": "coyote",
+    "start_frame": 75,
+    "end_frame": 100,
+    "dwell_s": 2.6
+  }
+]

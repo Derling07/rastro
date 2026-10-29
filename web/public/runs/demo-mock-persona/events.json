@@ -1,0 +1,11 @@
+[
+  {
+    "kind": "individual",
+    "t_s": 1.0,
+    "track_id": "persona-1",
+    "class": "persona",
+    "start_frame": 5,
+    "end_frame": 60,
+    "dwell_s": 11.2
+  }
+]

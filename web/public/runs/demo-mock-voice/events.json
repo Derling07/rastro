@@ -1,0 +1,29 @@
+[
+  {
+    "kind": "individual",
+    "t_s": 0.0,
+    "track_id": "coyote-1",
+    "class": "coyote",
+    "start_frame": 0,
+    "end_frame": 90,
+    "dwell_s": 18.2
+  },
+  {
+    "kind": "individual",
+    "t_s": 4.0,
+    "track_id": "coyote-2",
+    "class": "coyote",
+    "start_frame": 20,
+    "end_frame": 70,
+    "dwell_s": 10.2
+  },
+  {
+    "kind": "individual",
+    "t_s": 15.0,
+    "track_id": "coyote-3",
+    "class": "coyote",
+    "start_frame": 75,
+    "end_frame": 100,
+    "dwell_s": 5.2
+  }
+]

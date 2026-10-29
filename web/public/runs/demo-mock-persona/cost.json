@@ -1,0 +1,20 @@
+{
+  "est_usd_sam": 0.0,
+  "est_usd_voice": 0.0,
+  "est_usd_total": 0.0,
+  "sam": [
+    {
+      "concept": "person",
+      "class": "persona",
+      "n_detections": 56,
+      "mock": true,
+      "elapsed_s": 0.0001442432403564453,
+      "usage": {
+        "video_frames_processed": 0,
+        "mock": true
+      },
+      "est_usd": 0.0,
+      "chosen": true
+    }
+  ]
+}

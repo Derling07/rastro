@@ -1,0 +1,2321 @@
+{
+  "schema_version": "1.1",
+  "run_id": "demo-mock-coyote",
+  "source_video_id": "DSCF0104",
+  "created_at": "2026-10-27T04:11:28.616650+00:00",
+  "pack": {
+    "id": "fauna-camtrap",
+    "version": "0.4.0",
+    "path": "/workspace/rastro/packs/fauna.json"
+  },
+  "video": {
+    "path": "data/lila5fps/DSCF0104.mp4",
+    "fps": 5,
+    "native_fps": 5,
+    "annotated_url": "/runs/demo-mock-coyote/annotated.mp4",
+    "url": "/runs/demo-mock-coyote/annotated.mp4",
+    "poster": "/frames/DSCF0104_t1.jpg"
+  },
+  "station": "norte",
+  "local_hour": 14,
+  "naive_count": 4,
+  "unique_count": 3,
+  "by_class": {
+    "coyote": 3
+  },
+  "cost_usd": 0,
+  "counts": {
+    "naive": 4,
+    "unique": 3,
+    "by_class": {
+      "coyote": 3
+    }
+  },
+  "tracks": [
+    {
+      "track_id": "coyote-1",
+      "class": "coyote",
+      "start_frame": 0,
+      "end_frame": 90,
+      "dwell_s": 18.2,
+      "n_dets": 77
+    },
+    {
+      "track_id": "coyote-2",
+      "class": "coyote",
+      "start_frame": 20,
+      "end_frame": 70,
+      "dwell_s": 10.2,
+      "n_dets": 51
+    },
+    {
+      "track_id": "coyote-3",
+      "class": "coyote",
+      "start_frame": 75,
+      "end_frame": 100,
+      "dwell_s": 5.2,
+      "n_dets": 26
+    }
+  ],
+  "frames": [
+    {
+      "frame": 0,
+      "t_s": 0,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            220,
+            414,
+            340,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 1,
+      "t_s": 0.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            215,
+            414,
+            335,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 2,
+      "t_s": 0.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            210,
+            414,
+            330,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 3,
+      "t_s": 0.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            205,
+            414,
+            325,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 4,
+      "t_s": 0.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            200,
+            414,
+            320,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "t_s": 1,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            195,
+            414,
+            315,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 6,
+      "t_s": 1.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            190,
+            414,
+            310,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 7,
+      "t_s": 1.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            185,
+            414,
+            305,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 8,
+      "t_s": 1.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            180,
+            414,
+            300,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 9,
+      "t_s": 1.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            175,
+            414,
+            295,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "t_s": 2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            170,
+            414,
+            290,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 11,
+      "t_s": 2.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            165,
+            414,
+            285,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 12,
+      "t_s": 2.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            160,
+            414,
+            280,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 13,
+      "t_s": 2.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            155,
+            414,
+            275,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 14,
+      "t_s": 2.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            150,
+            414,
+            270,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "t_s": 3,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            145,
+            414,
+            265,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 16,
+      "t_s": 3.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            140,
+            414,
+            260,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 17,
+      "t_s": 3.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            135,
+            414,
+            255,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 18,
+      "t_s": 3.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            130,
+            414,
+            250,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 19,
+      "t_s": 3.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            125,
+            414,
+            245,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "t_s": 4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            120,
+            414,
+            240,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            900,
+            494,
+            1020,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 21,
+      "t_s": 4.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            115,
+            414,
+            235,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            904,
+            494,
+            1024,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 22,
+      "t_s": 4.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            109.99999999999999,
+            414,
+            230,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            908,
+            494,
+            1028,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 23,
+      "t_s": 4.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            105.00000000000001,
+            414,
+            225,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            912,
+            494,
+            1032,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 24,
+      "t_s": 4.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            100,
+            414,
+            220,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            916,
+            494,
+            1036,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "t_s": 5,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            95,
+            414,
+            215,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            920,
+            494,
+            1040,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 26,
+      "t_s": 5.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            90,
+            414,
+            210,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            924,
+            494,
+            1044,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 27,
+      "t_s": 5.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            85,
+            414,
+            205,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            928,
+            494,
+            1048,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 28,
+      "t_s": 5.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            80,
+            414,
+            200,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            932,
+            494,
+            1052,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 29,
+      "t_s": 5.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            75,
+            414,
+            195,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            936,
+            494,
+            1056,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "t_s": 6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            70,
+            414,
+            190,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            940,
+            494,
+            1060,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 31,
+      "t_s": 6.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            65,
+            414,
+            185,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            944,
+            494,
+            1064,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 32,
+      "t_s": 6.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            60,
+            414,
+            180,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            948,
+            494,
+            1068,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 33,
+      "t_s": 6.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            55,
+            414,
+            175,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            952,
+            494,
+            1072,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 34,
+      "t_s": 6.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            50,
+            414,
+            170,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            956,
+            494,
+            1076,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "t_s": 7,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            45,
+            414,
+            165,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            960,
+            494,
+            1080,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 36,
+      "t_s": 7.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            40,
+            414,
+            160,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            964,
+            494,
+            1084,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 37,
+      "t_s": 7.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            35,
+            414,
+            155,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            968,
+            494,
+            1088,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 38,
+      "t_s": 7.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            30,
+            414,
+            150,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            972,
+            494,
+            1092,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 39,
+      "t_s": 7.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            25,
+            414,
+            145,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            976,
+            494,
+            1096,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 40,
+      "t_s": 8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            20,
+            414,
+            140,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            980,
+            494,
+            1100,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 41,
+      "t_s": 8.2,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            984,
+            494,
+            1104,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 42,
+      "t_s": 8.4,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            988,
+            494,
+            1108,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 43,
+      "t_s": 8.6,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            992,
+            494,
+            1112,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 44,
+      "t_s": 8.8,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            996,
+            494,
+            1116,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 45,
+      "t_s": 9,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1000,
+            494,
+            1120,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 46,
+      "t_s": 9.2,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1004,
+            494,
+            1124,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 47,
+      "t_s": 9.4,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1008,
+            494,
+            1128,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 48,
+      "t_s": 9.6,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1012,
+            494,
+            1132,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 49,
+      "t_s": 9.8,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1016,
+            494,
+            1136,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 50,
+      "t_s": 10,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1020,
+            494,
+            1140,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 51,
+      "t_s": 10.2,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1024,
+            494,
+            1144,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 52,
+      "t_s": 10.4,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1028,
+            494,
+            1148,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 53,
+      "t_s": 10.6,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1032,
+            494,
+            1152,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 54,
+      "t_s": 10.8,
+      "objects": [
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1036,
+            494,
+            1156,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 55,
+      "t_s": 11,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            30,
+            414,
+            150,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1040,
+            494,
+            1160,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 56,
+      "t_s": 11.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            34.857142857142854,
+            414,
+            154.85714285714286,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1044,
+            494,
+            1164,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 57,
+      "t_s": 11.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            39.714285714285715,
+            414,
+            159.71428571428572,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1048,
+            494,
+            1168,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 58,
+      "t_s": 11.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            44.57142857142857,
+            414,
+            164.57142857142856,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1052,
+            494,
+            1172,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 59,
+      "t_s": 11.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            49.42857142857143,
+            414,
+            169.42857142857144,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1056,
+            494,
+            1176,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 60,
+      "t_s": 12,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            54.285714285714285,
+            414,
+            174.28571428571428,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1060,
+            494,
+            1180,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 61,
+      "t_s": 12.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            59.14285714285714,
+            414,
+            179.14285714285714,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1064,
+            494,
+            1184,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 62,
+      "t_s": 12.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            64,
+            414,
+            184,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1068,
+            494,
+            1188,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 63,
+      "t_s": 12.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            68.85714285714286,
+            414,
+            188.85714285714286,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1072,
+            494,
+            1192,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 64,
+      "t_s": 12.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            73.71428571428571,
+            414,
+            193.71428571428572,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1076,
+            494,
+            1196,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 65,
+      "t_s": 13,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            78.57142857142857,
+            414,
+            198.57142857142856,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1080,
+            494,
+            1200,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 66,
+      "t_s": 13.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            83.42857142857143,
+            414,
+            203.42857142857144,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1084,
+            494,
+            1204,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 67,
+      "t_s": 13.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            88.28571428571428,
+            414,
+            208.28571428571428,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1088,
+            494,
+            1208,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 68,
+      "t_s": 13.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            93.14285714285714,
+            414,
+            213.14285714285714,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1092,
+            494,
+            1212,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 69,
+      "t_s": 13.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            98,
+            414,
+            218,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1096,
+            494,
+            1216,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 70,
+      "t_s": 14,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            102.85714285714285,
+            414,
+            222.85714285714283,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-2",
+          "class": "coyote",
+          "bbox": [
+            1100,
+            494,
+            1220,
+            584
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 71,
+      "t_s": 14.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            107.71428571428571,
+            414,
+            227.71428571428572,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 72,
+      "t_s": 14.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            112.57142857142857,
+            414,
+            232.57142857142856,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 73,
+      "t_s": 14.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            117.42857142857142,
+            414,
+            237.42857142857142,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 74,
+      "t_s": 14.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            122.28571428571428,
+            414,
+            242.28571428571428,
+            504
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 75,
+      "t_s": 15,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            127.14285714285714,
+            414,
+            247.14285714285714,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1400,
+            454,
+            1520,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 76,
+      "t_s": 15.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            132,
+            414,
+            252,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1408,
+            454,
+            1528,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 77,
+      "t_s": 15.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            136.85714285714286,
+            414,
+            256.8571428571429,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1416,
+            454,
+            1536,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 78,
+      "t_s": 15.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            141.71428571428572,
+            414,
+            261.7142857142857,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1424,
+            454,
+            1544,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 79,
+      "t_s": 15.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            146.57142857142856,
+            414,
+            266.57142857142856,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1432,
+            454,
+            1552,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 80,
+      "t_s": 16,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            151.42857142857144,
+            414,
+            271.42857142857144,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1440,
+            454,
+            1560,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 81,
+      "t_s": 16.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            156.28571428571428,
+            414,
+            276.2857142857143,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1448,
+            454,
+            1568,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 82,
+      "t_s": 16.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            161.14285714285714,
+            414,
+            281.1428571428571,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1456,
+            454,
+            1576,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 83,
+      "t_s": 16.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            166,
+            414,
+            286,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1464,
+            454,
+            1584,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 84,
+      "t_s": 16.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            170.85714285714286,
+            414,
+            290.8571428571429,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1472,
+            454,
+            1592,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 85,
+      "t_s": 17,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            175.7142857142857,
+            414,
+            295.71428571428567,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1480,
+            454,
+            1600,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 86,
+      "t_s": 17.2,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            180.57142857142856,
+            414,
+            300.57142857142856,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1488,
+            454,
+            1608,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 87,
+      "t_s": 17.4,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            185.42857142857142,
+            414,
+            305.42857142857144,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1496,
+            454,
+            1616,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 88,
+      "t_s": 17.6,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            190.28571428571428,
+            414,
+            310.2857142857143,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1504,
+            454,
+            1624,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 89,
+      "t_s": 17.8,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            195.14285714285714,
+            414,
+            315.1428571428571,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1512,
+            454,
+            1632,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 90,
+      "t_s": 18,
+      "objects": [
+        {
+          "track_id": "coyote-1",
+          "class": "coyote",
+          "bbox": [
+            200,
+            414,
+            320,
+            504
+          ]
+        },
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1520,
+            454,
+            1640,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 91,
+      "t_s": 18.2,
+      "objects": [
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1528,
+            454,
+            1648,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 92,
+      "t_s": 18.4,
+      "objects": [
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1536,
+            454,
+            1656,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 93,
+      "t_s": 18.6,
+      "objects": [
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1544,
+            454,
+            1664,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 94,
+      "t_s": 18.8,
+      "objects": [
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1552,
+            454,
+            1672,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 95,
+      "t_s": 19,
+      "objects": [
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1560,
+            454,
+            1680,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 96,
+      "t_s": 19.2,
+      "objects": [
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1568,
+            454,
+            1688,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 97,
+      "t_s": 19.4,
+      "objects": [
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1576,
+            454,
+            1696,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 98,
+      "t_s": 19.6,
+      "objects": [
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1584,
+            454,
+            1704,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 99,
+      "t_s": 19.8,
+      "objects": [
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1592,
+            454,
+            1712,
+            544
+          ]
+        }
+      ]
+    },
+    {
+      "frame": 100,
+      "t_s": 20,
+      "objects": [
+        {
+          "track_id": "coyote-3",
+          "class": "coyote",
+          "bbox": [
+            1600,
+            454,
+            1720,
+            544
+          ]
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "kind": "individual",
+      "t_s": 0,
+      "track_id": "coyote-1",
+      "class": "coyote",
+      "start_frame": 0,
+      "end_frame": 90,
+      "dwell_s": 18.2
+    },
+    {
+      "kind": "individual",
+      "t_s": 4,
+      "track_id": "coyote-2",
+      "class": "coyote",
+      "start_frame": 20,
+      "end_frame": 70,
+      "dwell_s": 10.2
+    },
+    {
+      "kind": "individual",
+      "t_s": 15,
+      "track_id": "coyote-3",
+      "class": "coyote",
+      "start_frame": 75,
+      "end_frame": 100,
+      "dwell_s": 5.2
+    }
+  ],
+  "alerts": [
+    {
+      "id": "especie_objetivo",
+      "severity": "info",
+      "message": "Registro de coyote: 3 individuos",
+      "t_s": 0
+    }
+  ],
+  "voice": null,
+  "agent_log": [
+    {
+      "step": 1,
+      "tool": "sam.segment_video",
+      "detail": "concept=coyote n=154 chosen=True est_usd=0.0"
+    },
+    {
+      "step": 2,
+      "tool": "tracking.count_unique",
+      "detail": "unique=3 naive=4"
+    },
+    {
+      "step": 3,
+      "tool": "agent.build_report",
+      "detail": "pack=fauna-camtrap unique=3"
+    },
+    {
+      "step": 4,
+      "tool": "agent.local_report",
+      "detail": "source=local"
+    }
+  ],
+  "report": {
+    "titulo": "Reporte Rastro — fauna-camtrap",
+    "resumen": "Video data/lila5fps/DSCF0104.mp4: conteo ingenuo 4, individuos únicos 3. Clases: coyote=3.",
+    "especies": [
+      {
+        "clase": "coyote",
+        "individuos": 3
+      }
+    ],
+    "alertas": [
+      {
+        "id": "especie_objetivo",
+        "severity": "info",
+        "message": "Registro de coyote: 3 individuos",
+        "t_s": 0
+      }
+    ],
+    "notas_campo": [],
+    "recomendaciones": [
+      "Revisar clips con alerta alta.",
+      "Confirmar reentradas en el borde del frame si el conteo parece bajo."
+    ],
+    "gancho_demo": "3, no 4",
+    "_source": "local"
+  },
+  "artifacts": {
+    "annotated_video": "annotated.mp4",
+    "blurred_video": null,
+    "voice_json": null,
+    "cost_json": "cost.json",
+    "tracks_json": "tracks.json"
+  },
+  "cost": {
+    "est_usd_sam": 0,
+    "est_usd_voice": 0,
+    "est_usd_total": 0
+  },
+  "sam": [
+    {
+      "concept": "coyote",
+      "class": "coyote",
+      "n_detections": 154,
+      "mock": true,
+      "elapsed_s": 0.0002028942108154297,
+      "usage": {
+        "video_frames_processed": 0,
+        "mock": true
+      },
+      "est_usd": 0,
+      "chosen": true
+    }
+  ],
+  "is_mock": true
+}

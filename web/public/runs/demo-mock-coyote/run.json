@@ -1,0 +1,127 @@
+{
+  "created_at": "2026-10-27T04:11:28.616650+00:00",
+  "run_id": "demo-mock-coyote",
+  "pack": "fauna-camtrap",
+  "pack_path": "/workspace/rastro/packs/fauna.json",
+  "video": "data/lila5fps/DSCF0104.mp4",
+  "native_fps": 5.0,
+  "track_fps": 5.0,
+  "sam": [
+    {
+      "concept": "coyote",
+      "class": "coyote",
+      "n_detections": 154,
+      "mock": true,
+      "elapsed_s": 0.0002028942108154297,
+      "usage": {
+        "video_frames_processed": 0,
+        "mock": true
+      },
+      "est_usd": 0.0,
+      "chosen": true
+    }
+  ],
+  "summary": {
+    "pack_id": "fauna-camtrap",
+    "video": "data/lila5fps/DSCF0104.mp4",
+    "fps": 5.0,
+    "naive_count": 4,
+    "unique_count": 3,
+    "by_class": {
+      "coyote": 3
+    },
+    "events": [
+      {
+        "kind": "individual",
+        "t_s": 0.0,
+        "track_id": "coyote-1",
+        "class": "coyote",
+        "start_frame": 0,
+        "end_frame": 90,
+        "dwell_s": 18.2
+      },
+      {
+        "kind": "individual",
+        "t_s": 4.0,
+        "track_id": "coyote-2",
+        "class": "coyote",
+        "start_frame": 20,
+        "end_frame": 70,
+        "dwell_s": 10.2
+      },
+      {
+        "kind": "individual",
+        "t_s": 15.0,
+        "track_id": "coyote-3",
+        "class": "coyote",
+        "start_frame": 75,
+        "end_frame": 100,
+        "dwell_s": 5.2
+      }
+    ],
+    "alerts": [
+      {
+        "id": "especie_objetivo",
+        "severity": "info",
+        "message": "Registro de coyote: 3 individuos",
+        "t_s": 0.0
+      }
+    ],
+    "tracks": [
+      {
+        "track_id": "coyote-1",
+        "class": "coyote",
+        "start_frame": 0,
+        "end_frame": 90,
+        "n_dets": 77
+      },
+      {
+        "track_id": "coyote-2",
+        "class": "coyote",
+        "start_frame": 20,
+        "end_frame": 70,
+        "n_dets": 51
+      },
+      {
+        "track_id": "coyote-3",
+        "class": "coyote",
+        "start_frame": 75,
+        "end_frame": 100,
+        "n_dets": 26
+      }
+    ],
+    "notes": [],
+    "mock": true,
+    "est_usd_sam": 0.0,
+    "est_usd_voice": 0.0,
+    "sam_calls": 1
+  },
+  "report": {
+    "titulo": "Reporte Rastro — fauna-camtrap",
+    "resumen": "Video data/lila5fps/DSCF0104.mp4: conteo ingenuo 4, individuos únicos 3. Clases: coyote=3.",
+    "especies": [
+      {
+        "clase": "coyote",
+        "individuos": 3
+      }
+    ],
+    "alertas": [
+      {
+        "id": "especie_objetivo",
+        "severity": "info",
+        "message": "Registro de coyote: 3 individuos",
+        "t_s": 0.0
+      }
+    ],
+    "notas_campo": [],
+    "recomendaciones": [
+      "Revisar clips con alerta alta.",
+      "Confirmar reentradas en el borde del frame si el conteo parece bajo."
+    ],
+    "gancho_demo": "3, no 4",
+    "_source": "local"
+  },
+  "est_usd_sam": 0.0,
+  "est_usd_voice": 0.0,
+  "est_usd_total": 0.0
+}

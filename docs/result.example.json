@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.1",
+  "run_id": "fauna-camtrap-DSCF0112-20261027T041500Z",
+  "source_video_id": "DSCF0112",
+  "created_at": "2026-10-27T04:15:00+00:00",
+  "pack": { "id": "fauna-camtrap", "version": "0.4.0", "path": "packs/fauna.json" },
+  "video": { "path": "data/lila5fps/DSCF0112.mp4", "fps": 5.0, "native_fps": 5.0 },
+  "station": "norte",
+  "local_hour": 23,
+  "naive_count": 2,
+  "unique_count": 2,
+  "by_class": { "coyote": 2 },
+  "cost_usd": 0.0102,
+  "counts": { "naive": 2, "unique": 2, "by_class": { "coyote": 2 } },
+  "tracks": [
+    {
+      "track_id": "coyote-1",
+      "class": "coyote",
+      "start_frame": 1,
+      "end_frame": 50,
+      "dwell_s": 10.0,
+      "n_dets": 50
+    }
+  ],
+  "frames": [
+    {
+      "frame": 1,
+      "t_s": 0.2,
+      "objects": [
+        { "track_id": "coyote-1", "class": "coyote", "bbox": [120, 400, 240, 490] },
+        { "track_id": "coyote-2", "class": "coyote", "bbox": [900, 500, 1020, 590] }
+      ]
+    }
+  ],
+  "events": [],
+  "alerts": [
+    {
+      "id": "especie_objetivo",
+      "severity": "info",
+      "message": "Registro de coyote: 2 individuos",
+      "t_s": 0.2
+    }
+  ],
+  "voice": {
+    "transcript": "Estación Norte…",
+    "audio_duration_ms": 11440,
+    "station": "norte",
+    "local_hour": 21,
+    "est_usd": 0.00057,
+    "is_mock": false,
+    "turns": [
+      {
+        "turn_id": 0,
+        "speaker": "A",
+        "start_s": 0.22,
+        "end_s": 10.94,
+        "transcript": "Estación Norte…"
+      }
+    ]
+  },
+  "agent_log": [
+    { "step": 1, "tool": "sam.segment_video", "detail": "concept=coyote n=100" },
+    { "step": 2, "tool": "tracking.count_unique", "detail": "unique=2" },
+    { "step": 3, "tool": "spark.chat_json", "detail": "source=local" }
+  ],
+  "report": {
+    "titulo": "Reporte Rastro — fauna-camtrap",
+    "resumen": "…",
+    "gancho_demo": "2, no 2",
+    "_source": "local"
+  },
+  "artifacts": {
+    "annotated_video": "annotated.mp4",
+    "blurred_video": null,
+    "voice_json": "voice.json",
+    "cost_json": "cost.json",
+    "tracks_json": "tracks.json"
+  },
+  "cost": {
+    "est_usd_sam": 0.0102,
+    "est_usd_voice": 0.00057,
+    "est_usd_total": 0.01077
+  },
+  "sam": [
+    { "concept": "coyote", "class": "coyote", "n_detections": 100, "mock": false, "est_usd": 0.0102, "chosen": true }
+  ],
+  "is_mock": false
+}
