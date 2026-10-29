@@ -64,7 +64,7 @@ export function Cameras() {
   const [cards, setCards] = useState<CameraCard[]>([]);
   const [inbox, setInbox] = useState<AlertRow[]>([]);
   const [camera, setCamera] = useState<Camera | null>(null);
-  const [selected, setSelected] = useState("north-pen");
+  const [selected, setSelected] = useState("gray-fox");
   const [time, setTime] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [draft, setDraft] = useState<Point[]>([]);
