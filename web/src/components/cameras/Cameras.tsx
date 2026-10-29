@@ -79,12 +79,12 @@ export function Cameras() {
     setInbox(body.inbox);
   }, []);
 
-  const loadCamera = useCallback(async (id: string) => {
+  const loadCamera = useCallback(async (id: string): Promise<Camera> => {
     const res = await fetch(`/engine/api/cameras/${id}`, { cache: "no-store" });
     if (!res.ok) throw new Error("That camera is not on this server.");
     const body = (await res.json()) as { camera: Camera };
-    setCamera(body.camera);
-    setDraft([]);
+    if (body.camera.id !== id) throw new Error("The server returned a different camera.");
+    return body.camera;
   }, []);
 
   useEffect(() => {
@@ -103,8 +103,21 @@ export function Cameras() {
   }, [loadList]);
 
   useEffect(() => {
-    loadCamera(selected).catch((err: Error) => setError(err.message));
+    let ignore = false;
+    setCamera(null);
     setTime(0);
+    setDraft([]);
+    setError(null);
+    loadCamera(selected)
+      .then((next) => {
+        if (!ignore && next.id === selected) setCamera(next);
+      })
+      .catch((err: Error) => {
+        if (!ignore) setError(err.message);
+      });
+    return () => {
+      ignore = true;
+    };
   }, [loadCamera, selected]);
 
   useEffect(() => {
@@ -136,7 +149,7 @@ export function Cameras() {
       setError(body.error || "Could not apply the pen.");
       return;
     }
-    setCamera(body.camera);
+    if (body.camera.id === selected) setCamera(body.camera);
     setDraft([]);
     await loadList();
   }
@@ -249,8 +262,13 @@ export function Cameras() {
         </aside>
 
         <div className="space-y-4">
-          {camera && (
-            <>
+          {selected && !camera && !error && (
+            <p className="text-sm text-muted" role="status">
+              Loading this camera…
+            </p>
+          )}
+          {camera && camera.id === selected && (
+            <div data-camera-id={camera.id}>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-pack px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-pack">
                   {camera.video_url ? "Recorded clip" : "Stored run"}
@@ -359,7 +377,7 @@ export function Cameras() {
                   </div>
                 </div>
               )}
-            </>
+            </div>
           )}
 
           <section aria-labelledby="inbox-h">
