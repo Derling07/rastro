@@ -107,6 +107,54 @@ def _pack_rows(module: str, rows: list[dict[str, Any]]) -> tuple[list[list[int]]
     return heat, series
 
 
+def open_peak_hours() -> dict[str, Any]:
+    """Read-only traffic feed. Ready for a routing app to pull. Not a live integration."""
+    view = peak_view("traffic")
+    if view["badge"] == "Your data":
+        grouped: dict[str, list[dict[str, Any]]] = {}
+        for row in _rows:
+            if row.get("source") != "real" or row.get("pack") != "transito":
+                continue
+            station = str(row["station"])
+            weekday = row.get("weekday")
+            grouped.setdefault(station, []).append(
+                {
+                    "weekday": WEEKDAYS[weekday] if isinstance(weekday, int) and 0 <= weekday <= 6 else None,
+                    "hour": int(row["hour"]),
+                    "vehicles": int(row["value"]),
+                }
+            )
+        cameras = [
+            {
+                "camera_id": station,
+                "not_verified": True,
+                "peak_hours": sorted(hours, key=lambda item: (-item["vehicles"], item["hour"]))[:24],
+            }
+            for station, hours in sorted(grouped.items())
+        ]
+    else:
+        hours = []
+        for day, row in enumerate(view["heatmap"]):
+            for hour, value in enumerate(row):
+                if value:
+                    hours.append({"weekday": WEEKDAYS[day], "hour": hour, "vehicles": value})
+        hours.sort(key=lambda item: (-item["vehicles"], item["weekday"], item["hour"]))
+        cameras = [
+            {
+                "camera_id": "example-intersection",
+                "not_verified": True,
+                "peak_hours": hours[:24],
+            }
+        ]
+    return {
+        "badge": view["badge"],
+        "not_verified": True,
+        "stores": "aggregates_only",
+        "description": "Read-only peak hours per camera. Ready to connect to routing apps (for example Waze for Cities).",
+        "cameras": cameras,
+    }
+
+
 def peak_view(module: str) -> dict[str, Any]:
     if module not in {"crowd", "traffic"}:
         raise ValueError("module must be crowd or traffic")

@@ -880,6 +880,11 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/jobs":
             self._send(200, {"jobs": list_jobs()})
             return
+        if path == "/api/open/peak-hours":
+            from .peaks import open_peak_hours
+
+            self._send(200, open_peak_hours())
+            return
         if path == "/api/peaks":
             from .peaks import peak_view
 

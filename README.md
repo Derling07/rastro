@@ -70,6 +70,14 @@ Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **North p
 
 Crowd and traffic counts can be added up by hour and weekday. The chart on the Cameras page is one component for both. Until the server has seen 7 real runs, the chart is labeled **Example data**. After that it switches to **Your data**. Traffic keeps the **Not verified** badge. Only the aggregate row is stored (station, hour, weekday, count) — see `supabase/peak_aggregates.sql`. That table is meant for the Supabase free tier (500 MB). Video stays out of it.
 
+## Open peak-hour feed
+
+`GET /api/open/peak-hours` (through the app: `/engine/api/open/peak-hours`) is a read-only JSON list of peak hours per camera. It is ready to connect to routing apps (for example Waze for Cities). Traffic counts in that feed are not verified. The feed does not push data anywhere; another app would have to read it.
+
+```bash
+curl -s http://127.0.0.1:8787/api/open/peak-hours
+```
+
 ## Meta models
 
 | Model | Role | When |

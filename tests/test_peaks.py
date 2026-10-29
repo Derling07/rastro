@@ -52,6 +52,26 @@ def test_mock_runs_and_other_packs_are_not_stored():
     assert peak_view("traffic")["real_runs"] == 0
 
 
+def test_open_feed_is_read_only_peak_hours_per_camera():
+    from rastro.peaks import open_peak_hours
+
+    feed = open_peak_hours()
+    assert feed["not_verified"] is True
+    assert "Waze for Cities" in feed["description"]
+    assert feed["cameras"][0]["camera_id"] == "example-intersection"
+    assert feed["cameras"][0]["peak_hours"]
+    assert "vehicles" in feed["cameras"][0]["peak_hours"][0]
+    blob = str(feed).lower()
+    for banned in ("uber", "didi", "google maps"):
+        assert banned not in blob
+    from pathlib import Path
+
+    readme = Path(__file__).resolve().parents[1].joinpath("README.md").read_text().lower()
+    assert "waze for cities" in readme
+    for banned in ("uber", "didi", "google maps"):
+        assert banned not in readme
+
+
 def test_aggregate_rows_have_no_media_fields():
     note_finished_run(
         "multitudes",

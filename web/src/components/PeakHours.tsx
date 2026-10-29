@@ -66,6 +66,9 @@ export function PeakHours() {
       <p className="mt-1 text-sm text-muted">
         Counts added up by hour and weekday. The chart uses example numbers until this server has{" "}
         {data?.needed_runs ?? 7} real runs, then it switches to your data.
+        {module === "traffic"
+          ? " A read-only feed of these hours is ready to connect to routing apps (for example Waze for Cities). Traffic counts are not verified."
+          : ""}
       </p>
       {error && (
         <p className="mt-2 text-sm text-alta" role="alert">
