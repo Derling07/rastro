@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type MouseEvent } from "react";
+import { PeakHours } from "@/components/PeakHours";
 
 type Point = [number, number];
 
@@ -392,6 +393,8 @@ export function Cameras() {
               </ul>
             )}
           </section>
+
+          <PeakHours />
         </div>
       </div>
     </div>

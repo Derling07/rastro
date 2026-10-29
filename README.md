@@ -66,6 +66,10 @@ A camera in this app is not a live stream. It is a clip counted once, cached, an
 
 Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **North pen** is the farm example. **Ridge gate** is a protected area: the only alert is “Person detected in protected zone at HH:MM”, the face box is blurred, and nothing identifies the person. The ranger presses **Review**. Rastro does not notify authorities. The label is **Possible intrusion — needs review**. **Trap line** replays DSCF0112 (90 → 2). The inbox stays in the app: no SMS and no push. Farm and protected alerts are **NOT VERIFIED** until a labeled field clip exists (`eval/alert_set/`).
 
+## Peak hours
+
+Crowd and traffic counts can be added up by hour and weekday. The chart on the Cameras page is one component for both. Until the server has seen 7 real runs, the chart is labeled **Example data**. After that it switches to **Your data**. Traffic keeps the **Not verified** badge. Only the aggregate row is stored (station, hour, weekday, count) — see `supabase/peak_aggregates.sql`. That table is meant for the Supabase free tier (500 MB). Video stays out of it.
+
 ## Meta models
 
 | Model | Role | When |

@@ -586,6 +586,9 @@ def _process_once(job_id: str) -> None:
         if isinstance(result.get("peak_density"), dict)
         else None,
     )
+    from .peaks import note_finished_run
+
+    note_finished_run(str(job.get("pack") or ""), result)
 
 
 def _process(job_id: str) -> None:
@@ -876,6 +879,15 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path == "/api/jobs":
             self._send(200, {"jobs": list_jobs()})
+            return
+        if path == "/api/peaks":
+            from .peaks import peak_view
+
+            module = (parse_qs(parsed.query).get("module") or ["crowd"])[0]
+            try:
+                self._send(200, peak_view(module))
+            except ValueError as exc:
+                self._send(400, {"error": str(exc)})
             return
         if path == "/api/cameras":
             from .cameras import inbox, list_cameras
