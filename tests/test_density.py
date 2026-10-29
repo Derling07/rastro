@@ -71,10 +71,10 @@ def test_density_null_without_area():
 
 
 def test_sustained_alert_fires_after_10s():
-    # 15 s a 5 p/m² (umbral media = 4) con area 10 → 50 personas
+    # 15 s at 6 people/m² (crush-risk threshold) with area 10 → 60 people
     dets: list[Detection] = []
     for f in range(15):
-        for i in range(50):
+        for i in range(60):
             dets.append(
                 Detection(
                     frame=f,
@@ -88,10 +88,10 @@ def test_sustained_alert_fires_after_10s():
         series,
         [
             {
-                "id": "densidad_media",
-                "when": "density_per_m2 >= 4 SUSTAINED sustain_s",
-                "severity": "media",
-                "message": "Densidad de {density_per_m2} personas/m² en {zone} durante {sustain_s} s",
+                "id": "density_high",
+                "when": "density_per_m2 >= 6 SUSTAINED sustain_s",
+                "severity": "high",
+                "message": "Crush risk: {density_per_m2} people/m² in {zone} for {sustain_s} s",
             }
         ],
         smoothing_window_s=5,
@@ -99,16 +99,17 @@ def test_sustained_alert_fires_after_10s():
         sustain_keys={"sustain_s": 10},
     )
     assert len(alerts) >= 1
-    assert alerts[0]["id"] == "densidad_media"
+    assert alerts[0]["id"] == "density_high"
+    assert "Crush risk" in alerts[0]["message"]
     assert "t_s" in alerts[0]
     assert alerts[0]["zone"] == "zona_1"
 
 
 def test_sustained_alert_does_not_fire_on_spike():
-    # Solo 2 s por encima del umbral
+    # Only 2 s above 6 people/m²
     dets: list[Detection] = []
     for f in range(12):
-        n = 50 if f < 2 else 10  # spike corto
+        n = 70 if f < 2 else 10
         for i in range(n):
             dets.append(
                 Detection(
@@ -123,9 +124,9 @@ def test_sustained_alert_does_not_fire_on_spike():
         series,
         [
             {
-                "id": "densidad_media",
-                "when": "density_per_m2 >= 4 SUSTAINED sustain_s",
-                "severity": "media",
+                "id": "density_high",
+                "when": "density_per_m2 >= 6 SUSTAINED sustain_s",
+                "severity": "high",
                 "message": "x",
             }
         ],
@@ -142,6 +143,9 @@ def test_load_multitudes_pack():
     assert pack.tracking_enabled is False
     assert pack.privacy.get("blur_target") == "full_bbox"
     assert pack.density["sustain_s"] == 10
+    assert [a["id"] for a in pack.alerts] == ["density_high"]
+    assert pack.alerts[0]["when"] == "density_per_m2 >= 6 SUSTAINED sustain_s"
+    assert "crush" in pack.alerts[0]["message"].lower()
     assert "dedup" not in pack.data or pack.dedup == {} or True  # opcional
 
 

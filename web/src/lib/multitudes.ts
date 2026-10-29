@@ -5,8 +5,7 @@
 
 import type { DensitySample, PeakDensity, ZoneInfo } from "./result";
 
-/** Umbrales dens_personas_m2 del pack (propuesta; siempre rotular). */
-export const DENSITY_MEDIUM = 4;
+/** Crush-risk alert from packs/multitudes.json. Below this, density stays unmarked. */
 export const DENSITY_HIGH = 6;
 
 /**
@@ -26,23 +25,20 @@ export const PACK_ZONES_MULTITUDES: ZoneInfo[] = [
   },
 ];
 
-export type DensityLevel = "ok" | "medium" | "high" | "unknown";
+export type DensityLevel = "ok" | "high" | "unknown";
 
-/** Nivel según densidad (personas/m²). null → unknown (sin área). */
+/** Below 6 people/m² is unmarked. At or above 6 is crush risk. null means no area. */
 export function densityLevel(d: number | null | undefined): DensityLevel {
   if (d === null || d === undefined || Number.isNaN(d)) return "unknown";
   if (d >= DENSITY_HIGH) return "high";
-  if (d >= DENSITY_MEDIUM) return "medium";
   return "ok";
 }
 
-/** Colores NOVA: verde <4, ámbar 4–6, rojo ≥6. Siempre acompañar con número. */
+/** Green below 6 people/m², red at crush risk. Always show the number beside the color. */
 export function densityColor(d: number | null | undefined): string {
   switch (densityLevel(d)) {
     case "high":
       return "#ef4444";
-    case "medium":
-      return "#f59e0b";
     case "ok":
       return "#22c55e";
     default:

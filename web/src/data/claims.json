@@ -34,9 +34,8 @@
     "source": "eval/WICKER_COUNT.md"
   },
   "crowd_thresholds_people_per_m2": {
-    "media": 4,
-    "alta": 6,
-    "validated": false,
+    "high": 6,
+    "label": "crush risk",
     "source": "packs/multitudes.json"
   }
 }

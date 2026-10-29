@@ -173,28 +173,16 @@
   "frames": [],
   "events": [
     {
-      "t_s": 15,
-      "kind": "densidad_media",
-      "class": "persona"
-    },
-    {
       "t_s": 25,
-      "kind": "densidad_alta",
-      "class": "persona"
+      "kind": "density_high",
+      "class": "person"
     }
   ],
   "alerts": [
     {
-      "id": "densidad_media",
-      "severity": "media",
-      "message": "Densidad 4.4 personas/m² en zona_1 (ejemplo)",
-      "t_s": 15,
-      "zone": "zona_1"
-    },
-    {
-      "id": "densidad_alta",
-      "severity": "alta",
-      "message": "Densidad crítica 6.2 personas/m² en zona_1 (ejemplo)",
+      "id": "density_high",
+      "severity": "high",
+      "message": "Crush risk: 6.2 people/m² in zona_1. Open an exit or slow entry.",
       "t_s": 25,
       "zone": "zona_1"
     }

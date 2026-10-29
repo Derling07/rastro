@@ -21,7 +21,7 @@ type Props = {
 
 /**
  * Heat overlay por zona sincronizado al tiempo del video (muestra más cercana).
- * Verde &lt;4 · ámbar 4–6 · rojo ≥6; siempre con número escrito.
+ * Green below 6 people/m², red at crush risk. Always show the number.
  * Sin area_m2 / density_per_m2 null → solo persons, sin color de umbral.
  */
 export function ZoneHeatOverlay({

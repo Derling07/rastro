@@ -43,6 +43,10 @@ def test_claims_match_sources():
 
     pack = json.loads((REPO / "packs" / "multitudes.json").read_text())
     blob = json.dumps(pack)
-    assert "density_per_m2 >= 4" in blob
+    assert "density_per_m2 >= 4" not in blob
+    assert "density_medium" not in blob
     assert "density_per_m2 >= 6" in blob
-    assert claims["crowd_thresholds_people_per_m2"]["validated"] is False
+    thresholds = claims["crowd_thresholds_people_per_m2"]
+    assert thresholds["high"] == 6
+    assert "media" not in thresholds
+    assert "4" not in json.dumps(thresholds)

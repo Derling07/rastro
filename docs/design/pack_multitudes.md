@@ -5,10 +5,8 @@ Archivo: `pack_multitudes.propuesta.json`. Está en `docs/design/` porque `packs
 ## Qué cuenta
 Personas por zona y **densidad en personas/m²** en frames muestreados a 1 fps. No sigue individuos ni hay IDs: el plan ya lo recomienda (modo imagen de SAM devuelve todas las instancias y evita seguir a personas).
 
-## Umbrales (propuesta, Derling decide)
-- **≥ 4 personas/m² sostenido 10 s:** alerta media.
-- **≥ 6 personas/m² sostenido 10 s:** alerta alta.
-- Los números vienen del plan de ORION como propuesta. **No verifiqué una norma que los respalde**; antes de citarlos en el pitch, ECHO o QA deben buscar la fuente.
+## Umbral
+- **≥ 6 personas/m² sostenido 10 s:** alerta alta, riesgo de aplastamiento (crush risk). No hay umbral medio en 4.
 - "Sostenido 10 s" con media móvil de 5 s evita alertas por un solo frame ruidoso.
 
 ## Cómo se mide el área (lo más simple que funciona)
@@ -24,8 +22,8 @@ Cada persona se ubica por el **centro inferior de su caja** (los pies), que es l
 
 ## Panel (FRONT)
 - Contador grande: **pico de personas/m²** con su zona y `t_s`; debajo, personas en la zona ahora.
-- Video difuminado con la zona dibujada y coloreada por densidad (verde < 4, ámbar 4–6, rojo ≥ 6), siempre con el número escrito.
-- Gráfica de densidad en el tiempo con líneas en 4 y 6.
+- Video difuminado con la zona dibujada y coloreada por densidad (verde por debajo de 6, rojo en ≥ 6), siempre con el número escrito.
+- Gráfica de densidad en el tiempo con una línea en 6 (crush risk).
 - Acento del paquete: cian `#5CC8E0`.
 
 ## Guía para el clip de Derling en San José

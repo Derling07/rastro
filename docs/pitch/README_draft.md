@@ -25,7 +25,7 @@ Do **not** claim “11 → 3” — that contrast is not in `eval/`.
 |---|---|---|
 | `packs/fauna.json` | Coyotes / person on camera traps | Yes — default `outputs/demo-real-coyote-0112` |
 | Transit (`transito`) | Turning movements | Public demo clip: [Wicker Park intersection](https://commons.wikimedia.org/wiki/File:Wicker_Park_intersection_changes.webm) by Steven Vance, CC BY 3.0. Real run in progress; counts **NOT VERIFIED** yet |
-| Crowds (`multitudes`) | Density (blur faces, no facial recognition) | **No real run** — pack **pending**. Proposed thresholds **4** and **6** people/m² (to validate). Clip to be recorded by Derling in San José; MOT20 NC-SA if used later (link only) |
+| Crowds (`multitudes`) | Density (blur faces, no facial recognition) | **No real run.** One alert: **6** people/m² (high / crush risk). Clip to be recorded by Derling in San José; MOT20 NC-SA if used later (link only) |
 
 Official web default: **`demo-real-coyote-0112`** (`is_mock=false`). Mock runs are labeled **ejemplo**.
 
@@ -153,7 +153,7 @@ LILA downloads: **`DATA.md`** (MP4s gitignored).
 - IR prompts unstable → fallbacks in pack; score must be re-run after changes.
 - Upload limits: **MP4/MOV ≤ 50 MB ≤ 120 s**, target **720p**.
 - Supabase free: 50 MB/file. Vercel Hobby: 300 s function cap — heavy work stays in worker (`queue_worker.py`).
-- Transit/crowds demos: **no real `result.json` yet**. Crowd pack thresholds (4 / 6 people/m²) are **proposed**, not validated.
+- Transit/crowds demos: **no real `result.json` yet**. Crowd alert is a single threshold at 6 people/m² (high / crush risk).
 
 ---
 
@@ -179,7 +179,7 @@ Aligned with **`eval/LICENSES.md`** (QA, 26 Oct 2026):
 
 | Asset | License / note |
 |---|---|
-| **Code** | Apache-2.0 proposed (`LICENSE`; Derling still confirms) |
+| **Code** | MIT. Copyright 2026 Derling Torres Campos (`LICENSE`) |
 | **Seattle(ish) Camera Traps (LILA)** | Page says Community Data License Agreement (**permissive variant**) — **CDLA version number not stated on the LILA page** (FLAG). Cite https://lila.science/datasets/seattleish-camera-traps/ + CDLA-Permissive-2.0 text as reference; do not redistribute MP4s in git (`DATA.md`) |
 | **`probe_jfk.wav`** | HF dataset without clear license card — **do not use publicly** |
 | **`probe_animal.png`** | Provenance undocumented in `DATA.md` — **do not use publicly** |
@@ -203,7 +203,7 @@ Usage-based Meta API (plan figures: SAM video ≈ \$0.20 / 1000 frames, min 50 f
 
 **Rastro** sigue objetos en video sin contarlos dos veces, une notas de voz **públicas solo con consentimiento** (`voice.is_public`) y deja que un agente arme reporte y alertas. Cada sector es un **paquete JSON**.
 
-Corrida demo por defecto: `outputs/demo-real-coyote-0112` (SAM real). Gancho: **90 detecciones → 2 coyotes** (`detections_total`; 90 ≠ conteo ingenuo; `naive_count=2`). `detections_total` lo escribe el motor desde `586a9a1`. Tránsito: clip público Wicker Park (Steven Vance, CC BY 3.0); conteo aún no verificado. Multitudes: pack pendiente (umbrales propuestos 4 y 6 pers/m²); clip a grabar por Derling en San José. Eval fauna Round 2: **MAE 0**, **3/3 exactos** (muestra chica: 3 clips); tests eval 12/12, repo 24/24. Arquitectura: Supabase (ORION) + `queue_worker.py`, bucket privado `videos`.
+Corrida demo por defecto: `outputs/demo-real-coyote-0112` (SAM real). Gancho: **90 detecciones → 2 coyotes** (`detections_total`; 90 ≠ conteo ingenuo; `naive_count=2`). `detections_total` lo escribe el motor desde `586a9a1`. Tránsito: clip público Wicker Park (Steven Vance, CC BY 3.0); conteo aún no verificado. Multitudes: una alerta a 6 pers/m² (riesgo de aplastamiento); clip a grabar por Derling en San José. Eval fauna Round 2: **MAE 0**, **3/3 exactos** (muestra chica: 3 clips); tests eval 12/12, repo 24/24. Arquitectura: Supabase (ORION) + `queue_worker.py`, bucket privado `videos`.
 
 No publiques claves ni uses `probe_jfk.wav` / `probe_animal.png` en materiales públicos. Licencias: ver `eval/LICENSES.md`.
 

@@ -20,16 +20,10 @@
   },
   "alerts": [
     {
-      "id": "density_medium",
-      "when": "density_per_m2 >= 4 SUSTAINED sustain_s",
-      "severity": "medium",
-      "message": "Density of {density_per_m2} people/m² in {zone} for {sustain_s} s"
-    },
-    {
       "id": "density_high",
       "when": "density_per_m2 >= 6 SUSTAINED sustain_s",
       "severity": "high",
-      "message": "Critical density of {density_per_m2} people/m² in {zone}: open an exit or slow entry"
+      "message": "Crush risk: {density_per_m2} people/m² in {zone} for {sustain_s} s. Open an exit or slow entry."
     }
   ],
   "voice": { "languages": ["es", "en"], "link_by": ["timestamp", "station"] },

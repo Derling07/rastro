@@ -74,7 +74,7 @@ cd web && npm install && npm run sync-runs && npm run dev
 |---|---|
 | **Pantalla** | Chip **Tránsito** o **Multitudes** → UI muestra **· sin corrida** / «Sin reporte — pack sin corrida». Color de acento cambia; **no** se carga un mock de tránsito/multitudes como si fuera real. |
 | **Decís** | «Same engine. Different file. Transit and crowds have **no real runs yet** — the panel says so on purpose.» |
-| **Pendientes** | Tránsito: RepOD licenses **vary per file**, not verified — plan is own San José clip (pending Derling). Multitudes: clip to be recorded by Derling in San José; pack thresholds proposed 4 / 6 people/m² (to validate). MOT20 = NC-SA if used later (link only). |
+| **Pendientes** | Tránsito: RepOD licenses **vary per file**, not verified — plan is own San José clip (pending Derling). Multitudes: clip to be recorded by Derling in San José; one alert at 6 people/m² (high / crush risk). MOT20 = NC-SA if used later (link only). |
 | **Si alguien pregunta por mocks** | `demo-mock-*` y `web/mock/*` son **ejemplo** (`is_mock=true`), no evidencia de pack tránsito/multitudes. |
 
 ---

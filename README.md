@@ -6,7 +6,7 @@ A sector is defined by a JSON pack.
 
 Meta Global AI Developer Hackathon 2026 · Indie track. Submission deadline **4 Nov 2026, 8:00 p.m. Costa Rica**.
 
-The code in this repository was written during the event (from 26 Oct 2026). License: to be confirmed by the author.
+The code in this repository was written during the event (from 26 Oct 2026). License: MIT. Copyright 2026 Derling Torres Campos. See `LICENSE`.
 
 ## Run it
 
@@ -57,7 +57,7 @@ A sector is defined by a JSON pack.
 |---|---|---|
 | Fauna | `packs/fauna.json` | Unique animals, re-entry stitch, alerts |
 | Transit | `packs/transito.json` | Vehicles and a turn matrix. **Not a verified traffic count.** |
-| Crowd | `packs/multitudes.json` | People per zone and density. **No re-identification.** Thresholds 4 and 6 people/m² are proposed in the pack and are not validated. |
+| Crowd | `packs/multitudes.json` | People per zone and density. **No re-identification.** One alert: 6 people/m² (high / crush risk). |
 
 ## Meta models
 

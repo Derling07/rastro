@@ -20,16 +20,10 @@
   },
   "alerts": [
     {
-      "id": "densidad_media",
-      "when": "density_per_m2 >= 4 SUSTAINED sustain_s",
-      "severity": "media",
-      "message": "Densidad de {density_per_m2} personas/m² en {zone} durante {sustain_s} s"
-    },
-    {
-      "id": "densidad_alta",
+      "id": "density_high",
       "when": "density_per_m2 >= 6 SUSTAINED sustain_s",
-      "severity": "alta",
-      "message": "Densidad crítica de {density_per_m2} personas/m² en {zone}: abrir salida o frenar el ingreso"
+      "severity": "high",
+      "message": "Crush risk: {density_per_m2} people/m² in {zone} for {sustain_s} s. Open an exit or slow entry."
     }
   ],
   "voice": { "languages": ["es", "en"], "link_by": ["timestamp", "station"] },

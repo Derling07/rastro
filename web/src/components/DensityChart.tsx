@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import type { DensitySample } from "@/lib/result";
 import {
   DENSITY_HIGH,
-  DENSITY_MEDIUM,
   densityColor,
   seriesForZone,
 } from "@/lib/multitudes";
@@ -17,7 +16,7 @@ type Props = {
 };
 
 /**
- * Serie densidad vs tiempo (SVG). Umbrales 4/6 rotulados «propuesta».
+ * Density over time. One line: 6 people/m², high / crush risk.
  */
 export function DensityChart({ density, zone, empty, onSeek }: Props) {
   const series = useMemo(() => {
@@ -68,7 +67,7 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
     .filter((d): d is number => d !== null);
   const hasDens = densVals.length > 0;
   const yMax = hasDens
-    ? Math.max(DENSITY_HIGH * 1.25, ...densVals, DENSITY_MEDIUM)
+    ? Math.max(DENSITY_HIGH * 1.25, ...densVals)
     : Math.max(1, ...series.map((s) => s.persons));
 
   const xOf = (t: number) => padL + ((t - tMin) / (tMax - tMin)) * plotW;
@@ -81,7 +80,6 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
     })
     .join(" ");
 
-  const yMedium = yOf(DENSITY_MEDIUM);
   const yHigh = yOf(DENSITY_HIGH);
 
   return (
@@ -108,24 +106,6 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
             <line
               x1={padL}
               x2={W - padR}
-              y1={yMedium}
-              y2={yMedium}
-              stroke="#f59e0b"
-              strokeDasharray="4 3"
-              strokeWidth={1}
-            />
-            <text
-              x={W - padR}
-              y={yMedium - 3}
-              textAnchor="end"
-              fill="#f59e0b"
-              fontSize={9}
-            >
-              4 proposed
-            </text>
-            <line
-              x1={padL}
-              x2={W - padR}
               y1={yHigh}
               y2={yHigh}
               stroke="#ef4444"
@@ -139,7 +119,7 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
               fill="#ef4444"
               fontSize={9}
             >
-              6 proposed
+              6 crush risk
             </text>
           </>
         )}
