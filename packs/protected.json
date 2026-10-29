@@ -1,0 +1,42 @@
+{
+  "id": "protected-zone",
+  "version": "0.1.0",
+  "locale": "en",
+  "jurisdiction": "global",
+  "description": "A person who stays inside a protected zone raises an in-app alert for a human to review. Faces are blurred. No name, no face id, no notice to authorities. NOT VERIFIED until a labeled field clip exists.",
+  "targets": [
+    { "prompt": "person", "class": "person" }
+  ],
+  "sampling": { "fps": 1, "mode": "video_track" },
+  "geometry": {
+    "zones": [
+      {
+        "id": "ridge",
+        "polygon": [[0.25, 0.25], [0.75, 0.25], [0.75, 0.75], [0.25, 0.75]]
+      }
+    ],
+    "lines": []
+  },
+  "metrics": ["zone_alerts"],
+  "alerts": [
+    {
+      "id": "person_in_zone",
+      "kind": "person_in_zone",
+      "severity": "high",
+      "sustain_s": 3,
+      "message": "Person detected in protected zone at {local_time}"
+    }
+  ],
+  "privacy": {
+    "blur": ["person", "face"],
+    "blur_target": "full_bbox",
+    "identity": false,
+    "store": "blurred_boxes_only",
+    "notify_authorities": false
+  },
+  "station_defaults": {
+    "station": "ridge-gate",
+    "local_hhmm": "06:41"
+  },
+  "output": { "annotated_video": false }
+}

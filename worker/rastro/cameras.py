@@ -146,8 +146,45 @@ def _trap_camera() -> dict[str, Any] | None:
     }
 
 
+def _ridge_camera() -> dict[str, Any]:
+    zone = [[0.25, 0.25], [0.75, 0.25], [0.75, 0.75], [0.25, 0.75]]
+    tracks = [
+        track_at("box-1", "person", _repeat((0.05, 0.5), 2) + _repeat((0.5, 0.5), 8)),
+    ]
+    alerts = sustained_zone_alerts(
+        tracks,
+        {"id": "ridge", "polygon": zone},
+        fps=1.0,
+        sustain_s=3.0,
+        local_hhmm="06:41",
+    )
+    frames = _frames_from_tracks(tracks, 1.0)
+    for frame in frames:
+        for obj in frame["objects"]:
+            obj.pop("track_id", None)
+    return {
+        "id": "ridge-gate",
+        "name": "Ridge gate",
+        "site": "Protected area",
+        "module": "protected",
+        "simulated": True,
+        "verified": False,
+        "verification": "NOT VERIFIED",
+        "verification_note": "No labeled field clip yet. A person in the zone is not a verdict.",
+        "headline": "Person detected in a protected zone. You review it. Rastro does not notify anyone else.",
+        "duration_s": 9.0,
+        "fps": 1.0,
+        "sustain_s": 3.0,
+        "zone": {"id": "ridge", "polygon": zone},
+        "zone_editable": False,
+        "frames": frames,
+        "alerts": _apply_status("ridge-gate", alerts),
+        "actions": ["review"],
+    }
+
+
 def camera_catalog() -> list[dict[str, Any]]:
-    cameras = [_farm_camera()]
+    cameras = [_farm_camera(), _ridge_camera()]
     trap = _trap_camera()
     if trap:
         cameras.append(trap)
@@ -207,14 +244,15 @@ def decide(camera_id: str, alert_id: str, action: str) -> dict[str, Any]:
     camera = get_camera(camera_id)
     if camera is None:
         raise ValueError("unknown camera")
-    if action not in {"confirm", "dismiss"}:
-        raise ValueError("action must be confirm or dismiss")
+    outcomes = {"confirm": "confirmed", "dismiss": "dismissed", "review": "reviewed"}
+    if action not in outcomes:
+        raise ValueError("action must be confirm, dismiss, or review")
     if action not in camera.get("actions", []):
         raise ValueError("this camera does not use that action")
     known = {alert["id"] for alert in camera["alerts"]}
     if alert_id not in known:
         raise ValueError("unknown alert")
-    _status[f"{camera_id}:{alert_id}"] = "confirmed" if action == "confirm" else "dismissed"
+    _status[f"{camera_id}:{alert_id}"] = outcomes[action]
     updated = get_camera(camera_id)
     assert updated is not None
     return updated

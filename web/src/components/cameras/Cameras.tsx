@@ -136,6 +136,22 @@ export function Cameras() {
     await loadList();
   }
 
+  async function review(alertId: string, cameraId: string) {
+    setError(null);
+    const res = await fetch(`/engine/api/cameras/${cameraId}/alerts/${encodeURIComponent(alertId)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "review" }),
+    });
+    const body = (await res.json()) as { camera?: Camera; error?: string };
+    if (!res.ok) {
+      setError(body.error || "Could not mark this reviewed.");
+      return;
+    }
+    if (body.camera && body.camera.id === selected) setCamera(body.camera);
+    await loadList();
+  }
+
   async function act(alertId: string, action: "confirm" | "dismiss", cameraId = camera?.id) {
     if (!cameraId) return;
     setError(null);
@@ -263,10 +279,10 @@ export function Cameras() {
                   {draft.map(([x, y], index) => (
                     <circle key={index} cx={x * SIZE} cy={y * SIZE} r={8} fill="#f2a93b" />
                   ))}
-                  {frame?.objects.map((object) => {
+                  {frame?.objects.map((object, index) => {
                     const [x1, y1, x2, y2] = object.bbox;
                     return (
-                      <g key={object.track_id}>
+                      <g key={object.track_id || index}>
                         <rect
                           x={x1}
                           y={y1}
@@ -351,7 +367,17 @@ export function Cameras() {
                       </div>
                       <Snapshot boxes={alert.snapshot?.boxes ?? []} />
                     </div>
-                    {alert.status === "open" && alert.camera_id && (
+                    {alert.status === "open" && alert.camera_id && alert.kind === "person_in_zone" && (
+                      <div>
+                        <p className="text-sm text-muted">
+                          Possible intrusion — needs review. A person chooses. Rastro does not notify authorities.
+                        </p>
+                        <button type="button" className="demo-primary" onClick={() => void review(alert.id, alert.camera_id!)}>
+                          Review
+                        </button>
+                      </div>
+                    )}
+                    {alert.status === "open" && alert.camera_id && alert.kind !== "person_in_zone" && alert.kind !== "count" && (
                       <div className="flex flex-wrap gap-2">
                         <button type="button" className="demo-primary" onClick={() => void act(alert.id, "confirm", alert.camera_id)}>
                           Confirm

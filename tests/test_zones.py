@@ -93,6 +93,39 @@ def test_farm_pack_and_seeded_camera_are_not_verified():
     reset_camera_state()
 
 
+def test_protected_camera_is_review_only_and_stores_no_identity():
+    from rastro.pack import load_pack
+
+    pack = load_pack("protected")
+    assert pack.privacy["identity"] is False
+    assert pack.privacy["notify_authorities"] is False
+    assert "person" in pack.privacy["blur"]
+    assert "face" in pack.privacy["blur"]
+    reset_camera_state()
+    camera = get_camera("ridge-gate")
+    assert camera is not None
+    assert camera["verification"] == "NOT VERIFIED"
+    assert camera["actions"] == ["review"]
+    assert len(camera["alerts"]) == 1
+    alert = camera["alerts"][0]
+    assert alert["message"] == "Person detected in protected zone at 06:41"
+    assert alert["label"] == "Possible intrusion — needs review"
+    assert alert["authorities"] is False
+    assert alert["snapshot"]["blurred"] is True
+    blob = json.dumps(alert)
+    assert "track_id" not in alert
+    assert "name" not in blob
+    try:
+        decide("ridge-gate", alert["id"], "confirm")
+        raise AssertionError("confirm must not be allowed")
+    except ValueError:
+        pass
+    updated = decide("ridge-gate", alert["id"], "review")
+    saved = updated["alerts"][0]
+    assert saved["status"] == "reviewed"
+    reset_camera_state()
+
+
 def test_alert_set_marks_missing_clips_not_verified():
     manifest = json.loads((ROOT / "eval" / "alert_set" / "manifest.json").read_text())
     by_id = {row["id"]: row for row in manifest["alerts"]}
@@ -100,3 +133,5 @@ def test_alert_set_marks_missing_clips_not_verified():
     assert by_id["farm_leaves"]["status"] == "NOT VERIFIED"
     assert by_id["wild_enters"]["clip"] is None
     assert by_id["farm_leaves"]["clip"] is None
+    assert by_id["person_in_zone"]["status"] == "NOT VERIFIED"
+    assert by_id["person_in_zone"]["clip"] is None

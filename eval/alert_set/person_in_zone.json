@@ -1,0 +1,12 @@
+{
+  "id": "person_in_zone",
+  "status": "NOT VERIFIED",
+  "clip": null,
+  "zone": "ridge",
+  "class": "person",
+  "sustain_s": 3,
+  "blur": true,
+  "identity_stored": false,
+  "notify_authorities": false,
+  "label": "Possible intrusion — needs review"
+}

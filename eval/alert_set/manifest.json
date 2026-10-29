@@ -16,6 +16,14 @@
       "status": "NOT VERIFIED",
       "sustain_s": 3,
       "expect": "Fires only after the farm animal has stayed outside the zone for sustain_s, and only if it was inside first."
+    },
+    {
+      "id": "person_in_zone",
+      "title": "Person stays in a protected zone",
+      "clip": null,
+      "status": "NOT VERIFIED",
+      "sustain_s": 3,
+      "expect": "Message is 'Person detected in protected zone at HH:MM'. Label is 'Possible intrusion — needs review'. No identity fields. No notice to authorities."
     }
   ]
 }

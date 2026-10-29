@@ -64,7 +64,7 @@ A sector is defined by a JSON pack.
 
 A camera in this app is not a live stream. It is a clip counted once, cached, and played back on a loop. Alerts are tied to `t_s`. Every camera is labeled **Simulated camera**.
 
-Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **North pen** is the farm example. **Trap line** replays DSCF0112 (90 → 2). The alert inbox stays in the app: no SMS and no push. Farm alerts are **NOT VERIFIED** until a labeled field clip exists (`eval/alert_set/`).
+Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **North pen** is the farm example. **Ridge gate** is a protected area: the only alert is “Person detected in protected zone at HH:MM”, the face box is blurred, and nothing identifies the person. The ranger presses **Review**. Rastro does not notify authorities. The label is **Possible intrusion — needs review**. **Trap line** replays DSCF0112 (90 → 2). The inbox stays in the app: no SMS and no push. Farm and protected alerts are **NOT VERIFIED** until a labeled field clip exists (`eval/alert_set/`).
 
 ## Meta models
 
