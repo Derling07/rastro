@@ -175,6 +175,13 @@ def stage_sleep() -> float:
         return 0.35
 
 
+def _vehicle_count(by_class: Any) -> int | None:
+    if not isinstance(by_class, dict):
+        return None
+    people = {"person", "persona", "people", "pedestrian"}
+    return sum(int(count) for name, count in by_class.items() if str(name).lower() not in people)
+
+
 def key_status() -> dict[str, bool]:
     meta = bool(os.environ.get("META_API_KEY") or os.environ.get("MODEL_API_KEY"))
     baseten = bool(os.environ.get("BASETEN_API_KEY"))
@@ -451,6 +458,11 @@ def _envelope(
 ) -> dict[str, Any]:
     result = _scrub_abs(result)
     crowd = result.get("sampling_mode") == "image_sample" or job.get("pack") == "multitudes"
+    if crowd:
+        result["count_labels"] = {
+            "naive_count": "detection boxes across frames, not unique people",
+            "unique_count": "peak people in one frame, not a unique-individual count",
+        }
     return {
         "job_id": job["id"],
         "mock_mode": bool(result.get("is_mock")),
@@ -556,6 +568,7 @@ def _process_once(job_id: str) -> None:
         naive_count=result.get("naive_count"),
         unique_count=result.get("unique_count"),
         detections_total=result.get("detections_total"),
+        vehicle_count=_vehicle_count(result.get("by_class")) if job.get("pack") == "transito" else None,
         is_mock=bool(result.get("is_mock")),
         sampling_mode=result.get("sampling_mode"),
         peak_persons=(result.get("peak_density") or {}).get("persons")
@@ -728,6 +741,7 @@ def list_jobs() -> list[dict[str, Any]]:
                 "sampling_mode": job.get("sampling_mode"),
                 "peak_persons": job.get("peak_persons"),
                 "peak_density_per_m2": job.get("peak_density_per_m2"),
+                "vehicle_count": job.get("vehicle_count"),
                 "error": job.get("error"),
                 "created_at": job.get("created_at"),
                 "finished_at": job.get("finished_at"),

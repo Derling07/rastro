@@ -66,6 +66,11 @@ def test_fauna_trap_reidentifies_and_labels_mock():
     extra = sum(len(row["sightings"]) - 1 for row in identities)
     assert extra == result["naive_count"] - result["unique_count"]
     assert "Mock" in envelope["hint"]
+    line = (
+        f"{result['detections_total']} raw detections → {result['unique_count']} unique"
+    )
+    assert result["report"]["gancho_demo"].startswith(line)
+    assert line in result["report"]["resumen"]
 
 
 def test_stored_dscf0112_replays_measured_counts():
@@ -212,6 +217,9 @@ def test_crowd_report_is_density_only_and_has_no_absolute_path():
     assert "/data/" not in blob
     assert "/tmp/" not in blob
     assert "/workspace/" not in blob
+    labels = envelope["result"]["count_labels"]
+    assert "not unique people" in labels["naive_count"]
+    assert "not a unique-individual count" in labels["unique_count"]
     assert done["sampling_mode"] == "image_sample"
     assert isinstance(done["peak_persons"], int)
 
@@ -223,6 +231,9 @@ def test_transit_report_does_not_call_people_vehicles():
     report = api.get_result(job["id"])["result"]["report"]
     assert "unique vehicles" in report["gancho_demo"]
     assert "person" in report["gancho_demo"].lower()
+    assert done["naive_count"] == 16
+    assert done["unique_count"] == 11
+    assert done["vehicle_count"] == 10
     blob = json.dumps(report)
     assert "/tmp/" not in blob and "/data/" not in blob
 

@@ -615,6 +615,24 @@ def run_pipeline(
         report["gancho_demo"] = line
         report["especies"] = []
         report["recomendaciones"] = ["Read the peak as density, not as unique people."]
+        report["count_labels"] = {
+            "naive_count": "detection boxes across frames, not unique people",
+            "unique_count": "peak people in one frame, not a unique-individual count",
+        }
+    elif "transito" not in str(pack_obj.id).lower():
+        from .agent import tracking_line
+
+        detections_total = int(sum(int(m.get("n_detections") or 0) for m in sam_meta))
+        line = tracking_line(
+            detections_total=detections_total,
+            naive=counted.naive_count,
+            unique=counted.unique_count,
+            by_class=counted.by_class,
+        )
+        report["gancho_demo"] = line
+        clases = ", ".join(f"{k}={v}" for k, v in counted.by_class.items()) or "none"
+        report["resumen"] = f"{line}. Classes: {clases}."
+        report["titulo"] = f"Rastro report — {pack_obj.id}"
     if peak_dens:
         report["pico_densidad"] = peak_dens
     if persons_peak:

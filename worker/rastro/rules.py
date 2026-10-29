@@ -99,8 +99,14 @@ def evaluate_alerts(
         msg_tmpl = spec.get("message", aid)
         severity = spec.get("severity", "info")
 
+        night_class = None
         if "persona" in when and "local_hour" in when:
-            if "persona" not in by_class or by_class["persona"] < 1:
+            night_class = "persona"
+        elif "local_hour" in when and "class == 'person'" in when:
+            night_class = "person"
+        if night_class:
+            count = by_class.get(night_class, 0)
+            if count < 1:
                 continue
             if local_hour is None:
                 continue
@@ -121,11 +127,11 @@ def evaluate_alerts(
                         "message": _format_message(
                             msg_tmpl,
                             station=station,
-                            **{"class": "persona"},
-                            unique_count=by_class["persona"],
+                            **{"class": night_class},
+                            unique_count=count,
                         ),
                         "local_hour": local_hour,
-                        "t_s": _first_t_s(tracks, "persona", fps),
+                        "t_s": _first_t_s(tracks, night_class, fps),
                     }
                 )
             continue

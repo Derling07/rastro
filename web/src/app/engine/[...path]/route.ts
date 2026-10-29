@@ -30,7 +30,7 @@ async function forward(req: NextRequest, path: string[]): Promise<Response> {
     });
   } catch {
     return Response.json(
-      { error: "The worker is not connected." },
+      { error: "Can't reach the analysis server, try again" },
       { status: 503 },
     );
   }

@@ -41,6 +41,7 @@ type Job = {
   sampling_mode?: string | null;
   peak_persons?: number | null;
   peak_density_per_m2?: number | null;
+  vehicle_count?: number | null;
 };
 
 type Envelope = {
@@ -100,6 +101,13 @@ function vehicleSplit(byClass: Record<string, number>): { vehicles: number; peop
   return { vehicles, people };
 }
 
+function friendlyError(raw: string | null | undefined): string {
+  if (!raw || raw.toLowerCase().includes("mock failure")) {
+    return "This run failed. Nothing was counted.";
+  }
+  return raw;
+}
+
 function densityText(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.?0+$/, "");
 }
@@ -115,6 +123,9 @@ function historyCount(item: Job): string {
   if (item.pack === "multitudes") {
     const people = item.peak_persons ?? item.unique_count;
     return typeof people === "number" ? ` · Peak ${people} people` : "";
+  }
+  if (item.pack === "transito" && typeof item.naive_count === "number" && typeof item.vehicle_count === "number") {
+    return ` · ${item.naive_count} → ${item.vehicle_count} vehicles · not verified`;
   }
   if (typeof item.unique_count !== "number") {
     return item.pack === "transito" ? " · not verified" : "";
@@ -391,7 +402,7 @@ export function Studio() {
 
         {offline && (
           <p className="mb-4 rounded-lg border border-alta/50 bg-panel p-3 text-sm" role="alert">
-            The worker is not connected. Start it with <code>docker compose up</code>.
+            Can{"'"}t reach the analysis server, try again
           </p>
         )}
 
@@ -531,9 +542,9 @@ export function Studio() {
             </ol>
           )}
           {busy && job?.status !== "done" && <p className="mt-2 text-sm">Tracking…</p>}
-          {error && (
+          {error && job?.status !== "failed" && (
             <p className="mt-2 text-sm text-alta" role="alert">
-              {error}
+              {friendlyError(error)}
             </p>
           )}
         </section>
@@ -542,7 +553,16 @@ export function Studio() {
           <h2 id="results-h" className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
             4 · Results
           </h2>
-          {(!parsed || envelope?.empty) && (
+          {job?.status === "failed" && (
+            <div
+              className="mt-2 rounded-lg border border-alta/50 bg-panel p-4"
+              role="alert"
+            >
+              <p className="font-bold text-alta">This run failed</p>
+              <p className="mt-1 text-sm text-muted">{friendlyError(error || job.error)}</p>
+            </div>
+          )}
+          {job?.status !== "failed" && (!parsed || envelope?.empty) && (
             <p className="mt-2 rounded-lg border border-dashed border-line p-4 text-sm text-muted">
               {envelope?.empty
                 ? "Empty result. This mock path finished with no counts."

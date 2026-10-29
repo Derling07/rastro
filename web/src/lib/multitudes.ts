@@ -15,7 +15,7 @@ export const DENSITY_HIGH = 6;
  */
 export const PACK_ZONES_MULTITUDES: ZoneInfo[] = [
   {
-    id: "zona_1",
+    id: "zone_1",
     polygon: [
       [0.1, 0.4],
       [0.9, 0.4],

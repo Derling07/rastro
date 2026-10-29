@@ -7,10 +7,21 @@ type Props = {
   onSeek?: (t: number) => void;
 };
 
+function severityLabel(s: string): string {
+  const k = s.toLowerCase();
+  if (k === "alta" || k === "high") return "High";
+  if (k === "media" || k === "medium") return "Medium";
+  if (k === "critica" || k === "crítica" || k === "critical") return "Critical";
+  if (k === "info") return "Info";
+  return s;
+}
+
 function severityColor(s: string): string {
   const k = s.toLowerCase();
-  if (k === "alta" || k === "critica" || k === "crítica") return "var(--alta)";
-  if (k === "media") return "var(--media)";
+  if (k === "alta" || k === "high" || k === "critica" || k === "crítica" || k === "critical") {
+    return "var(--alta)";
+  }
+  if (k === "media" || k === "medium") return "var(--media)";
   return "var(--pack)";
 }
 
@@ -38,7 +49,7 @@ export function AlertList({ alerts, onSeek }: Props) {
             onClick={() => onSeek?.(a.t_s)}
           >
             <span className="text-[11px] font-bold uppercase text-muted">
-              {a.severity}
+              {severityLabel(a.severity)}
               <span className="ml-2 text-pack">{fmtTime(a.t_s)}</span>
             </span>
             <p className="text-sm">{a.message}</p>

@@ -113,6 +113,31 @@ def _split_counts(by_class: dict[str, int]) -> tuple[int, int]:
     return vehicles, people
 
 
+def unique_noun(by_class: dict[str, int]) -> str:
+    names = [(str(k), int(v)) for k, v in by_class.items() if int(v) > 0]
+    if len(names) != 1:
+        return "individuals"
+    name, count = names[0]
+    if count == 1 or name.endswith("s"):
+        return name
+    return f"{name}s"
+
+
+def tracking_line(
+    *,
+    detections_total: int,
+    naive: int,
+    unique: int,
+    by_class: dict[str, int],
+) -> str:
+    """Same sentence the UI headline uses."""
+    if detections_total:
+        left, word = detections_total, "raw detections"
+    else:
+        left, word = naive, "sightings"
+    return f"{left} {word} → {unique} unique {unique_noun(by_class)}"
+
+
 def crowd_line(persons: int, density: float | None) -> str:
     if density is None:
         return f"Up to {persons} people at once"

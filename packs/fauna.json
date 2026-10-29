@@ -16,7 +16,7 @@
     },
     {
       "prompt": "person",
-      "class": "persona"
+      "class": "person"
     }
   ],
   "sampling": {
@@ -64,16 +64,16 @@
   },
   "alerts": [
     {
-      "id": "persona_noche",
-      "when": "class == 'persona' AND local_hour NOT IN 6..18",
-      "severity": "alta",
-      "message": "Persona detectada de noche en la estación {station}"
+      "id": "person_at_night",
+      "when": "class == 'person' AND local_hour NOT IN 6..18",
+      "severity": "high",
+      "message": "Person detected at night at {station}"
     },
     {
-      "id": "especie_objetivo",
+      "id": "target_species",
       "when": "class == 'coyote' AND unique_count >= 1",
       "severity": "info",
-      "message": "Registro de {class}: {unique_count} individuos"
+      "message": "Coyote recorded: {unique_count} individuals"
     }
   ],
   "voice": {
@@ -98,7 +98,7 @@
   },
   "privacy": {
     "blur": [
-      "persona"
+      "person"
     ],
     "store": "aggregates_and_blurred_clips",
     "identity": false,

@@ -179,7 +179,7 @@ def test_pipeline_multitudes_mock(tmp_path: Path):
     assert r.get("peak_density") is not None
     assert r.get("persons_per_zone")
     # Con area 10 y ~90 personas mock → densidad alta sostenida
-    dens_alerts = [a for a in r["alerts"] if "densidad" in a["id"]]
+    dens_alerts = [a for a in r["alerts"] if "densidad" in a["id"] or "density" in a["id"]]
     assert dens_alerts, f"esperaba alertas de densidad, got {r['alerts']}"
     assert all("t_s" in a for a in r["alerts"])
     # Fauna no se rompe: unique_count es pico (sin tracking)

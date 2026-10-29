@@ -10,5 +10,5 @@ def test_load_fauna_pack():
     assert "animal" in coyote.get("fallbacks", [])
     assert pack.dedup["reentry_window_s"] == 20
     assert "center_dist_factor" in pack.dedup
-    assert "persona" in pack.privacy["blur"]
+    assert "person" in pack.privacy["blur"]
     assert pack.privacy.get("identity") is False

@@ -65,20 +65,20 @@
     {
       "id": "flujo_alto_autos",
       "when": "class == 'car' AND unique_count >= 20",
-      "severity": "media",
-      "message": "Flujo alto de autos en {station}: {unique_count} únicos"
+      "severity": "medium",
+      "message": "Heavy car flow at {station}: {unique_count} unique"
     },
     {
       "id": "presencia_peatones",
       "when": "class == 'person' AND unique_count >= 5",
       "severity": "info",
-      "message": "Peatones en intersección {station}: {unique_count}"
+      "message": "People in the intersection at {station}: {unique_count}"
     },
     {
       "id": "motos_presentes",
       "when": "class == 'motorcycle' AND unique_count >= 3",
       "severity": "info",
-      "message": "Motos detectadas en {station}: {unique_count}"
+      "message": "Motorcycles detected at {station}: {unique_count}"
     }
   ],
   "voice": {
