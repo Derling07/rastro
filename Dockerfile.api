@@ -1,0 +1,19 @@
+FROM python:3.12-slim-bookworm
+
+WORKDIR /app
+
+COPY requirements.txt pyproject.toml README.md ./
+COPY worker ./worker
+COPY packs ./packs
+COPY web/public/runs/demo-real-coyote-0112 ./web/public/runs/demo-real-coyote-0112
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+ENV PYTHONPATH=/app/worker \
+    PYTHONUNBUFFERED=1 \
+    PORT=8787 \
+    RASTRO_JOBS_DIR=/tmp/rastro-jobs
+
+EXPOSE 8787
+
+CMD ["python", "-m", "rastro.api"]

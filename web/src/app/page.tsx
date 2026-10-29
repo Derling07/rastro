@@ -1,5 +1,5 @@
-import { DemoPanel } from "@/components/DemoPanel";
+import { Studio } from "@/components/studio/Studio";
 
 export default function Home() {
-  return <DemoPanel />;
+  return <Studio />;
 }

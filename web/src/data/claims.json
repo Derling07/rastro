@@ -1,0 +1,50 @@
+{
+  "illustration": {
+    "appearances": 11,
+    "individuals": 3,
+    "label": "naive_count vs unique_count",
+    "source": "eval/fixtures/result_DSCF0104_overcount_mock.json",
+    "is_mock": true,
+    "scored": false
+  },
+  "measured_0112": {
+    "clip": "DSCF0112",
+    "detections_total": 90,
+    "unique_count": 2,
+    "naive_count": 2,
+    "is_mock": false,
+    "cached_est_usd": 0,
+    "source": "web/public/runs/demo-real-coyote-0112/result.json"
+  },
+  "measured_0104": {
+    "clip": "DSCF0104",
+    "detections_total": 34,
+    "unique_count": 1,
+    "naive_count": 1,
+    "is_mock": false,
+    "source": "web/public/runs/demo-real-coyote/result.json"
+  },
+  "eval": {
+    "n_scored": 3,
+    "n_pass": 3,
+    "mae": 0,
+    "exact_match_rate": 1,
+    "small_sample": true,
+    "source": "eval/last_score_outputs.json",
+    "pass_clips": ["DSCF0104", "DSCF0112", "DSCF0004"],
+    "skipped_unverified": ["DSCF0840", "wicker-park-milwaukee-north-damen"]
+  },
+  "wicker": {
+    "status": "NOT VERIFIED",
+    "engine_car": 56,
+    "engine_motorcycle": 1,
+    "engine_bus": 1,
+    "source": "eval/WICKER_COUNT.md"
+  },
+  "crowd_thresholds_people_per_m2": {
+    "media": 4,
+    "alta": 6,
+    "validated": false,
+    "source": "packs/multitudes.json"
+  }
+}

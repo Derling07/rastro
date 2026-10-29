@@ -17,16 +17,15 @@ const barlow = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "Rastro · panel de demo",
-  description:
-    "Motor que sigue y cuenta en video sin duplicar. Meta hackathon — panel FRONT.",
+  title: "Rastro",
+  description: "Track unique individuals in video.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${atkinson.variable} ${barlow.variable}`}>
+    <html lang="en" className={`${atkinson.variable} ${barlow.variable}`}>
       <body className="min-h-screen bg-ink text-[var(--text)] antialiased">
         {children}
       </body>

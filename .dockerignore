@@ -1,0 +1,12 @@
+.git
+uploads
+.cache
+**/__pycache__
+**/.pytest_cache
+**/*.pyc
+web/node_modules
+web/.next
+outputs
+*.wav
+.env
+worker/.env
