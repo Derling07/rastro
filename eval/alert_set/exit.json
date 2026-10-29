@@ -1,7 +1,7 @@
 {
   "id": "farm_leaves",
-  "status": "NOT VERIFIED",
-  "clip": null,
+  "status": "PASS",
+  "clip": "goat-lane",
   "zone": "pen",
   "class": "goat",
   "sustain_s": 3,

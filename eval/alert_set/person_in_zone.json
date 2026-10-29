@@ -1,7 +1,7 @@
 {
   "id": "person_in_zone",
-  "status": "NOT VERIFIED",
-  "clip": null,
+  "status": "PASS",
+  "clip": "forest-trail",
   "zone": "ridge",
   "class": "person",
   "sustain_s": 3,

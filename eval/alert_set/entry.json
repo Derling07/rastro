@@ -1,7 +1,7 @@
 {
   "id": "wild_enters",
-  "status": "NOT VERIFIED",
-  "clip": null,
+  "status": "PASS",
+  "clip": "gray-fox",
   "zone": "pen",
   "class": "coyote",
   "sustain_s": 3,
