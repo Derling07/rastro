@@ -47,7 +47,7 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
   if (empty || !series.length) {
     return (
       <p className="text-sm text-muted" role="status">
-        Sin serie de densidad.
+        No density series.
       </p>
     );
   }
@@ -88,20 +88,20 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
     <div className="rounded-lg border border-line bg-panel p-3">
       <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-sm font-bold text-muted">
-          Densidad en el tiempo
+          Density over time
           {zone ? (
             <span className="ml-1 font-normal text-pack">{zone}</span>
           ) : null}
         </h3>
         <p className="text-[10px] uppercase tracking-wide text-muted">
-          {hasDens ? "personas/m²" : "personas (sin área)"}
+          {hasDens ? "people/m²" : "people (no area)"}
         </p>
       </div>
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className="h-auto w-full"
         role="img"
-        aria-label="Gráfico de densidad por tiempo"
+        aria-label="Density over time"
       >
         {hasDens && (
           <>
@@ -121,7 +121,7 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
               fill="#f59e0b"
               fontSize={9}
             >
-              4 propuesta
+              4 proposed
             </text>
             <line
               x1={padL}
@@ -139,7 +139,7 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
               fill="#ef4444"
               fontSize={9}
             >
-              6 propuesta
+              6 proposed
             </text>
           </>
         )}
@@ -164,7 +164,7 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
                 className={onSeek ? "cursor-pointer" : undefined}
                 onClick={() => onSeek?.(s.t_s)}
               >
-                <title>{`t=${s.t_s.toFixed(1)}s · ${s.persons} pers${v !== null && v !== undefined ? ` · ${v.toFixed(2)}/m²` : ""}`}</title>
+                <title>{`t=${s.t_s.toFixed(1)}s · ${s.persons} people${v !== null && v !== undefined ? ` · ${v.toFixed(2)}/m²` : ""}`}</title>
               </circle>
             </g>
           );

@@ -19,7 +19,7 @@ export function VoiceNotePanel({ voice, report }: Props) {
   const agentSummary =
     (typeof report.notas_campo === "string" && report.notas_campo) ||
     report.resumen ||
-    "El agente procesó la nota de campo; el texto literal no es público.";
+    "The agent processed the field note; the literal text is not public.";
 
   return (
     <section
@@ -27,7 +27,7 @@ export function VoiceNotePanel({ voice, report }: Props) {
       aria-labelledby="voice-heading"
     >
       <h2 id="voice-heading" className="mb-2 text-sm font-bold text-muted">
-        Nota de voz
+        Voice note
       </h2>
       {isPublic && turns.length > 0 ? (
         <ul className="space-y-2">
@@ -47,14 +47,13 @@ export function VoiceNotePanel({ voice, report }: Props) {
         <div>
           <p className="mb-1 text-[11px] uppercase tracking-wide text-muted">
             {voice
-              ? "Resumen del agente · nota privada"
-              : "Sin nota de voz en esta corrida"}
+              ? "Agent summary · private note"
+              : "No voice note on this run"}
           </p>
           <p className="text-sm leading-relaxed">{agentSummary}</p>
           {turns.length > 0 && (
             <p className="mt-2 text-xs text-muted">
-              {turns.length} turno(s) transcrito(s), ocultos por privacidad
-              (is_public ≠ true).
+              {turns.length} transcribed turn(s), hidden because the note is not public.
             </p>
           )}
         </div>

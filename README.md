@@ -1,10 +1,12 @@
 # Rastro
 
-One engine that follows things in video **without counting the same individual twice**, can attach a field voice note, and lets an agent write the report and the alerts. The sector is a JSON pack: camera traps, intersection turns, or crowd density.
+Count each individual once, even when it leaves the frame and comes back. SAM 3.1 tracks objects through the video, the rules engine stitches a re-entry into the same individual, and Muse Spark writes the report without changing those numbers.
+
+A sector is defined by a JSON pack.
 
 Meta Global AI Developer Hackathon 2026 · Indie track. Submission deadline **4 Nov 2026, 8:00 p.m. Costa Rica**.
 
-The code in this repository was written during the event (from 26 Oct 2026). The `LICENSE` file is Apache-2.0. The owner has not confirmed that choice; the file is unchanged.
+The code in this repository was written during the event (from 26 Oct 2026). License: to be confirmed by the author.
 
 ## Run it
 
@@ -47,15 +49,15 @@ On the mock camera-trap sample the engine’s own contract (covered by `tests/te
 
 A separate **stored** clip, DSCF0112, is a previous SAM 3.1 run checked into `web/public/runs/demo-real-coyote-0112`: **90 raw detections, naive_count 2, unique_count 2, is_mock false**. The app replays that file. It does not call SAM again. 90 is `detections_total`, not the naive count.
 
-Do not read the old README line “11 appearances, 3 individuals” as a score. That pair lives only in `eval/fixtures/result_DSCF0104_overcount_mock.json`, an intentional mock fixture (`is_mock true`). It is not what the app runs.
-
 ## Sectors
 
-| Pack | File | What the result shows |
+A sector is defined by a JSON pack.
+
+| Sector | File | What the result shows |
 |---|---|---|
 | Fauna | `packs/fauna.json` | Unique animals, re-entry stitch, alerts |
-| Tránsito | `packs/transito.json` | Vehicles and a turn matrix. **Not a verified traffic count.** |
-| Multitudes | `packs/multitudes.json` | People per zone and density. **No re-identification.** Thresholds 4 and 6 people/m² are proposed in the pack and are not validated. |
+| Transit | `packs/transito.json` | Vehicles and a turn matrix. **Not a verified traffic count.** |
+| Crowd | `packs/multitudes.json` | People per zone and density. **No re-identification.** Thresholds 4 and 6 people/m² are proposed in the pack and are not validated. |
 
 ## Meta models
 
@@ -110,7 +112,7 @@ Wicker Park (`eval/WICKER_COUNT.md`): the engine comparison (car 56, motorcycle 
 
 ## Limits
 
-- No facial recognition. Packs ask for a blur box, not an identity. Multitudes does not track people.
+- No facial recognition. Packs ask for a blur box, not an identity. Crowd does not track people.
 - Sample clips are synthetic or stored. They are labeled. They are not a new field survey.
 - SAM video, as used by this project: about 15,000 frames per request, at most 16 objects per frame, one concept per request.
 - Uploads: MP4 or MOV, up to 50 MB. Product target is also at most 120 seconds at 720p.
@@ -128,5 +130,10 @@ web/               the app
 supabase/          schema only
 eval/              scores and fixtures
 ```
+
+## Data and credits
+
+- **Wicker Park intersection changes** by Steven Vance, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Wicker_Park_intersection_changes.webm).
+- **DSCF camera-trap clips:** Seattle(ish) Camera Traps, LILA BC. License: Community Data License Agreement (permissive variant). [Dataset page](https://lila.science/datasets/seattleish-camera-traps/).
 
 Heavy videos were left out of git. See `DATA.md` and `eval/LICENSES.md` before redistributing clips.

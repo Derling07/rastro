@@ -18,7 +18,8 @@ const barlow = Barlow_Condensed({
 
 export const metadata: Metadata = {
   title: "Rastro",
-  description: "Track unique individuals in video.",
+  description:
+    "Count each individual once in video, even after it leaves the frame and comes back. Sectors are JSON packs for camera traps, traffic, and crowds.",
 };
 
 export default function RootLayout({

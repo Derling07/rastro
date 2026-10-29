@@ -3,6 +3,7 @@
 import {
   ACCESS_LINES,
   CARDINAL_LABEL,
+  CARDINAL_LETTER,
   CARDINALS,
   countFor,
   outboundTotals,
@@ -45,28 +46,26 @@ export function TurnMatrix({ matrix, empty, isMock }: Props) {
     >
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 id="giros-h" className="text-sm font-bold text-muted">
-          Matriz de giros · N/S/E/O
+          Turn matrix · N/S/E/W
         </h2>
         {empty ? (
           <span className="rounded-full bg-[var(--line)] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-muted">
-            sin corrida
+            No run yet
           </span>
         ) : isMock ? (
           <span className="rounded-full bg-[var(--line)] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-muted">
-            ejemplo
+            Mock
           </span>
         ) : (
           <span className="rounded-full bg-pack px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-ink">
-            medido
+            Measured
           </span>
         )}
       </div>
 
       {empty && (
         <p className="mb-3 text-sm text-muted">
-          Sin corrida para este video. Layout de accesos listo; el motor llenará
-          la matriz cuando exista{" "}
-          <code className="text-pack">packs/transito.json</code> + corrida real.
+          No run yet for this video. The approach layout is ready; counts fill in after a run.
         </p>
       )}
 
@@ -74,7 +73,7 @@ export function TurnMatrix({ matrix, empty, isMock }: Props) {
       <div
         className="mx-auto mb-4 grid max-w-xs grid-cols-3 grid-rows-3 gap-2 text-center"
         role="img"
-        aria-label="Accesos de la intersección: Norte, Sur, Este, Oeste"
+        aria-label="Intersection approaches: North, South, East, West"
       >
         <div />
         <AccessPad from="N" total={empty ? null : out.N} />
@@ -101,7 +100,7 @@ export function TurnMatrix({ matrix, empty, isMock }: Props) {
             className="rounded border border-line px-2 py-0.5"
             title={`geometry.lines id=${l.id}`}
           >
-            <span className="font-display text-pack">{l.from}</span> · {l.label}
+            <span className="font-display text-pack">{CARDINAL_LETTER[l.from]}</span> · {l.label}
           </li>
         ))}
       </ul>
@@ -110,7 +109,7 @@ export function TurnMatrix({ matrix, empty, isMock }: Props) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[240px] border-collapse text-sm">
           <caption className="sr-only">
-            Conteos de movimiento origen a destino
+            Turn counts from origin to destination
           </caption>
           <thead>
             <tr>
@@ -118,7 +117,7 @@ export function TurnMatrix({ matrix, empty, isMock }: Props) {
                 scope="col"
                 className="border-b border-line px-2 py-1 text-left text-[11px] font-bold uppercase text-muted"
               >
-                De \ A
+                From \ To
               </th>
               {CARDINALS.map((to) => (
                 <th
@@ -126,7 +125,7 @@ export function TurnMatrix({ matrix, empty, isMock }: Props) {
                   scope="col"
                   className="border-b border-line px-2 py-1 text-center text-[11px] font-bold text-pack"
                 >
-                  {to}
+                  {CARDINAL_LETTER[to]}
                 </th>
               ))}
             </tr>
@@ -138,7 +137,7 @@ export function TurnMatrix({ matrix, empty, isMock }: Props) {
                   scope="row"
                   className="border-b border-line/60 px-2 py-1.5 text-left font-display text-pack"
                 >
-                  {from}
+                  {CARDINAL_LETTER[from]}
                   <span className="ml-1 hidden text-[10px] font-sans font-normal text-muted sm:inline">
                     {CARDINAL_LABEL[from]}
                   </span>
@@ -181,7 +180,7 @@ function AccessPad({
 }) {
   return (
     <div className="rounded border border-line bg-ink/30 px-2 py-3">
-      <p className="font-display text-xl font-bold leading-none text-pack">{from}</p>
+      <p className="font-display text-xl font-bold leading-none text-pack">{CARDINAL_LETTER[from]}</p>
       <p className="mt-0.5 text-[10px] uppercase tracking-wide text-muted">
         {CARDINAL_LABEL[from]}
       </p>

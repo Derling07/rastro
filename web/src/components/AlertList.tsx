@@ -22,7 +22,7 @@ function fmtTime(t: number): string {
 
 export function AlertList({ alerts, onSeek }: Props) {
   if (!alerts.length) {
-    return <p className="text-sm text-muted">Sin alertas.</p>;
+    return <p className="text-sm text-muted">No alerts.</p>;
   }
   return (
     <ul className="space-y-2">

@@ -23,17 +23,19 @@ type Props = {
   naive: number;
   unique: number;
   noun: string;
+  /** Traffic counts are not a verified survey. */
+  unverified?: boolean;
   onSeek?: (t: number) => void;
 };
 
-export function IdentityBoard({ identities, naive, unique, noun, onSeek }: Props) {
+export function IdentityBoard({ identities, naive, unique, noun, unverified, onSeek }: Props) {
   const merged = naive > unique;
   const span = Math.max(0.1, ...identities.map((row) => row.end_s), 1);
 
-  const sentence =
-    merged
-      ? `${naive} sightings, ${unique} unique ${noun}`
-      : `${unique} unique ${noun}. No repeat sighting was merged.`;
+  const base = merged
+    ? `${naive} sightings, ${unique} unique ${noun}`
+    : `${unique} unique ${noun}. No repeat sighting was merged.`;
+  const sentence = unverified ? `${base} · NOT VERIFIED` : base;
 
   return (
     <section className="rounded-lg border border-line bg-panel p-4" aria-label="Individuals">

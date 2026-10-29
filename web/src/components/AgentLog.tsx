@@ -8,7 +8,7 @@ type Props = { steps: AgentStep[] };
 export function AgentLog({ steps }: Props) {
   const [open, setOpen] = useState(false);
   if (!steps.length) {
-    return <p className="text-sm text-muted">Sin registro del agente.</p>;
+    return <p className="text-sm text-muted">No agent log.</p>;
   }
   return (
     <div>
@@ -19,7 +19,7 @@ export function AgentLog({ steps }: Props) {
         onClick={() => setOpen((v) => !v)}
       >
         <span className="font-bold text-muted">
-          Registro del agente · {steps.length} pasos
+          Agent log · {steps.length} steps
         </span>
         <span aria-hidden>{open ? "▾" : "▸"}</span>
       </button>
@@ -32,7 +32,7 @@ export function AgentLog({ steps }: Props) {
                 <code className="ml-2 text-[11px] text-muted">{s.tool}</code>
               )}
               {s.ok === false && (
-                <span className="ml-2 text-xs text-alta">falló</span>
+                <span className="ml-2 text-xs text-alta">failed</span>
               )}
               {s.detail && (
                 <p className="text-xs text-muted">{s.detail}</p>

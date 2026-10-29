@@ -10,13 +10,7 @@ REPO = Path(__file__).resolve().parents[1]
 
 def test_claims_match_sources():
     claims = json.loads((REPO / "web" / "src" / "data" / "claims.json").read_text())
-    over = json.loads(
-        (REPO / "eval" / "fixtures" / "result_DSCF0104_overcount_mock.json").read_text()
-    )
-    assert claims["illustration"]["appearances"] == over["naive_count"] == 11
-    assert claims["illustration"]["individuals"] == over["unique_count"] == 3
-    assert over["is_mock"] is True
-    assert claims["illustration"]["scored"] is False
+    assert "illustration" not in claims
 
     run = json.loads(
         (REPO / "web" / "public" / "runs" / "demo-real-coyote-0112" / "result.json").read_text()

@@ -8,19 +8,27 @@
 export const CARDINALS = ["N", "S", "E", "O"] as const;
 export type Cardinal = (typeof CARDINALS)[number];
 
+/** Letter shown in the UI. Pack geometry still uses O for west. */
+export const CARDINAL_LETTER: Record<Cardinal, string> = {
+  N: "N",
+  S: "S",
+  E: "E",
+  O: "W",
+};
+
 export const CARDINAL_LABEL: Record<Cardinal, string> = {
-  N: "Norte",
-  S: "Sur",
-  E: "Este",
-  O: "Oeste",
+  N: "North",
+  S: "South",
+  E: "East",
+  O: "West",
 };
 
 /** Líneas de acceso esperadas en packs/transito.json → geometry.lines[].id */
 export const ACCESS_LINES: { id: string; from: Cardinal; label: string }[] = [
-  { id: "acceso_N", from: "N", label: "Acceso N" },
-  { id: "acceso_S", from: "S", label: "Acceso S" },
-  { id: "acceso_E", from: "E", label: "Acceso E" },
-  { id: "acceso_O", from: "O", label: "Acceso O" },
+  { id: "acceso_N", from: "N", label: "Approach N" },
+  { id: "acceso_S", from: "S", label: "Approach S" },
+  { id: "acceso_E", from: "E", label: "Approach E" },
+  { id: "acceso_O", from: "O", label: "Approach W" },
 ];
 
 export type TurnKey = `${Cardinal}->${Cardinal}`;

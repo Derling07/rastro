@@ -44,10 +44,9 @@ export function MultitudesPanel({
         className="rounded-lg border border-dashed border-line bg-panel p-4 text-sm text-muted"
         role="status"
       >
-        <p className="font-bold text-[var(--text)]">Multitudes · sin corrida</p>
+        <p className="font-bold text-[var(--text)]">Crowd · no run yet</p>
         <p className="mt-1">
-          Aún no hay un result.json de densidad. El panel mostrará chart,
-          pico y personas/zona cuando exista una corrida.
+          No density result yet. After a run this panel shows the chart, the peak, and people per zone.
         </p>
       </div>
     );
@@ -67,7 +66,7 @@ export function MultitudesPanel({
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
-              Pico de densidad
+              Peak density
             </p>
             {peakInfo ? (
               <>
@@ -85,35 +84,35 @@ export function MultitudesPanel({
                     : peakInfo.peak.persons}
                   <span className="ml-1 text-lg font-normal text-muted">
                     {peakInfo.peak.density_per_m2 !== null
-                      ? "pers/m²"
-                      : "pers"}
+                      ? "people/m²"
+                      : "people"}
                   </span>
                 </p>
                 <p className="mt-1 text-sm text-muted">
                   {peakInfo.peak.zone} · t={peakInfo.peak.t_s.toFixed(1)}s ·{" "}
-                  {peakInfo.peak.persons} personas
+                  {peakInfo.peak.persons} people
                 </p>
               </>
             ) : (
-              <p className="mt-1 text-sm text-muted">Sin pico reportado.</p>
+              <p className="mt-1 text-sm text-muted">No peak reported.</p>
             )}
           </div>
           {peakInfo && peakInfo.area_m2 !== null && (
             <div className="text-right">
               <p className="text-xs text-muted">
-                área supuesta:{" "}
+                assumed area:{" "}
                 <span className="font-semibold text-[var(--text)]">
                   {peakInfo.area_m2} m²
                 </span>
               </p>
               <span className="mt-1 inline-block rounded-full bg-[var(--line)] px-2 py-0.5 text-[10px] font-bold uppercase text-muted">
-                ejemplo
+                assumed area
               </span>
             </div>
           )}
           {isMock && (
             <span className="rounded-full bg-[var(--line)] px-2 py-0.5 text-[10px] font-bold uppercase text-muted">
-              ejemplo
+              Mock
             </span>
           )}
         </div>
@@ -126,9 +125,9 @@ export function MultitudesPanel({
 
       {/* persons_per_zone */}
       <div className="rounded-lg border border-line bg-panel p-3">
-        <h3 className="mb-2 text-sm font-bold text-muted">Personas por zona</h3>
+        <h3 className="mb-2 text-sm font-bold text-muted">People per zone</h3>
         {zoneEntries.length === 0 ? (
-          <p className="text-sm text-muted">Sin datos.</p>
+          <p className="text-sm text-muted">No data.</p>
         ) : (
           <ul className="space-y-1.5">
             {zoneEntries.map(([zid, n]) => {
@@ -152,7 +151,7 @@ export function MultitudesPanel({
                       </span>
                     ) : (
                       <span className="ml-2 text-xs text-muted">
-                        sin área → solo personas
+                        no area — people only
                       </span>
                     )}
                   </span>

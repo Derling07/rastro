@@ -7,7 +7,7 @@ type Props = { report: ReportSection; empty?: boolean };
 export function ReportView({ report, empty }: Props) {
   if (empty) {
     return (
-      <p className="text-sm text-muted">Sin reporte — pack sin corrida.</p>
+      <p className="text-sm text-muted">No report yet.</p>
     );
   }
   return (
@@ -19,7 +19,7 @@ export function ReportView({ report, empty }: Props) {
         id="report-title"
         className="font-display text-2xl font-semibold text-pack"
       >
-        {report.titulo || "Reporte"}
+        {report.titulo || "Report"}
       </h2>
       {report.gancho_demo && (
         <p className="mt-1 font-display text-lg text-[var(--text)]">
@@ -44,7 +44,7 @@ export function ReportView({ report, empty }: Props) {
       {report.recomendaciones && report.recomendaciones.length > 0 && (
         <div className="mt-3">
           <h3 className="text-[11px] font-bold uppercase tracking-wide text-muted">
-            Recomendaciones
+            Recommendations
           </h3>
           <ul className="mt-1 list-inside list-disc text-sm">
             {report.recomendaciones.map((r, i) => (

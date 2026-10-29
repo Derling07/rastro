@@ -1,12 +1,4 @@
 {
-  "illustration": {
-    "appearances": 11,
-    "individuals": 3,
-    "label": "naive_count vs unique_count",
-    "source": "eval/fixtures/result_DSCF0104_overcount_mock.json",
-    "is_mock": true,
-    "scored": false
-  },
   "measured_0112": {
     "clip": "DSCF0112",
     "detections_total": 90,

@@ -460,7 +460,11 @@ export function Studio() {
           </h2>
           {!parsed && (
             <p className="mt-2 rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-              Nothing yet. After a run, repeat appearances of the same individual collapse into one count.
+              {pack === "multitudes"
+                ? "Nothing yet. A run reports how many people are in view at once. This sector does not re-identify them."
+                : pack === "transito"
+                  ? "Nothing yet. A run counts vehicles and the turns they take. Traffic counts are not verified."
+                  : "Nothing yet. After a run, repeat appearances of the same individual collapse into one count."}
             </p>
           )}
           {parsed && envelope && (
@@ -481,6 +485,7 @@ export function Studio() {
                   naive={parsed.naive_count}
                   unique={parsed.unique_count}
                   noun={nounFor(pack)}
+                  unverified={pack === "transito"}
                   onSeek={seek}
                 />
               ) : (
@@ -560,6 +565,31 @@ export function Studio() {
           </ul>
         )}
       </aside>
+      <footer className="border-t border-line pt-4 text-xs leading-relaxed text-muted lg:col-span-2">
+        <h2 className="text-[11px] font-bold uppercase tracking-[0.16em]">Data and credits</h2>
+        <p className="mt-2">
+          Wicker Park intersection changes by Steven Vance,{" "}
+          <a className="underline" href="https://creativecommons.org/licenses/by/3.0/">
+            CC BY 3.0
+          </a>
+          , via{" "}
+          <a
+            className="underline"
+            href="https://commons.wikimedia.org/wiki/File:Wicker_Park_intersection_changes.webm"
+          >
+            Wikimedia Commons
+          </a>
+          .
+        </p>
+        <p className="mt-1">
+          DSCF camera-trap clips: Seattle(ish) Camera Traps, LILA BC. License: Community Data
+          License Agreement (permissive variant).{" "}
+          <a className="underline" href="https://lila.science/datasets/seattleish-camera-traps/">
+            Dataset page
+          </a>
+          .
+        </p>
+      </footer>
     </div>
   );
 }

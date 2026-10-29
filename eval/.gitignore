@@ -4,3 +4,4 @@ __pycache__/
 .pytest_cache/
 *.pyc
 last_score*.json
+!last_score_outputs.json
