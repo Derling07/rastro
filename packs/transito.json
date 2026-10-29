@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "locale": "es-CR",
   "jurisdiction": "global",
-  "description": "Matriz de giros N/S/E/O en intersección. SAM por recorte de acceso (tope 16 objs/frame). budget_usd 0.50. Encudre calibrado para data/transit/wicker_park_intersection (vista cenital). Conteos NOT VERIFIED hasta QA.",
+  "description": "Turn matrix N/S/E/W at an intersection. SAM on each approach crop (16 objects per frame cap). budget_usd 0.50. Framing calibrated for data/transit/wicker_park_intersection (overhead view). Counts are NOT VERIFIED until QA.",
   "targets": [
     { "prompt": "car", "class": "car", "fallbacks": ["vehicle", "automobile"] },
     { "prompt": "motorcycle", "class": "motorcycle", "fallbacks": ["motorbike", "scooter"] },

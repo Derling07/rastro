@@ -3,7 +3,7 @@
   "version": "0.4.0",
   "locale": "es-CR",
   "jurisdiction": "global",
-  "description": "Paquete cámaras trampa (LILA CDLA). Prompt primario 'coyote' con fallbacks ['animal','fox','dog'] si SAM no detecta. Persona se difumina por caja SAM (sin face ID). Dedup de reentrada configurable.",
+  "description": "Camera-trap pack (LILA CDLA). Primary prompt 'coyote' with fallbacks ['animal','fox','dog'] if SAM finds nothing. A person is blurred from the SAM box (no face ID). Re-entry dedup is configurable.",
   "targets": [
     {
       "prompt": "coyote",

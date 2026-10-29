@@ -1,7 +1,7 @@
 {
-  "transcript": "Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro.",
+  "transcript": "North station, 21:40. I saw movement near camera three. It looks like a person with a flashlight. I am going to check the perimeter.",
   "audio_duration_ms": 8000,
-  "session_id": "mock-nota_campo_es",
+  "session_id": "mock-field-note",
   "mock": true,
   "est_usd": 0.0,
   "turns": [
@@ -11,11 +11,11 @@
       "end_ms": 8000,
       "start_s": 0.0,
       "end_s": 8.0,
-      "transcript": "Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro.",
+      "transcript": "North station, 21:40. I saw movement near camera three. It looks like a person with a flashlight. I am going to check the perimeter.",
       "speaker": "A"
     }
   ],
-  "station": "norte",
+  "station": "north",
   "local_hour": 14,
-  "linked_note": "[estación=norte hora=14:00] Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro."
+  "linked_note": "[station=north hour=14:00] North station, 21:40. I saw movement near camera three. It looks like a person with a flashlight. I am going to check the perimeter."
 }

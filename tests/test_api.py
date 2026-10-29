@@ -236,6 +236,8 @@ def test_transit_report_does_not_call_people_vehicles():
     assert done["vehicle_count"] == 10
     blob = json.dumps(report)
     assert "/tmp/" not in blob and "/data/" not in blob
+    assert "placeholder" not in report["resumen"]
+    assert "Intersection.mp4" in report["resumen"]
 
 
 def test_upload_rejects_unknown_pack_and_empty_file():

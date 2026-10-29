@@ -16,7 +16,7 @@
     "url": "/runs/demo-mock-voice/annotated.mp4",
     "poster": "/frames/DSCF0104_t1.jpg"
   },
-  "station": "norte",
+  "station": "north",
   "local_hour": 14,
   "naive_count": 4,
   "unique_count": 3,
@@ -2238,14 +2238,14 @@
     {
       "id": "especie_objetivo",
       "severity": "info",
-      "message": "Registro de coyote: 3 individuos",
+      "message": "Coyote recorded: 3 individuals",
       "t_s": 0
     }
   ],
   "voice": {
-    "transcript": "Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro.",
+    "transcript": "North station, 21:40. I saw movement near camera three. It looks like a person with a flashlight. I am going to check the perimeter.",
     "audio_duration_ms": 8000,
-    "session_id": "mock-nota_campo_es",
+    "session_id": "mock-field-note",
     "mock": true,
     "est_usd": 0,
     "turns": [
@@ -2254,12 +2254,12 @@
         "speaker": "A",
         "start_s": 0,
         "end_s": 8,
-        "transcript": "Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro."
+        "transcript": "North station, 21:40. I saw movement near camera three. It looks like a person with a flashlight. I am going to check the perimeter."
       }
     ],
-    "station": "norte",
+    "station": "north",
     "local_hour": 14,
-    "linked_note": "[estación=norte hora=14:00] Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro.",
+    "linked_note": "[station=north hour=14:00] North station, 21:40. I saw movement near camera three. It looks like a person with a flashlight. I am going to check the perimeter.",
     "is_mock": true,
     "is_public": false
   },
@@ -2277,7 +2277,7 @@
     {
       "step": 3,
       "tool": "voice.transcribe",
-      "detail": "station=norte hour=14"
+      "detail": "station=north hour=14"
     },
     {
       "step": 4,
@@ -2291,8 +2291,8 @@
     }
   ],
   "report": {
-    "titulo": "Reporte Rastro — fauna-camtrap",
-    "resumen": "Video data/lila5fps/DSCF0104.mp4: conteo ingenuo 4, individuos únicos 3. Clases: coyote=3. Nota de campo: [estación=norte hora=14:00] Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro.",
+    "titulo": "Rastro report — fauna-camtrap",
+    "resumen": "Clip DSCF0104.mp4: 4 sightings, 3 unique coyotes. Classes: coyote=3. Field note: [station=north hour=14:00] North station, 21:40. I saw movement near camera three. It looks like a person with a flashlight. I am going to check the perimeter.",
     "especies": [
       {
         "clase": "coyote",
@@ -2303,20 +2303,20 @@
       {
         "id": "especie_objetivo",
         "severity": "info",
-        "message": "Registro de coyote: 3 individuos",
+        "message": "Coyote recorded: 3 individuals",
         "t_s": 0
       }
     ],
     "notas_campo": [
-      "[estación=norte hora=14:00] Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro."
+      "[station=north hour=14:00] North station, 21:40. I saw movement near camera three. It looks like a person with a flashlight. I am going to check the perimeter."
     ],
     "recomendaciones": [
-      "Revisar clips con alerta alta.",
-      "Confirmar reentradas en el borde del frame si el conteo parece bajo."
+      "Review clips with a high-severity alert.",
+      "Check re-entries at the frame edge if the count looks low."
     ],
-    "gancho_demo": "3, no 4",
+    "gancho_demo": "4 sightings → 3 unique coyotes",
     "_source": "local",
-    "estacion": "norte",
+    "estacion": "north",
     "hora_local": 14
   },
   "artifacts": {

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "locale": "es-CR",
   "jurisdiction": "global",
-  "description": "Densidad de personas por zona en frames muestreados (modo imagen de SAM, sin límite de 16). No sigue individuos ni reconoce caras: solo cuántos, no quiénes.",
+  "description": "People per zone on sampled frames (SAM image mode, no 16-object cap). Does not follow individuals or recognize faces: how many, not who.",
   "targets": [{ "prompt": "person", "class": "person" }],
   "sampling": { "fps": 1, "mode": "image_sample" },
   "geometry": {

@@ -40,7 +40,7 @@
     {
       "id": "especie_objetivo",
       "severity": "info",
-      "message": "Registro de coyote: 3 individuos",
+      "message": "Coyote recorded: 3 individuals",
       "t_s": 0.0
     }
   ],
@@ -68,7 +68,7 @@
     }
   ],
   "notes": [
-    "[estación=norte hora=14:00] Estación norte, 21:40. Vi movimiento cerca de la cámara tres. Parece una persona con linterna. Voy a revisar el perímetro."
+    "[station=north hour=14:00] North station, 21:40. I saw movement near camera three. It looks like a person with a flashlight. I am going to check the perimeter."
   ],
   "mock": true,
   "est_usd_sam": 0.0,

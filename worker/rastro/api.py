@@ -306,6 +306,14 @@ def identities_from_tracks(tracks: list[dict[str, Any]], *, fps: float) -> list[
     return rows
 
 
+def _sample_clip_name(title: str) -> str:
+    """Filename the report should name. Samples have no real media, so the title is the name."""
+    name = Path(str(title or "sample")).name.strip() or "sample"
+    if not name.lower().endswith((".mp4", ".mov")):
+        name = f"{name}.mp4"
+    return name
+
+
 def _placeholder_video(dest: Path) -> Path:
     dest.parent.mkdir(parents=True, exist_ok=True)
     if not dest.exists() or dest.stat().st_size < 16:
@@ -623,7 +631,7 @@ def create_sample_job(sample_id: str) -> dict[str, Any]:
     # Samples have no real media. Never send the placeholder to a paid API.
     force_mock = sample["kind"] == "engine"
     if force_mock:
-        video_path = str(_placeholder_video(jobs_dir() / job_id / "placeholder.mp4"))
+        video_path = str(_placeholder_video(jobs_dir() / job_id / _sample_clip_name(sample["title"])))
     job = {
         "id": job_id,
         "status": "queued",
