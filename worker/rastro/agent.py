@@ -7,27 +7,32 @@ determinista para no bloquear el CLI.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any
 
 from .spark_client import SparkClient
 from .types import RunSummary
 
-SYSTEM = """Sos el agente de reportes de Rastro, un sistema que sigue animales
-y personas en video de cámaras trampa sin contarlas dos veces.
+SYSTEM = """You are Rastro's report agent. You write in English only.
 
-Recibís un JSON con conteos ya calculados por código (NO los inventes).
-Tu trabajo:
-1) Redactar un reporte corto en español (Costa Rica), claro para un guardaparque.
-2) Confirmar o reforzar las alertas que ya vienen en el JSON.
-3) Devolver SOLO un JSON con esta forma:
+You receive JSON counts already computed by code. Do not change the numbers.
+Write a short report for a field operator.
+Confirm or restate the alerts already in the JSON.
+Return ONLY JSON of this shape:
 {
   "titulo": "...",
-  "resumen": "2-4 oraciones",
+  "resumen": "2-4 sentences in English",
   "especies": [{"clase": "...", "individuos": N}],
   "alertas": [{"id": "...", "severidad": "...", "mensaje": "..."}],
   "recomendaciones": ["..."],
-  "gancho_demo": "frase corta tipo: 3, no 11"
+  "gancho_demo": "one short English line"
 }
+
+Rules:
+- Never include a filesystem path. Refer to the clip by its file name only.
+- For a density / crowd pack, do not talk about unique individuals or "N, not M".
+  Say how many people are in view at once and the peak people per square meter.
+- For traffic, do not call people "vehicles".
 """
 
 
@@ -49,8 +54,8 @@ def build_report(
             log.append({"step": 2, "tool": "spark.chat_json", "detail": "request"})
             data, reply = client.chat_json(
                 prompt=(
-                    "Este es el resumen numérico de una corrida de Rastro. "
-                    "No cambies los números. Redactá el reporte.\n\n"
+                    "Numeric summary of a Rastro run. Do not change the numbers. "
+                    "Write the report in English.\n\n"
                     + json.dumps(payload, ensure_ascii=False, indent=2)
                 ),
                 system=SYSTEM,
@@ -84,28 +89,91 @@ def build_report(
     return report, log
 
 
+_PEOPLE = {"person", "persona", "people", "pedestrian"}
+
+
+def _clip_name(video: str) -> str:
+    name = Path(video).name
+    return name or "clip"
+
+
+def _is_crowd(pack_id: str) -> bool:
+    pid = pack_id.lower()
+    return "multitud" in pid or "crowd" in pid or "densidad" in pid
+
+
+def _split_counts(by_class: dict[str, int]) -> tuple[int, int]:
+    people = 0
+    vehicles = 0
+    for name, count in by_class.items():
+        if name.lower() in _PEOPLE:
+            people += int(count)
+        else:
+            vehicles += int(count)
+    return vehicles, people
+
+
+def crowd_line(persons: int, density: float | None) -> str:
+    if density is None:
+        return f"Up to {persons} people at once"
+    text = f"{density:g}"
+    return f"Up to {persons} people at once · peak {text} people/m²"
+
+
 def _local_report(summary: RunSummary) -> dict[str, Any]:
-    especies = [
-        {"clase": k, "individuos": v} for k, v in sorted(summary.by_class.items())
-    ]
     notas = list(summary.notes or [])
-    resumen = (
-        f"Video {summary.video}: conteo ingenuo {summary.naive_count}, "
-        f"individuos únicos {summary.unique_count}. "
-        f"Clases: {', '.join(f'{k}={v}' for k, v in summary.by_class.items()) or 'ninguna'}."
-    )
+    clip = _clip_name(summary.video)
+    if _is_crowd(summary.pack_id):
+        line = crowd_line(summary.unique_count, None)
+        resumen = (
+            f"{line}. This sector measures how many people are in view at once. "
+            "It does not re-identify them."
+        )
+        gancho = line
+        especies: list[dict[str, Any]] = []
+        recomendaciones = [
+            "Read the peak as density, not as unique people.",
+        ]
+    elif "transito" in summary.pack_id.lower() or "transit" in summary.pack_id.lower():
+        vehicles, people = _split_counts(summary.by_class)
+        resumen = (
+            f"Clip {clip}: {summary.naive_count} sightings, "
+            f"{vehicles} unique vehicles"
+            + (f", {people} {'person' if people == 1 else 'people'}" if people else "")
+            + ". Traffic counts are not verified."
+        )
+        gancho = f"{vehicles} unique vehicles" + (
+            f" · {people} {'person' if people == 1 else 'people'}" if people else ""
+        )
+        especies = [
+            {"clase": k, "individuos": v} for k, v in sorted(summary.by_class.items())
+        ]
+        recomendaciones = [
+            "Do not treat this as a verified traffic count.",
+        ]
+    else:
+        clases = ", ".join(f"{k}={v}" for k, v in summary.by_class.items()) or "none"
+        resumen = (
+            f"Clip {clip}: {summary.naive_count} sightings, "
+            f"{summary.unique_count} unique individuals. Classes: {clases}."
+        )
+        gancho = f"{summary.unique_count} unique, not {summary.naive_count} sightings"
+        especies = [
+            {"clase": k, "individuos": v} for k, v in sorted(summary.by_class.items())
+        ]
+        recomendaciones = [
+            "Review clips with a high-severity alert.",
+            "Check re-entries at the frame edge if the count looks low.",
+        ]
     if notas:
-        resumen += " Nota de campo: " + " | ".join(notas[:2])
+        resumen += " Field note: " + " | ".join(notas[:2])
     return {
-        "titulo": f"Reporte Rastro — {summary.pack_id}",
+        "titulo": f"Rastro report — {summary.pack_id}",
         "resumen": resumen,
         "especies": especies,
         "alertas": summary.alerts,
         "notas_campo": notas,
-        "recomendaciones": [
-            "Revisar clips con alerta alta.",
-            "Confirmar reentradas en el borde del frame si el conteo parece bajo.",
-        ],
-        "gancho_demo": f"{summary.unique_count}, no {summary.naive_count}",
+        "recomendaciones": recomendaciones,
+        "gancho_demo": gancho,
         "_source": "local",
     }

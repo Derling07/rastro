@@ -177,6 +177,53 @@ def test_network_errors_retry_then_succeed(monkeypatch):
     assert calls["n"] == 2
 
 
+def test_txt_sent_as_mp4_is_rejected():
+    with pytest.raises(api.UploadError) as exc:
+        api.create_upload_job("fauna", "notes.txt", "video/mp4", _ftyp())
+    assert exc.value.status == 400
+    assert ".mp4" in str(exc.value) or ".mov" in str(exc.value)
+
+
+def test_mock_fail_and_empty_paths():
+    failed = _wait(api.create_sample_job("mock-fail")["id"])
+    assert failed["status"] == "failed"
+    assert "mock failure" in (failed.get("error") or "")
+    done = _wait(api.create_sample_job("mock-empty")["id"])
+    assert done["status"] == "done", done.get("error")
+    envelope = api.get_result(done["id"])
+    assert envelope["empty"] is True
+    assert envelope["result"]["unique_count"] == 0
+    assert envelope["identities"] == []
+
+
+def test_crowd_report_is_density_only_and_has_no_absolute_path():
+    job = api.create_sample_job("multitudes-plaza")
+    done = _wait(job["id"], timeout=60)
+    assert done["status"] == "done", done.get("error")
+    envelope = api.get_result(job["id"])
+    report = envelope["result"]["report"]
+    assert report["gancho_demo"].startswith("Up to ")
+    assert "people/m²" in report["gancho_demo"]
+    assert "unique" not in report["resumen"].lower()
+    blob = json.dumps(envelope["result"])
+    assert "/data/" not in blob
+    assert "/tmp/" not in blob
+    assert "/workspace/" not in blob
+    assert done["sampling_mode"] == "image_sample"
+    assert isinstance(done["peak_persons"], int)
+
+
+def test_transit_report_does_not_call_people_vehicles():
+    job = api.create_sample_job("transito-intersection")
+    done = _wait(job["id"], timeout=60)
+    assert done["status"] == "done", done.get("error")
+    report = api.get_result(job["id"])["result"]["report"]
+    assert "unique vehicles" in report["gancho_demo"]
+    assert "person" in report["gancho_demo"].lower()
+    blob = json.dumps(report)
+    assert "/tmp/" not in blob and "/data/" not in blob
+
+
 def test_upload_rejects_unknown_pack_and_empty_file():
     with pytest.raises(ValueError):
         api.create_upload_job("nope", "a.mp4", "video/mp4", _ftyp())
@@ -237,6 +284,8 @@ def test_ui_uploads_only_through_engine():
     assert "/engine/api/jobs" in text
     assert "/api/upload" not in text
     assert "Not verified" in text
+    assert "PartialBanner" in text
+    assert 'item.status === "queued" || item.status === "processing"' in text
     assert "Up to" in text and "people at once" in text
     assert "busiest frame" not in text
     assert "Mock mode." in text and "Live keys." in text

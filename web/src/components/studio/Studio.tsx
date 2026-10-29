@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertList } from "@/components/AlertList";
+import { PartialBanner } from "@/components/PartialBanner";
 import { MultitudesPanel } from "@/components/MultitudesPanel";
 import { ReportView } from "@/components/ReportView";
 import { TurnMatrix } from "@/components/TurnMatrix";
@@ -36,6 +37,9 @@ type Job = {
   unique_count?: number | null;
   is_mock?: boolean | null;
   error?: string | null;
+  sampling_mode?: string | null;
+  peak_persons?: number | null;
+  peak_density_per_m2?: number | null;
 };
 
 type Envelope = {
@@ -43,6 +47,7 @@ type Envelope = {
   server_mock: boolean;
   hint: string;
   reidentifies: boolean;
+  empty?: boolean;
   identities: Identity[];
   pack: string;
   result: unknown;
@@ -79,6 +84,44 @@ function busiestTime(frames: { t_s: number; objects: unknown[] }[]): number {
     if ((frame.objects?.length ?? 0) > (best?.objects?.length ?? 0)) best = frame;
   }
   return best?.t_s ?? 0;
+}
+
+const PEOPLE = new Set(["person", "persona", "people", "pedestrian"]);
+
+function vehicleSplit(byClass: Record<string, number>): { vehicles: number; people: number } {
+  let vehicles = 0;
+  let people = 0;
+  for (const [name, count] of Object.entries(byClass)) {
+    if (PEOPLE.has(name.toLowerCase())) people += count;
+    else vehicles += count;
+  }
+  return { vehicles, people };
+}
+
+function densityText(value: number): string {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.?0+$/, "");
+}
+
+function transitHeadline(result: RastroResult): string {
+  const { vehicles, people } = vehicleSplit(result.by_class);
+  const personLabel = people === 1 ? "person" : "people";
+  const peoplePart = people > 0 ? ` · ${people} ${personLabel}` : "";
+  return `${result.naive_count} sightings, ${vehicles} unique vehicles${peoplePart} · NOT VERIFIED`;
+}
+
+function crowdHistory(item: Job): string {
+  const people = item.peak_persons ?? item.unique_count ?? 0;
+  if (typeof item.peak_density_per_m2 === "number") {
+    return `Up to ${people} people at once · peak ${densityText(item.peak_density_per_m2)} people/m²`;
+  }
+  return `Up to ${people} people at once`;
+}
+
+function crowdHeadline(result: RastroResult): string {
+  const people = result.peak_density?.persons ?? result.unique_count;
+  const density = result.peak_density?.density_per_m2;
+  if (density === null || density === undefined) return `Up to ${people} people at once`;
+  return `Up to ${people} people at once · peak ${densityText(density)} people/m²`;
 }
 
 function nounFor(pack: PackKey): string {
@@ -186,6 +229,18 @@ export function Studio() {
       window.clearInterval(id);
     };
   }, [jobId, jobStatus, refreshHistory]);
+
+  useEffect(() => {
+    if (job) return;
+    const active = history.find((item) => item.status === "queued" || item.status === "processing");
+    if (!active) return;
+    setBusy(true);
+    setError(null);
+    setJob(active);
+    if (active.pack === "fauna" || active.pack === "transito" || active.pack === "multitudes") {
+      setPack(active.pack);
+    }
+  }, [history, job]);
 
   const packSamples = useMemo(
     () => (samples ?? []).filter((sample) => sample.pack === pack),
@@ -458,17 +513,20 @@ export function Studio() {
           <h2 id="results-h" className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
             4 · Results
           </h2>
-          {!parsed && (
+          {(!parsed || envelope?.empty) && (
             <p className="mt-2 rounded-lg border border-dashed border-line p-4 text-sm text-muted">
-              {pack === "multitudes"
-                ? "Nothing yet. A run reports how many people are in view at once. This sector does not re-identify them."
-                : pack === "transito"
-                  ? "Nothing yet. A run counts vehicles and the turns they take. Traffic counts are not verified."
-                  : "Nothing yet. After a run, repeat appearances of the same individual collapse into one count."}
+              {envelope?.empty
+                ? "Empty result. This mock path finished with no counts."
+                : pack === "multitudes"
+                  ? "Nothing yet. A run reports how many people are in view at once. This sector does not re-identify them."
+                  : pack === "transito"
+                    ? "Nothing yet. A run counts vehicles and the turns they take. Traffic counts are not verified."
+                    : "Nothing yet. After a run, repeat appearances of the same individual collapse into one count."}
             </p>
           )}
-          {parsed && envelope && (
+          {parsed && envelope && !envelope.empty && (
             <div className="mt-3 space-y-4">
+              <PartialBanner partial={parsed.partial} />
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
                   {envelope.hint}
@@ -485,12 +543,13 @@ export function Studio() {
                   naive={parsed.naive_count}
                   unique={parsed.unique_count}
                   noun={nounFor(pack)}
-                  unverified={pack === "transito"}
+                  headline={pack === "transito" ? transitHeadline(parsed) : undefined}
+                  unverified={false}
                   onSeek={seek}
                 />
               ) : (
                 <p className="rounded-lg border border-line bg-panel p-4 font-display text-3xl">
-                  {`Up to ${parsed.peak_density ? parsed.peak_density.persons : parsed.unique_count} people at once`}
+                  {crowdHeadline(parsed)}
                 </p>
               )}
               {envelope.reidentifies && parsed.detections_total !== null && (
@@ -555,9 +614,11 @@ export function Studio() {
                   <span className="text-xs text-muted">
                     {item.pack} · {item.status}
                     {item.is_mock ? " · mock" : ""}
-                    {typeof item.naive_count === "number" && typeof item.unique_count === "number"
-                      ? ` · ${item.naive_count} → ${item.unique_count}`
-                      : ""}
+                    {item.pack === "multitudes" && typeof (item.peak_persons ?? item.unique_count) === "number"
+                      ? ` · ${crowdHistory(item)}`
+                      : typeof item.naive_count === "number" && typeof item.unique_count === "number"
+                        ? ` · ${item.naive_count} → ${item.unique_count}`
+                        : ""}
                   </span>
                 </button>
               </li>

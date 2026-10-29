@@ -3,5 +3,6 @@ frames/
 __pycache__/
 .pytest_cache/
 *.pyc
-last_score*.json
-!last_score_outputs.json
+last_score_demo_0112.json
+last_score_demo_real.json
+last_score_real.json

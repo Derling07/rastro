@@ -575,7 +575,7 @@ def run_pipeline(
 
     summary = RunSummary(
         pack_id=pack_obj.id,
-        video=str(video),
+        video=video.name,
         fps=track_fps,
         naive_count=counted.naive_count,
         unique_count=counted.unique_count,
@@ -601,6 +601,20 @@ def run_pipeline(
         report.setdefault("notas_campo", notes)
         report["estacion"] = station_name
         report["hora_local"] = local_hour
+    if image_mode:
+        from .agent import crowd_line
+
+        persons = int((peak_dens or {}).get("persons") or counted.unique_count)
+        dens = None if not peak_dens else peak_dens.get("density_per_m2")
+        line = crowd_line(persons, float(dens) if dens is not None else None)
+        report["titulo"] = "Crowd density"
+        report["resumen"] = (
+            f"{line}. This sector measures how many people are in view at once. "
+            "It does not re-identify them."
+        )
+        report["gancho_demo"] = line
+        report["especies"] = []
+        report["recomendaciones"] = ["Read the peak as density, not as unique people."]
     if peak_dens:
         report["pico_densidad"] = peak_dens
     if persons_peak:
@@ -805,7 +819,7 @@ def run_pipeline(
         pack_id=pack_obj.id,
         pack_version=str(pack_obj.data.get("version") or "0"),
         pack_path=str(pack_obj.path),
-        video_path=str(video),
+        video_path=video.name,
         track_fps=track_fps,
         native_fps=native_fps,
         station=station_name,

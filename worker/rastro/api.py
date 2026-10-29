@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import threading
@@ -53,7 +54,10 @@ class UploadError(ValueError):
 
 
 def video_ext_from_bytes(data: bytes, content_type: str, filename: str) -> str:
-    """Require an ISO BMFF ftyp box. Returns .mp4 or .mov."""
+    """Require a .mp4/.mov name and an ISO BMFF ftyp box. Returns the extension."""
+    suffix = Path(filename).suffix.lower()
+    if suffix not in {".mp4", ".mov"}:
+        raise UploadError("Only .mp4 or .mov files are accepted.", 400)
     ctype = (content_type or "").split(";")[0].strip().lower()
     if ctype and ctype not in ACCEPTED_TYPES and ctype != "application/octet-stream":
         raise UploadError("Only MP4 or MOV videos are accepted.", 400)
@@ -216,6 +220,20 @@ def samples() -> list[dict[str, Any]]:
             "title": "Plaza",
             "hint": "Mock density. People are not re-identified.",
         },
+        {
+            "id": "mock-fail",
+            "pack": "fauna",
+            "kind": "fail",
+            "title": "Failing job",
+            "hint": "Mock path that fails, so the error state can be tested.",
+        },
+        {
+            "id": "mock-empty",
+            "pack": "fauna",
+            "kind": "empty",
+            "title": "Empty result",
+            "hint": "Mock path with no counts, so the empty state can be tested.",
+        },
     ]
 
 
@@ -348,11 +366,54 @@ def _attach_identities(result: dict[str, Any], tracks_path: Path | None) -> list
     return identities_from_tracks(tracks, fps=fps)
 
 
+_ABS_PATH = re.compile(r"/[\w.@+-]+(?:/[\w.@+-]+)+")
+
+
+def _scrub_abs(value: Any) -> Any:
+    """Drop absolute filesystem paths before a result leaves the server."""
+    if isinstance(value, str):
+        return _ABS_PATH.sub(lambda match: Path(match.group(0)).name, value)
+    if isinstance(value, list):
+        return [_scrub_abs(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _scrub_abs(item) for key, item in value.items()}
+    return value
+
+
+def empty_result(job_id: str) -> dict[str, Any]:
+    return {
+        "schema_version": "1.1",
+        "run_id": job_id,
+        "source_video_id": "empty",
+        "pack": {"id": "fauna-camtrap", "version": "0", "path": "packs/fauna.json"},
+        "video": {"path": "empty.mp4", "fps": 5},
+        "naive_count": 0,
+        "unique_count": 0,
+        "detections_total": 0,
+        "by_class": {},
+        "tracks": [],
+        "frames": [],
+        "events": [],
+        "alerts": [],
+        "voice": None,
+        "agent_log": [],
+        "report": {"titulo": "Empty result", "resumen": "", "gancho_demo": ""},
+        "artifacts": {},
+        "cost_usd": 0,
+        "cost": {"est_usd_sam": 0, "est_usd_voice": 0, "est_usd_total": 0},
+        "is_mock": True,
+        "empty": True,
+        "sampling_mode": "video_track",
+    }
+
+
 def _envelope(
     job: dict[str, Any],
     result: dict[str, Any],
     identities: list[dict[str, Any]],
 ) -> dict[str, Any]:
+    result = _scrub_abs(result)
+    crowd = result.get("sampling_mode") == "image_sample" or job.get("pack") == "multitudes"
     return {
         "job_id": job["id"],
         "mock_mode": bool(result.get("is_mock")),
@@ -361,8 +422,9 @@ def _envelope(
         "source": job.get("kind"),
         "pack": job.get("pack"),
         "hint": _hint(job, result),
-        "reidentifies": result.get("sampling_mode") != "image_sample",
-        "identities": identities,
+        "reidentifies": not crowd and job.get("kind") != "empty",
+        "empty": bool(result.get("empty") or job.get("kind") == "empty"),
+        "identities": [] if crowd or job.get("kind") == "empty" else identities,
         "result": result,
     }
 
@@ -407,7 +469,14 @@ def _process_once(job_id: str) -> None:
     out = jobs_dir() / job_id
     out.mkdir(parents=True, exist_ok=True)
     tracks_path: Path | None = out / "tracks.json"
-    if job["kind"] == "stored-run":
+    if job["kind"] == "fail":
+        time.sleep(sleep)
+        raise RuntimeError("mock failure")
+    if job["kind"] == "empty":
+        time.sleep(sleep)
+        result = empty_result(job_id)
+        tracks_path = None
+    elif job["kind"] == "stored-run":
         if sample is None:
             raise RuntimeError("unknown sample")
         time.sleep(sleep)
@@ -445,6 +514,13 @@ def _process_once(job_id: str) -> None:
         naive_count=result.get("naive_count"),
         unique_count=result.get("unique_count"),
         is_mock=bool(result.get("is_mock")),
+        sampling_mode=result.get("sampling_mode"),
+        peak_persons=(result.get("peak_density") or {}).get("persons")
+        if isinstance(result.get("peak_density"), dict)
+        else None,
+        peak_density_per_m2=(result.get("peak_density") or {}).get("density_per_m2")
+        if isinstance(result.get("peak_density"), dict)
+        else None,
     )
 
 
@@ -605,6 +681,9 @@ def list_jobs() -> list[dict[str, Any]]:
                 "naive_count": job.get("naive_count"),
                 "unique_count": job.get("unique_count"),
                 "is_mock": job.get("is_mock"),
+                "sampling_mode": job.get("sampling_mode"),
+                "peak_persons": job.get("peak_persons"),
+                "peak_density_per_m2": job.get("peak_density_per_m2"),
                 "error": job.get("error"),
                 "created_at": job.get("created_at"),
                 "finished_at": job.get("finished_at"),
