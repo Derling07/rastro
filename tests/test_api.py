@@ -107,15 +107,18 @@ def _ftyp(brand: bytes = b"isom") -> bytes:
     return (8 + len(payload)).to_bytes(4, "big") + b"ftyp" + payload
 
 
-def test_upload_mp4_runs_mock_engine(monkeypatch):
+def test_upload_in_mock_mode_is_not_counted_as_the_sample(monkeypatch):
     monkeypatch.setattr(api, "video_duration_s", lambda _path: 2.0)
-    job = api.create_upload_job("fauna-camtrap", "clip.mp4", "video/mp4", _ftyp())
+    job = api.create_upload_job("fauna-camtrap", "fake.mp4", "video/mp4", _ftyp())
     done = _wait(job["id"], timeout=60)
     assert done["status"] == "done", done.get("error")
-    result = api.get_result(job["id"])["result"]
+    envelope = api.get_result(job["id"])
+    result = envelope["result"]
+    assert envelope["uncomputed"] is True
     assert result["is_mock"] is True
-    assert result["unique_count"] >= 1
-    assert result["report"]["resumen"]
+    assert result["unique_count"] == 0
+    assert result["naive_count"] == 0
+    assert result["report"]["gancho_demo"] == "Mock result — not computed from your video"
 
 
 def test_upload_rejects_bad_bytes_and_long_videos(monkeypatch, tmp_path):

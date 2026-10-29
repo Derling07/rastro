@@ -340,6 +340,8 @@ def _engine_result(
 
 
 def _hint(job: dict[str, Any], result: dict[str, Any]) -> str:
+    if result.get("uncomputed"):
+        return "Mock result — not computed from your video"
     if job.get("kind") == "stored-run":
         text = "Stored SAM run. This server did not call the model again."
     elif result.get("is_mock"):
@@ -378,6 +380,41 @@ def _scrub_abs(value: Any) -> Any:
     if isinstance(value, dict):
         return {key: _scrub_abs(item) for key, item in value.items()}
     return value
+
+
+def uncomputed_upload_result(job_id: str, filename: str) -> dict[str, Any]:
+    """Mock mode must not invent counts for a file the tracker did not read."""
+    name = Path(filename).name or "upload.mp4"
+    line = "Mock result — not computed from your video"
+    return {
+        "schema_version": "1.1",
+        "run_id": job_id,
+        "source_video_id": Path(name).stem,
+        "pack": {"id": "upload", "version": "0", "path": ""},
+        "video": {"path": name, "fps": 0},
+        "naive_count": 0,
+        "unique_count": 0,
+        "detections_total": None,
+        "by_class": {},
+        "tracks": [],
+        "frames": [],
+        "events": [],
+        "alerts": [],
+        "voice": None,
+        "agent_log": [],
+        "report": {
+            "titulo": line,
+            "resumen": "No API key is set, so this file was not tracked. Sample counts are not from your video.",
+            "gancho_demo": line,
+            "recomendaciones": [],
+        },
+        "artifacts": {},
+        "cost_usd": 0,
+        "cost": {"est_usd_sam": 0, "est_usd_voice": 0, "est_usd_total": 0},
+        "is_mock": True,
+        "uncomputed": True,
+        "sampling_mode": "video_track",
+    }
 
 
 def empty_result(job_id: str) -> dict[str, Any]:
@@ -422,9 +459,10 @@ def _envelope(
         "source": job.get("kind"),
         "pack": job.get("pack"),
         "hint": _hint(job, result),
-        "reidentifies": not crowd and job.get("kind") != "empty",
+        "reidentifies": not crowd and job.get("kind") != "empty" and not result.get("uncomputed"),
         "empty": bool(result.get("empty") or job.get("kind") == "empty"),
-        "identities": [] if crowd or job.get("kind") == "empty" else identities,
+        "uncomputed": bool(result.get("uncomputed")),
+        "identities": [] if crowd or job.get("kind") == "empty" or result.get("uncomputed") else identities,
         "result": result,
     }
 
@@ -476,6 +514,10 @@ def _process_once(job_id: str) -> None:
         time.sleep(sleep)
         result = empty_result(job_id)
         tracks_path = None
+    elif job["kind"] == "upload" and not key_status()["meta"]:
+        time.sleep(sleep)
+        result = uncomputed_upload_result(job_id, str(job.get("original_name") or "upload.mp4"))
+        tracks_path = None
     elif job["kind"] == "stored-run":
         if sample is None:
             raise RuntimeError("unknown sample")
@@ -513,6 +555,7 @@ def _process_once(job_id: str) -> None:
         error=None,
         naive_count=result.get("naive_count"),
         unique_count=result.get("unique_count"),
+        detections_total=result.get("detections_total"),
         is_mock=bool(result.get("is_mock")),
         sampling_mode=result.get("sampling_mode"),
         peak_persons=(result.get("peak_density") or {}).get("persons")
@@ -680,6 +723,7 @@ def list_jobs() -> list[dict[str, Any]]:
                 "kind": job.get("kind"),
                 "naive_count": job.get("naive_count"),
                 "unique_count": job.get("unique_count"),
+                "detections_total": job.get("detections_total"),
                 "is_mock": job.get("is_mock"),
                 "sampling_mode": job.get("sampling_mode"),
                 "peak_persons": job.get("peak_persons"),

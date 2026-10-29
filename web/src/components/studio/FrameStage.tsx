@@ -10,12 +10,9 @@ type Props = {
   isMock?: boolean;
 };
 
-function reducedMotion(): boolean {
-  return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
 export function FrameStage({ frames, time, onTime, isMock }: Props) {
   const [playing, setPlaying] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const ordered = useMemo(
     () => frames.filter((frame) => frame.objects.length > 0).sort((a, b) => a.t_s - b.t_s),
     [frames],
@@ -36,6 +33,14 @@ export function FrameStage({ frames, time, onTime, isMock }: Props) {
       if (frame.t_s <= time + 0.001) return frame;
       return best;
     }, ordered[0] ?? null) ?? null;
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setReduceMotion(query.matches);
+    apply();
+    query.addEventListener("change", apply);
+    return () => query.removeEventListener("change", apply);
+  }, []);
 
   useEffect(() => {
     if (!playing || ordered.length < 2) return;
@@ -91,10 +96,9 @@ export function FrameStage({ frames, time, onTime, isMock }: Props) {
           type="button"
           className="rounded-full border border-line px-3 py-1 text-sm hover:border-pack"
           onClick={() => {
-            if (reducedMotion()) return;
+            if (reduceMotion) return;
             setPlaying((value) => !value);
           }}
-          title={reducedMotion() ? "Playback is off because reduced motion is on. Use the slider." : "Play the tracked frames"}
         >
           {playing ? "Pause" : "Play"}
         </button>
@@ -112,6 +116,11 @@ export function FrameStage({ frames, time, onTime, isMock }: Props) {
           }}
         />
       </div>
+      {reduceMotion && (
+        <p className="text-sm text-muted">
+          Playback stays off while reduced motion is on. Use the slider to change frames.
+        </p>
+      )}
       <p className="text-xs text-muted">Boxes are the tracker’s frames. The id stays with the individual after a re-entry.</p>
     </div>
   );

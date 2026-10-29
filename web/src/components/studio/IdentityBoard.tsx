@@ -22,6 +22,8 @@ type Props = {
   identities: Identity[];
   naive: number;
   unique: number;
+  /** Raw SAM detections. Used when the naive count was already deduped. */
+  detectionsTotal?: number | null;
   noun: string;
   /** When set, replaces the generated sightings sentence. */
   headline?: string;
@@ -30,13 +32,26 @@ type Props = {
   onSeek?: (t: number) => void;
 };
 
-export function IdentityBoard({ identities, naive, unique, noun, headline, unverified, onSeek }: Props) {
+export function IdentityBoard({
+  identities,
+  naive,
+  unique,
+  detectionsTotal,
+  noun,
+  headline,
+  unverified,
+  onSeek,
+}: Props) {
   const merged = naive > unique;
   const span = Math.max(0.1, ...identities.map((row) => row.end_s), 1);
+  const useRaw =
+    typeof detectionsTotal === "number" && detectionsTotal > unique && naive === unique;
 
-  const base = merged
-    ? `${naive} sightings, ${unique} unique ${noun}`
-    : `${unique} unique ${noun}. No repeat sighting was merged.`;
+  const base = useRaw
+    ? `${detectionsTotal} raw detections → ${unique} unique ${noun}`
+    : merged
+      ? `${naive} sightings, ${unique} unique ${noun}`
+      : `${unique} unique ${noun}. No repeat sighting was merged.`;
   const sentence = headline ?? (unverified ? `${base} · NOT VERIFIED` : base);
 
   return (

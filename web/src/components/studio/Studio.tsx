@@ -35,6 +35,7 @@ type Job = {
   original_name?: string;
   naive_count?: number | null;
   unique_count?: number | null;
+  detections_total?: number | null;
   is_mock?: boolean | null;
   error?: string | null;
   sampling_mode?: string | null;
@@ -48,6 +49,7 @@ type Envelope = {
   hint: string;
   reidentifies: boolean;
   empty?: boolean;
+  uncomputed?: boolean;
   identities: Identity[];
   pack: string;
   result: unknown;
@@ -109,12 +111,25 @@ function transitHeadline(result: RastroResult): string {
   return `${result.naive_count} sightings, ${vehicles} unique vehicles${peoplePart} · NOT VERIFIED`;
 }
 
-function crowdHistory(item: Job): string {
-  const people = item.peak_persons ?? item.unique_count ?? 0;
-  if (typeof item.peak_density_per_m2 === "number") {
-    return `Up to ${people} people at once · peak ${densityText(item.peak_density_per_m2)} people/m²`;
+function historyCount(item: Job): string {
+  if (item.pack === "multitudes") {
+    const people = item.peak_persons ?? item.unique_count;
+    return typeof people === "number" ? ` · Peak ${people} people` : "";
   }
-  return `Up to ${people} people at once`;
+  if (typeof item.unique_count !== "number") {
+    return item.pack === "transito" ? " · not verified" : "";
+  }
+  const left =
+    item.pack !== "transito" &&
+    typeof item.detections_total === "number" &&
+    item.detections_total !== item.naive_count
+      ? item.detections_total
+      : item.naive_count;
+  if (typeof left !== "number") {
+    return item.pack === "transito" ? " · not verified" : "";
+  }
+  const verified = item.pack === "transito" ? " · not verified" : "";
+  return ` · ${left} → ${item.unique_count}${verified}`;
 }
 
 function crowdHeadline(result: RastroResult): string {
@@ -302,13 +317,15 @@ export function Studio() {
       return;
     }
     const name = file.name.toLowerCase();
-    const okType =
-      file.type === "video/mp4" ||
-      file.type === "video/quicktime" ||
-      name.endsWith(".mp4") ||
-      name.endsWith(".mov");
-    if (!okType) {
-      setError("Only MP4 or MOV.");
+    const okExt = name.endsWith(".mp4") || name.endsWith(".mov");
+    if (!okExt) {
+      setError("Only .mp4 or .mov files are accepted.");
+      return;
+    }
+    const header = new Uint8Array(await file.slice(0, 64).arrayBuffer());
+    const headerText = new TextDecoder("latin1").decode(header);
+    if (!headerText.includes("ftyp")) {
+      setError("That file is not an MP4 or MOV.");
       return;
     }
     if (file.size > 50 * 1024 * 1024) {
@@ -354,7 +371,12 @@ export function Studio() {
           {STEPS.map((item) => {
             const state = item.id < step ? "done" : item.id === step ? "now" : "wait";
             return (
-              <li key={item.id} className="step-pip" data-state={state}>
+              <li
+                key={item.id}
+                className="step-pip"
+                data-state={state}
+                aria-current={state === "now" ? "step" : undefined}
+              >
                 <span className="font-display text-lg">{item.id}</span>
                 {item.label}
               </li>
@@ -378,16 +400,18 @@ export function Studio() {
                 key={item.key}
                 type="button"
                 className={
-                  "rounded-full border px-3 py-1.5 text-sm " +
+                  "max-w-xs rounded-2xl border px-3 py-2 text-left text-sm " +
                   (item.key === pack
                     ? "border-pack bg-pack text-ink"
                     : "border-line text-muted hover:border-pack")
                 }
                 aria-pressed={item.key === pack}
-                title={SECTOR_HINT[item.key]}
                 onClick={() => setPack(item.key)}
               >
-                {item.label}
+                <span className="block font-bold">{item.label}</span>
+                <span className="mt-0.5 block text-[11px] font-normal leading-snug opacity-80">
+                  {SECTOR_HINT[item.key]}
+                </span>
               </button>
             ))}
           </div>
@@ -436,7 +460,7 @@ export function Studio() {
             <label className="block text-sm">
               MP4 or MOV, up to 50 MB
               <input
-                className="mt-2 block w-full text-sm"
+                className="mt-2 block w-full text-sm text-muted file:mr-3 file:cursor-pointer file:rounded-full file:border file:border-line file:bg-panel file:px-3 file:py-1 file:text-sm file:font-bold file:text-[var(--text)]"
                 type="file"
                 accept="video/mp4,video/quicktime,.mp4,.mov"
                 onChange={(event) => setFile(event.target.files?.[0] ?? null)}
@@ -445,7 +469,7 @@ export function Studio() {
             <label className="mt-3 block text-sm" title="Optional. Off by default, the transcript stays private.">
               Voice note, optional
               <input
-                className="mt-2 block w-full text-sm"
+                className="mt-2 block w-full text-sm text-muted file:mr-3 file:cursor-pointer file:rounded-full file:border file:border-line file:bg-panel file:px-3 file:py-1 file:text-sm file:font-bold file:text-[var(--text)]"
                 type="file"
                 accept="audio/wav,audio/mpeg,.wav,.mp3"
                 onChange={(event) => setVoice(event.target.files?.[0] ?? null)}
@@ -537,11 +561,16 @@ export function Studio() {
                   </span>
                 )}
               </div>
-              {envelope.reidentifies ? (
+              {envelope.uncomputed ? (
+                <p className="rounded-lg border border-pack bg-panel p-4 font-display text-3xl leading-tight">
+                  Mock result — not computed from your video
+                </p>
+              ) : envelope.reidentifies ? (
                 <IdentityBoard
                   identities={envelope.identities}
                   naive={parsed.naive_count}
                   unique={parsed.unique_count}
+                  detectionsTotal={parsed.detections_total}
                   noun={nounFor(pack)}
                   headline={pack === "transito" ? transitHeadline(parsed) : undefined}
                   unverified={false}
@@ -602,8 +631,8 @@ export function Studio() {
         {history.length === 0 ? (
           <p className="mt-2 text-sm text-muted">No runs yet.</p>
         ) : (
-          <ul className="mt-2 space-y-2">
-            {history.map((item) => (
+          <ul className="mt-2 max-h-[60vh] space-y-2 overflow-auto">
+            {history.slice(0, 8).map((item) => (
               <li key={item.id}>
                 <button
                   type="button"
@@ -614,11 +643,7 @@ export function Studio() {
                   <span className="text-xs text-muted">
                     {item.pack} · {item.status}
                     {item.is_mock ? " · mock" : ""}
-                    {item.pack === "multitudes" && typeof (item.peak_persons ?? item.unique_count) === "number"
-                      ? ` · ${crowdHistory(item)}`
-                      : typeof item.naive_count === "number" && typeof item.unique_count === "number"
-                        ? ` · ${item.naive_count} → ${item.unique_count}`
-                        : ""}
+                    {historyCount(item)}
                   </span>
                 </button>
               </li>
