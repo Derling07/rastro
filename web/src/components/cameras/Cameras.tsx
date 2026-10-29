@@ -37,6 +37,10 @@ type Camera = {
   verification_note: string;
   headline: string;
   duration_s: number;
+  video_url?: string | null;
+  frame_width?: number;
+  frame_height?: number;
+  credit?: { title?: string; author?: string; license?: string; license_url?: string; source_url?: string };
   zone: { id: string; polygon: Point[] } | null;
   zone_editable: boolean;
   frames: Frame[];
@@ -179,8 +183,10 @@ export function Cameras() {
     const ctm = svg.getScreenCTM();
     if (!ctm) return;
     const mapped = point.matrixTransform(ctm.inverse());
-    const nx = Math.min(1, Math.max(0, mapped.x / SIZE));
-    const ny = Math.min(1, Math.max(0, mapped.y / SIZE));
+    const width = camera.frame_width || SIZE;
+    const height = camera.frame_height || SIZE;
+    const nx = Math.min(1, Math.max(0, mapped.x / width));
+    const ny = Math.min(1, Math.max(0, mapped.y / height));
     setDraft((current) => [...current, [Number(nx.toFixed(3)), Number(ny.toFixed(3))]]);
   }
 
@@ -205,8 +211,7 @@ export function Cameras() {
       <div className="mb-4 rounded-lg border border-line bg-panel p-4">
         <p className="font-display text-2xl">Cameras</p>
         <p className="mt-1 text-sm text-muted">
-          A camera here is a clip that was counted once. It loops, and an alert shows up at the second it happened.
-          Nothing is streaming live.
+          Each camera plays a real clip under an open license. It is not a live stream. Alerts are tied to the second they happened.
         </p>
       </div>
 
@@ -248,7 +253,7 @@ export function Cameras() {
             <>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-pack px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-pack">
-                  Simulated camera
+                  {camera.video_url ? "Recorded clip" : "Stored run"}
                 </span>
                 {!camera.verified && (
                   <span className="rounded-full border border-alta px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-alta">
@@ -260,17 +265,30 @@ export function Cameras() {
               <p className="text-sm text-muted">{camera.verification_note}</p>
 
               <div className="rounded-lg border border-line bg-black p-2">
+                <div className="relative">
+                {camera.video_url && (
+                  <video
+                    key={camera.id}
+                    className="block aspect-video w-full bg-black"
+                    src={camera.video_url}
+                    muted
+                    playsInline
+                    loop
+                    autoPlay={!reduceMotion}
+                    onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
+                  />
+                )}
                 <svg
-                  viewBox={`0 0 ${SIZE} ${SIZE}`}
-                  className="block aspect-video w-full"
+                  viewBox={`0 0 ${camera.frame_width || SIZE} ${camera.frame_height || SIZE}`}
+                  className={camera.video_url ? "absolute inset-0 h-full w-full" : "block aspect-video w-full"}
                   role="img"
-                  aria-label="Simulated camera frame"
+                  aria-label="Recorded camera frame"
                   onClick={onStageClick}
                 >
-                  <rect width={SIZE} height={SIZE} fill="#0b100e" />
+                  {!camera.video_url && <rect width={SIZE} height={SIZE} fill="#0b100e" />}
                   {polygon.length >= 2 && (
                     <polygon
-                      points={polygon.map(([x, y]) => `${x * SIZE},${y * SIZE}`).join(" ")}
+                      points={polygon.map(([x, y]) => `${x * (camera.frame_width || SIZE)},${y * (camera.frame_height || SIZE)}`).join(" ")}
                       fill="#5cc8e0"
                       fillOpacity={0.12}
                       stroke="#5cc8e0"
@@ -278,7 +296,7 @@ export function Cameras() {
                     />
                   )}
                   {draft.map(([x, y], index) => (
-                    <circle key={index} cx={x * SIZE} cy={y * SIZE} r={8} fill="#f2a93b" />
+                    <circle key={index} cx={x * (camera.frame_width || SIZE)} cy={y * (camera.frame_height || SIZE)} r={8} fill="#f2a93b" />
                   ))}
                   {frame?.objects.map((object, index) => {
                     const [x1, y1, x2, y2] = object.bbox;
@@ -300,6 +318,7 @@ export function Cameras() {
                     );
                   })}
                 </svg>
+                </div>
                 <div className="mt-2 flex flex-wrap items-center gap-3 px-1 text-sm">
                   <button type="button" className="demo-secondary" onClick={() => setPlaying((value) => !value)}>
                     {playing ? "Pause" : "Play loop"}
@@ -395,8 +414,31 @@ export function Cameras() {
           </section>
 
           <PeakHours />
+          {camera?.credit?.source_url && (
+            <p className="text-xs leading-relaxed text-muted">
+              This clip: {camera.credit.title} by {camera.credit.author},{" "}
+              <a className="underline" href={camera.credit.license_url}>
+                {camera.credit.license}
+              </a>
+              .{" "}
+              <a className="underline" href={camera.credit.source_url}>
+                Source
+              </a>
+              .
+            </p>
+          )}
         </div>
       </div>
+      <footer className="mt-8 border-t border-line pt-4 text-xs leading-relaxed text-muted">
+        <h2 className="text-[11px] font-bold uppercase tracking-[0.16em]">Data and credits</h2>
+        <ul className="mt-2 space-y-1">
+          <li>Gray fox in New Mexico by Andy, CC BY 3.0, Wikimedia Commons.</li>
+          <li>Goats going home by Thamizhpparithi Maari, CC BY-SA 3.0, Wikimedia Commons.</li>
+          <li>DSCF0004 and DSCF0112, Seattle(ish) Camera Traps by Dan Morris, LILA BC, CDLA permissive. Faces in the published person clip are blurred.</li>
+          <li>Plaza Mayor (Madrid) by Michiel1972, CC BY-SA 3.0, Wikimedia Commons.</li>
+          <li>Wicker Park intersection changes by Steven Vance, CC BY 3.0, Wikimedia Commons. Traffic count not verified.</li>
+        </ul>
+      </footer>
     </div>
   );
 }

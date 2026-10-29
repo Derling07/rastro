@@ -696,12 +696,17 @@ export function Studio() {
           .
         </p>
         <p className="mt-1">
-          DSCF camera-trap clips: Seattle(ish) Camera Traps, LILA BC. License: Community Data
-          License Agreement (permissive variant).{" "}
+          DSCF camera-trap clips, including the person on the forest trail: Seattle(ish) Camera
+          Traps, Dan Morris, LILA BC. License: Community Data License Agreement (permissive
+          variant). The published person clip has the face blurred.{" "}
           <a className="underline" href="https://lila.science/datasets/seattleish-camera-traps/">
             Dataset page
           </a>
           .
+        </p>
+        <p className="mt-1">
+          Gray fox in New Mexico by Andy, CC BY 3.0. Goats going home by Thamizhpparithi Maari,
+          CC BY-SA 3.0. Plaza Mayor (Madrid) by Michiel1972, CC BY-SA 3.0. All via Wikimedia Commons.
         </p>
       </footer>
     </div>

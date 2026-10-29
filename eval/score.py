@@ -451,6 +451,63 @@ def score_run(
     }
 
 
+def score_alert_set() -> int:
+    """Compare recorded-camera alerts with hand labels. Prints PASS/FAIL."""
+    sys.path.insert(0, str(ROOT / "worker"))
+    from rastro.cameras import get_camera, reset_camera_state
+
+    reset_camera_state()
+    manifest = json.loads((ROOT / "eval" / "alert_set" / "manifest.json").read_text(encoding="utf-8"))
+    print("Alert set (local detector vs hand labels, spend $0)")
+    failed = 0
+    for row in manifest["alerts"]:
+        camera = get_camera(row["clip"])
+        status = "FAIL"
+        detail = "camera missing"
+        if camera is not None and row["id"] == "crowd_plaza":
+            pred = int(camera.get("headline", "0").split()[2]) if "Up to" in camera.get("headline", "") else None
+            # headline is "Up to N people..."
+            try:
+                pred = int(camera["headline"].split()[2])
+            except (IndexError, ValueError):
+                pred = None
+            target = int(row["peak_persons"])
+            tol = int(row["tolerance"])
+            if pred is not None and abs(pred - target) <= tol:
+                status = "PASS"
+                detail = f"peak {pred} vs hand {target} ±{tol}"
+            else:
+                detail = f"peak {pred} vs hand {target} ±{tol}"
+        elif camera is not None and row["id"] == "traffic_wicker":
+            status = "NOT VERIFIED" if camera["verification"] == "NOT VERIFIED" else "FAIL"
+            detail = camera["verification_note"]
+        elif camera is not None:
+            times = [float(alert["t_s"]) for alert in camera["alerts"] if alert["kind"] == row["id"] or alert["kind"] in {"wild_enters", "farm_leaves", "person_in_zone"} and alert["kind"].startswith(row["id"].split("_")[0])]
+            kinds = {
+                "wild_enters": "wild_enters",
+                "farm_leaves": "farm_leaves",
+                "person_in_zone": "person_in_zone",
+            }
+            kind = kinds.get(row["id"], row["id"])
+            times = [float(alert["t_s"]) for alert in camera["alerts"] if alert["kind"] == kind]
+            target = float(row.get("t_s") or 0)
+            tol = float(row.get("tolerance_s") or 0)
+            hit = any(abs(t - target) <= tol for t in times)
+            message_ok = True
+            if row.get("message"):
+                message_ok = any(alert.get("message") == row["message"] for alert in camera["alerts"])
+            if hit and message_ok and camera["verification"] == "PASS":
+                status = "PASS"
+            detail = f"times={times} target={target}±{tol}"
+        expected = row["status"]
+        mark = "PASS" if status == expected else "FAIL"
+        if mark == "FAIL":
+            failed += 1
+        print(f"  {row['id']:18} {status:12} expected {expected:12} {detail}")
+    print(f"  spend_usd: {manifest.get('spend_usd', 0)}")
+    return 1 if failed else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Score Rastro unique counts vs hand GT (offline).")
     parser.add_argument("--gt", type=Path, default=DEFAULT_GT, help="Path to ground_truth.json")
@@ -467,6 +524,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Allow scoring is_mock/demo-mock runs as if real (default: skip/flag)",
     )
     parser.add_argument("--json-out", type=Path, default=None, help="Optional path to write full report")
+    parser.add_argument(
+        "--alerts",
+        action="store_true",
+        help="Also score eval/alert_set against the recorded cameras",
+    )
     args = parser.parse_args(argv)
 
     # Refuse to run if someone tries to pass secrets via env into this script's prints
@@ -508,10 +570,13 @@ def main(argv: list[str] | None = None) -> int:
         args.json_out.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
         print(f"\nWrote {args.json_out}")
 
+    alert_code = 0
+    if args.alerts:
+        alert_code = score_alert_set()
     # Exit 1 if any FAIL or ERROR on scored set
     if agg["n_fail"] or agg["n_error"]:
         return 1
-    return 0
+    return alert_code
 
 
 if __name__ == "__main__":

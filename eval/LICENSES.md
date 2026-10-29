@@ -113,3 +113,17 @@ Descargados a `data/transit/` (binarios locales; ver `eval/DATA_TRANSIT.md` + `d
 **Atribución:** "Wicker Park intersection changes" by Steven Vance, Wikimedia Commons (from Vimeo), CC BY 3.0. Converted to H.264 720p (audio removed) for Rastro QA.
 
 **Confirmado 2026-10-26 (America/Costa_Rica):** licencias leídas en la ficha de cada archivo Commons (no en la categoría). Ambos ≪ 500 MB (tope ORION Round 3) y ≪ 50 MB post-convert.
+
+## 9. Recorded cameras (2026-10-29)
+
+Each file below allows redistribution. Confirmed from the file page, not from a search snippet. No Meta or Baseten spend. Local detector only.
+
+| Clip in the app | Source | Author | License |
+|---|---|---|---|
+| `/cameras/gray-fox.mp4` | https://commons.wikimedia.org/wiki/File:Gray_fox_(Urocyon_cinereoargenteus)_in_New_Mexico.webm | Andy | CC BY 3.0 — https://creativecommons.org/licenses/by/3.0/ |
+| `/cameras/goats.mp4` | https://commons.wikimedia.org/wiki/File:A_video_on_goats_going_to_home.ogv | Thamizhpparithi Maari | CC BY-SA 3.0 — https://creativecommons.org/licenses/by-sa/3.0/ |
+| `/cameras/person-trail.mp4` | https://lila.science/datasets/seattleish-camera-traps/ file `DSCF0004.MP4` | Dan Morris | CDLA permissive variant. Face blurred before publish. Daytime, not night. |
+| `/cameras/plaza.mp4` | https://commons.wikimedia.org/wiki/File:Plaza_Mayor_(Madrid).ogv | Michiel1972 (M.M. Minderhoud) | CC BY-SA 3.0 — https://creativecommons.org/licenses/by-sa/3.0/ |
+| `/cameras/wicker.mp4` | https://commons.wikimedia.org/wiki/File:Wicker_Park_intersection_changes.webm | Steven Vance | CC BY 3.0 — https://creativecommons.org/licenses/by/3.0/ |
+
+DSCF0112 (the 90 → 2 coyote proof) stays the stored Seattle(ish) run from section 1. It is not re-analyzed here.

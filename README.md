@@ -153,6 +153,11 @@ eval/              scores and fixtures
 ## Data and credits
 
 - **Wicker Park intersection changes** by Steven Vance, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Wicker_Park_intersection_changes.webm).
-- **DSCF camera-trap clips:** Seattle(ish) Camera Traps, LILA BC. License: Community Data License Agreement (permissive variant). [Dataset page](https://lila.science/datasets/seattleish-camera-traps/).
+- **DSCF camera-trap clips:** Seattle(ish) Camera Traps, Dan Morris, LILA BC. License: Community Data License Agreement (permissive variant). [Dataset page](https://lila.science/datasets/seattleish-camera-traps/). The person clip published in the app has the face blurred.
+- **Gray fox in New Mexico** by Andy, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Gray_fox_(Urocyon_cinereoargenteus)_in_New_Mexico.webm). Night trail camera.
+- **Goats going home** by Thamizhpparithi Maari, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:A_video_on_goats_going_to_home.ogv).
+- **Plaza Mayor (Madrid)** by Michiel1972, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Plaza_Mayor_(Madrid).ogv).
+
+Local analysis used OpenCV Zoo YOLOX (COCO) and, for the infrared fox, a difference from the first frame. Spend on Meta and Baseten: **$0**. The SAM cap was not used.
 
 Heavy videos were left out of git. See `DATA.md` and `eval/LICENSES.md` before redistributing clips.

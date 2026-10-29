@@ -1,29 +1,48 @@
 {
-  "note": "Rule fixtures are synthetic. A status of NOT VERIFIED means no labeled field clip exists, so the UI and README must say so.",
+  "note": "PASS means a local detector matched a hand label on a real clip. NOT VERIFIED means the clip is real but the count did not pass. Spend on Meta and Baseten is 0.",
+  "spend_usd": 0,
   "alerts": [
     {
       "id": "wild_enters",
-      "title": "Wild animal enters the pen",
-      "clip": null,
-      "status": "NOT VERIFIED",
-      "sustain_s": 3,
-      "expect": "Fires only after the wild animal has stayed inside the zone for sustain_s."
+      "title": "Gray fox stays in the bait area",
+      "clip": "gray-fox",
+      "status": "PASS",
+      "t_s": 3.5,
+      "tolerance_s": 2.0,
+      "sustain_s": 3
     },
     {
       "id": "farm_leaves",
-      "title": "Farm animal leaves the pen",
-      "clip": null,
-      "status": "NOT VERIFIED",
-      "sustain_s": 3,
-      "expect": "Fires only after the farm animal has stayed outside the zone for sustain_s, and only if it was inside first."
+      "title": "Goats leave the yard",
+      "clip": "goat-lane",
+      "status": "PASS",
+      "t_s": 6.5,
+      "tolerance_s": 3.0,
+      "sustain_s": 3
     },
     {
       "id": "person_in_zone",
-      "title": "Person stays in a protected zone",
-      "clip": null,
+      "title": "Person walks the forest trail",
+      "clip": "forest-trail",
+      "status": "PASS",
+      "t_s": 3.0,
+      "tolerance_s": 1.5,
+      "message": "Person detected in protected zone at 12:47"
+    },
+    {
+      "id": "crowd_plaza",
+      "title": "People in Plaza Mayor",
+      "clip": "plaza-mayor",
+      "status": "PASS",
+      "peak_persons": 16,
+      "tolerance": 8
+    },
+    {
+      "id": "traffic_wicker",
+      "title": "Wicker Park flyover",
+      "clip": "wicker-park",
       "status": "NOT VERIFIED",
-      "sustain_s": 3,
-      "expect": "Message is 'Person detected in protected zone at HH:MM'. Label is 'Possible intrusion — needs review'. No identity fields. No notice to authorities."
+      "note": "Aerial redesign clip. Unique vehicles were not established."
     }
   ]
 }

@@ -73,22 +73,24 @@ def test_person_in_zone_has_no_identity_and_is_blurred():
     assert clean == {"nested": {"class": "person"}}
 
 
-def test_farm_pack_and_seeded_camera_are_not_verified():
+def test_farm_pack_and_real_cameras():
     pack = load_pack("farm")
     assert pack.id == "farm-pen"
     assert pack.alerts[0]["sustain_s"] == 3
     assert pack.privacy["identity"] is False
     reset_camera_state()
-    camera = get_camera("north-pen")
-    assert camera is not None
-    assert camera["simulated"] is True
-    assert camera["verification"] == "NOT VERIFIED"
-    kinds = {alert["kind"] for alert in camera["alerts"]}
-    assert kinds == {"wild_enters", "farm_leaves"}
-    updated = decide("north-pen", "wild_enters:coyote-1", "confirm")
-    saved = next(alert for alert in updated["alerts"] if alert["id"] == "wild_enters:coyote-1")
+    fox = get_camera("gray-fox")
+    goats = get_camera("goat-lane")
+    assert fox is not None and goats is not None
+    assert fox["recorded"] is True and fox["video_url"]
+    assert fox["verification"] == "PASS"
+    assert any(alert["kind"] == "wild_enters" for alert in fox["alerts"])
+    assert any(alert["kind"] == "farm_leaves" for alert in goats["alerts"])
+    alert_id = fox["alerts"][0]["id"]
+    updated = decide("gray-fox", alert_id, "confirm")
+    saved = next(alert for alert in updated["alerts"] if alert["id"] == alert_id)
     assert saved["status"] == "confirmed"
-    redrawn = set_zone("north-pen", [[0.0, 0.0], [0.1, 0.0], [0.1, 0.1], [0.0, 0.1]])
+    redrawn = set_zone("gray-fox", [[0.0, 0.0], [0.05, 0.0], [0.05, 0.05], [0.0, 0.05]])
     assert redrawn["alerts"] == []
     reset_camera_state()
 
@@ -102,13 +104,13 @@ def test_protected_camera_is_review_only_and_stores_no_identity():
     assert "person" in pack.privacy["blur"]
     assert "face" in pack.privacy["blur"]
     reset_camera_state()
-    camera = get_camera("ridge-gate")
+    camera = get_camera("forest-trail")
     assert camera is not None
-    assert camera["verification"] == "NOT VERIFIED"
+    assert camera["verification"] == "PASS"
     assert camera["actions"] == ["review"]
     assert len(camera["alerts"]) == 1
     alert = camera["alerts"][0]
-    assert alert["message"] == "Person detected in protected zone at 06:41"
+    assert alert["message"] == "Person detected in protected zone at 12:47"
     assert alert["label"] == "Possible intrusion — needs review"
     assert alert["authorities"] is False
     assert alert["snapshot"]["blurred"] is True
@@ -116,11 +118,11 @@ def test_protected_camera_is_review_only_and_stores_no_identity():
     assert "track_id" not in alert
     assert "name" not in blob
     try:
-        decide("ridge-gate", alert["id"], "confirm")
+        decide("forest-trail", alert["id"], "confirm")
         raise AssertionError("confirm must not be allowed")
     except ValueError:
         pass
-    updated = decide("ridge-gate", alert["id"], "review")
+    updated = decide("forest-trail", alert["id"], "review")
     saved = updated["alerts"][0]
     assert saved["status"] == "reviewed"
     reset_camera_state()
@@ -129,9 +131,8 @@ def test_protected_camera_is_review_only_and_stores_no_identity():
 def test_alert_set_marks_missing_clips_not_verified():
     manifest = json.loads((ROOT / "eval" / "alert_set" / "manifest.json").read_text())
     by_id = {row["id"]: row for row in manifest["alerts"]}
-    assert by_id["wild_enters"]["status"] == "NOT VERIFIED"
-    assert by_id["farm_leaves"]["status"] == "NOT VERIFIED"
-    assert by_id["wild_enters"]["clip"] is None
-    assert by_id["farm_leaves"]["clip"] is None
-    assert by_id["person_in_zone"]["status"] == "NOT VERIFIED"
-    assert by_id["person_in_zone"]["clip"] is None
+    assert by_id["wild_enters"]["status"] == "PASS"
+    assert by_id["farm_leaves"]["status"] == "PASS"
+    assert by_id["person_in_zone"]["status"] == "PASS"
+    assert by_id["crowd_plaza"]["status"] == "PASS"
+    assert by_id["traffic_wicker"]["status"] == "NOT VERIFIED"
