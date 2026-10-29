@@ -24,6 +24,7 @@ def _isolated(monkeypatch, tmp_path):
     monkeypatch.delenv("SUPABASE_URL", raising=False)
     monkeypatch.delenv("SUPABASE_SERVICE_ROLE_KEY", raising=False)
     monkeypatch.delenv("RASTRO_ALLOW_LIVE", raising=False)
+    monkeypatch.setenv("RASTRO_RETRY_SLEEP", "0")
     api.reset_state()
     yield
     api.reset_state()
@@ -101,8 +102,14 @@ def test_engine_samples_return_counts_and_report(sample_id):
     assert envelope["hint"]
 
 
-def test_upload_mp4_runs_mock_engine():
-    job = api.create_upload_job("fauna-camtrap", "clip.mp4", "video/mp4", b"\x00" * 64)
+def _ftyp(brand: bytes = b"isom") -> bytes:
+    payload = brand + b"\x00\x00\x00\x00" + brand
+    return (8 + len(payload)).to_bytes(4, "big") + b"ftyp" + payload
+
+
+def test_upload_mp4_runs_mock_engine(monkeypatch):
+    monkeypatch.setattr(api, "video_duration_s", lambda _path: 2.0)
+    job = api.create_upload_job("fauna-camtrap", "clip.mp4", "video/mp4", _ftyp())
     done = _wait(job["id"], timeout=60)
     assert done["status"] == "done", done.get("error")
     result = api.get_result(job["id"])["result"]
@@ -111,9 +118,68 @@ def test_upload_mp4_runs_mock_engine():
     assert result["report"]["resumen"]
 
 
+def test_upload_rejects_bad_bytes_and_long_videos(monkeypatch, tmp_path):
+    with pytest.raises(api.UploadError):
+        api.create_upload_job("fauna", "clip.mp4", "video/mp4", b"\x00" * 64)
+    monkeypatch.setattr(api, "video_duration_s", lambda _path: 121.0)
+    with pytest.raises(api.UploadError) as exc:
+        api.create_upload_job("fauna", "long.mp4", "video/mp4", _ftyp())
+    assert exc.value.status == 400
+    assert "120" in str(exc.value)
+    assert list(tmp_path.rglob("upload*")) == []
+
+
+def test_voice_is_checked_before_the_video_is_written(monkeypatch, tmp_path):
+    monkeypatch.setattr(api, "video_duration_s", lambda _path: 1.0)
+    with pytest.raises(api.UploadError):
+        api.create_upload_job(
+            "fauna",
+            "clip.mp4",
+            "video/mp4",
+            _ftyp(),
+            voice_name="note.wav",
+            voice_type="audio/wav",
+            voice_body=b"not-a-wav",
+        )
+    assert list(tmp_path.rglob("*")) == []
+
+
+def test_restart_marks_inflight_jobs_interrupted():
+    folder = api.jobs_dir() / "stuck"
+    folder.mkdir()
+    (folder / "job.json").write_text(
+        json.dumps({"id": "stuck", "status": "processing", "stage": "motor", "pack": "fauna"}),
+        encoding="utf-8",
+    )
+    api.hydrate()
+    job = api.get_job("stuck")
+    assert job is not None
+    assert job["status"] == "failed"
+    assert job["error"] == "interrupted"
+    disk = json.loads((folder / "job.json").read_text(encoding="utf-8"))
+    assert disk["status"] == "failed"
+
+
+def test_network_errors_retry_then_succeed(monkeypatch):
+    calls = {"n": 0}
+    real = api._engine_result
+
+    def flaky(*args, **kwargs):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise ConnectionError("connection reset")
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(api, "_engine_result", flaky)
+    job = api.create_sample_job("fauna-trap")
+    done = _wait(job["id"])
+    assert done["status"] == "done", done.get("error")
+    assert calls["n"] == 2
+
+
 def test_upload_rejects_unknown_pack_and_empty_file():
     with pytest.raises(ValueError):
-        api.create_upload_job("nope", "a.mp4", "video/mp4", b"abc")
+        api.create_upload_job("nope", "a.mp4", "video/mp4", _ftyp())
     with pytest.raises(ValueError):
         api.create_upload_job("fauna", "a.mp4", "video/mp4", b"")
 
@@ -161,6 +227,20 @@ def test_keys_switch_mock_mode(monkeypatch):
     monkeypatch.setenv("META_API_KEY", "not-a-real-key")
     assert api.mock_mode() is False
     monkeypatch.delenv("META_API_KEY")
+
+
+def test_ui_uploads_only_through_engine():
+    from pathlib import Path
+
+    studio = Path(__file__).resolve().parents[1] / "web" / "src" / "components" / "studio" / "Studio.tsx"
+    text = studio.read_text(encoding="utf-8")
+    assert "/engine/api/jobs" in text
+    assert "/api/upload" not in text
+    assert "Not verified" in text
+    assert "Up to" in text and "people at once" in text
+    assert "busiest frame" not in text
+    assert "Mock mode." in text and "Live keys." in text
+    assert not (studio.parents[1] / "DemoPanel.tsx").exists()
 
 
 def test_history_lists_finished_job():

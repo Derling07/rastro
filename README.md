@@ -14,7 +14,7 @@ Docker is the path that serves the app and the worker together. With no keys, ev
 docker compose up --build
 ```
 
-Open [http://127.0.0.1:43123](http://127.0.0.1:43123). The worker listens on port 8787.
+Open [http://127.0.0.1:43123](http://127.0.0.1:43123). Inside Compose the app calls the worker at `http://api:8787`. On the host, that port is published only on `127.0.0.1:8787`.
 
 ```bash
 cp .env.example .env   # names only; leave values blank for mock

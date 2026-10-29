@@ -7,13 +7,22 @@ COPY worker ./worker
 COPY packs ./packs
 COPY web/public/runs/demo-real-coyote-0112 ./web/public/runs/demo-real-coyote-0112
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ffmpeg \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir -r requirements.txt \
+    && useradd --create-home --uid 10001 rastro \
+    && mkdir -p /data/rastro-jobs \
+    && chown -R rastro:rastro /app /data/rastro-jobs
 
 ENV PYTHONPATH=/app/worker \
     PYTHONUNBUFFERED=1 \
     PORT=8787 \
-    RASTRO_JOBS_DIR=/tmp/rastro-jobs
+    RASTRO_BIND=0.0.0.0 \
+    RASTRO_JOBS_DIR=/data/rastro-jobs
 
 EXPOSE 8787
+
+USER rastro
 
 CMD ["python", "-m", "rastro.api"]

@@ -286,14 +286,13 @@ export function Studio() {
   return (
     <div className="mx-auto grid max-w-6xl gap-6 px-4 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_240px]">
       <div>
-        <header className="mb-5 flex items-center justify-between gap-3">
+        <header className="mb-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
           <h1 className="font-display text-4xl font-bold tracking-tight">Rastro</h1>
-          <span
-            className="rounded-full border border-line px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-muted"
-            title={serverMock ? "No API keys. Sample clips and uploads use the mock tracker." : "Keys are set. Uploaded videos can call the live models. Sample clips stay mock."}
-          >
-            {serverMock ? "Mock" : "Live keys"}
-          </span>
+          <p className="text-sm text-muted">
+            {serverMock
+              ? "Mock mode. No API keys — samples and uploads use the mock tracker."
+              : "Live keys. Uploads can call SAM and Muse Spark. Samples stay on the mock tracker."}
+          </p>
         </header>
 
         <ol className="mb-5 flex flex-wrap gap-2" aria-label="Steps">
@@ -466,9 +465,16 @@ export function Studio() {
           )}
           {parsed && envelope && (
             <div className="mt-3 space-y-4">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
-                {envelope.hint}
-              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
+                  {envelope.hint}
+                </p>
+                {pack === "transito" && (
+                  <span className="rounded-full border border-alta px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-alta">
+                    Not verified
+                  </span>
+                )}
+              </div>
               {envelope.reidentifies ? (
                 <IdentityBoard
                   identities={envelope.identities}
@@ -479,9 +485,7 @@ export function Studio() {
                 />
               ) : (
                 <p className="rounded-lg border border-line bg-panel p-4 font-display text-3xl">
-                  {parsed.peak_density
-                    ? `Peak ${parsed.peak_density.persons} people`
-                    : `${parsed.unique_count} in the busiest frame`}
+                  {`Up to ${parsed.peak_density ? parsed.peak_density.persons : parsed.unique_count} people at once`}
                 </p>
               )}
               {envelope.reidentifies && parsed.detections_total !== null && (

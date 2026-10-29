@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
+import subprocess
 import threading
 import time
 import uuid
@@ -23,7 +25,124 @@ from urllib.parse import parse_qs, urlparse
 
 REPO = Path(__file__).resolve().parents[2]
 MAX_UPLOAD_BYTES = 50 * 1024 * 1024
+MAX_VOICE_BYTES = 32 * 1024 * 1024
+MAX_DURATION_S = 120.0
 ACCEPTED_TYPES = {"video/mp4": ".mp4", "video/quicktime": ".mov"}
+_MP4_BRANDS = {
+    b"isom",
+    b"iso2",
+    b"iso5",
+    b"iso6",
+    b"mp41",
+    b"mp42",
+    b"avc1",
+    b"mp4v",
+    b"M4V ",
+    b"MSNV",
+    b"dash",
+}
+_MOV_BRANDS = {b"qt  "}
+
+
+class UploadError(ValueError):
+    """Rejected upload. status is the HTTP code (400 or 413)."""
+
+    def __init__(self, message: str, status: int = 400) -> None:
+        super().__init__(message)
+        self.status = status
+
+
+def video_ext_from_bytes(data: bytes, content_type: str, filename: str) -> str:
+    """Require an ISO BMFF ftyp box. Returns .mp4 or .mov."""
+    ctype = (content_type or "").split(";")[0].strip().lower()
+    if ctype and ctype not in ACCEPTED_TYPES and ctype != "application/octet-stream":
+        raise UploadError("Only MP4 or MOV videos are accepted.", 400)
+    idx = data.find(b"ftyp")
+    if idx < 4 or idx > 64 or idx + 8 > len(data):
+        raise UploadError("File is not an MP4 or MOV (missing ftyp).", 400)
+    brand = data[idx + 4 : idx + 8]
+    if brand in _MOV_BRANDS:
+        return ".mov"
+    if brand in _MP4_BRANDS:
+        return ".mp4"
+    raise UploadError("File is not an MP4 or MOV.", 400)
+
+
+def validate_voice(name: str | None, content_type: str | None, body: bytes | None) -> None:
+    """Check a voice note in memory. Call this before writing the video."""
+    if body is None:
+        return
+    if len(body) == 0:
+        raise UploadError("Voice note is empty.", 400)
+    if len(body) > MAX_VOICE_BYTES:
+        raise UploadError("Voice note exceeds 32 MB.", 413)
+    suffix = Path(name or "").suffix.lower()
+    ctype = (content_type or "").split(";")[0].strip().lower()
+    wav = suffix == ".wav" or ctype in {"audio/wav", "audio/x-wav", "audio/wave"}
+    mp3 = suffix == ".mp3" or ctype in {"audio/mpeg", "audio/mp3"}
+    if not wav and not mp3:
+        raise UploadError("Voice note must be WAV or MP3.", 400)
+    if key_status()["meta"] and not wav:
+        raise UploadError("Live voice notes must be WAV.", 400)
+    if wav and (len(body) < 12 or not body.startswith(b"RIFF") or body[8:12] != b"WAVE"):
+        raise UploadError("Voice note is not a WAV file.", 400)
+    if mp3 and not (body.startswith(b"ID3") or (len(body) >= 2 and body[0] == 0xFF and (body[1] & 0xE0) == 0xE0)):
+        raise UploadError("Voice note is not an MP3 file.", 400)
+
+
+def video_duration_s(path: Path) -> float:
+    """Duration in seconds via ffprobe. Raises UploadError if it cannot be read."""
+    try:
+        out = subprocess.check_output(
+            [
+                "ffprobe",
+                "-v",
+                "error",
+                "-show_entries",
+                "format=duration",
+                "-of",
+                "default=noprint_wrappers=1:nokey=1",
+                str(path),
+            ],
+            text=True,
+            timeout=30,
+        )
+    except FileNotFoundError as exc:
+        raise UploadError("ffprobe is not installed; cannot check duration.", 400) from exc
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+        raise UploadError("Could not read the video duration.", 400) from exc
+    try:
+        return float(out.strip())
+    except ValueError as exc:
+        raise UploadError("Could not read the video duration.", 400) from exc
+
+
+def _network_error(exc: BaseException) -> bool:
+    if isinstance(exc, FileNotFoundError):
+        return False
+    if isinstance(exc, (ConnectionError, TimeoutError)):
+        return True
+    module = type(exc).__module__
+    if module.startswith(("requests", "httpx", "httpcore", "urllib3")):
+        return True
+    text = str(exc).lower()
+    return any(
+        bit in text
+        for bit in (
+            "timed out",
+            "connection reset",
+            "connection aborted",
+            "temporarily unavailable",
+            "name or service not known",
+        )
+    )
+
+
+def _retry_sleep() -> float:
+    try:
+        return max(0.0, float(os.environ.get("RASTRO_RETRY_SLEEP", "0.5")))
+    except ValueError:
+        return 0.5
 PACK_ALIASES = {
     "fauna": "fauna",
     "fauna-camtrap": "fauna",
@@ -272,57 +391,83 @@ def _set_job(job_id: str, **fields: Any) -> dict[str, Any]:
     return snapshot
 
 
-def _process(job_id: str) -> None:
+def _process_once(job_id: str) -> None:
     sleep = stage_sleep()
-    try:
-        job = _set_job(job_id, status="processing", stage="descargando", started_at=_now(), error=None)
+    current = get_job(job_id) or {}
+    job = _set_job(
+        job_id,
+        status="processing",
+        stage="descargando",
+        started_at=current.get("started_at") or _now(),
+        error=None,
+    )
+    time.sleep(sleep)
+    _set_job(job_id, stage="motor")
+    sample = _sample(job["sample_id"]) if job.get("sample_id") else None
+    out = jobs_dir() / job_id
+    out.mkdir(parents=True, exist_ok=True)
+    tracks_path: Path | None = out / "tracks.json"
+    if job["kind"] == "stored-run":
+        if sample is None:
+            raise RuntimeError("unknown sample")
         time.sleep(sleep)
-        _set_job(job_id, stage="motor")
-        sample = _sample(job["sample_id"]) if job.get("sample_id") else None
-        out = jobs_dir() / job_id
-        out.mkdir(parents=True, exist_ok=True)
-        tracks_path: Path | None = out / "tracks.json"
-        if job["kind"] == "stored-run":
-            if sample is None:
-                raise RuntimeError("unknown sample")
-            time.sleep(sleep)
-            result_path, tracks_path = _replay_paths(sample["id"])
-            result = dict(_read_json(result_path))
-            result["_replayed_from"] = str(result_path.relative_to(REPO))
-        else:
-            video = Path(job["video_path"])
-            if not video.exists():
-                raise FileNotFoundError(str(video))
-            voice = Path(job["voice_path"]) if job.get("voice_path") else None
-            result = _engine_result(
-                str(job["pack"]),
-                video,
-                out,
-                voice=voice,
-                voice_public=bool(job.get("voice_public")),
-                force_mock=bool(job.get("force_mock")),
-            )
-        identities = _attach_identities(result, tracks_path)
-        _set_job(job_id, stage="guardando")
-        time.sleep(sleep)
-        fresh = get_job(job_id) or job
-        envelope = _envelope(fresh, result, identities)
-        _persist_envelope(job_id, envelope)
-        with _lock:
-            _results[job_id] = envelope
-        _set_job(
-            job_id,
-            status="done",
-            stage=None,
-            run_id=str(result.get("run_id") or job_id),
-            finished_at=_now(),
-            error=None,
-            naive_count=result.get("naive_count"),
-            unique_count=result.get("unique_count"),
-            is_mock=bool(result.get("is_mock")),
+        result_path, tracks_path = _replay_paths(sample["id"])
+        result = dict(_read_json(result_path))
+        result["_replayed_from"] = str(result_path.relative_to(REPO))
+    else:
+        video = Path(job["video_path"])
+        if not video.exists():
+            raise FileNotFoundError(str(video))
+        voice = Path(job["voice_path"]) if job.get("voice_path") else None
+        result = _engine_result(
+            str(job["pack"]),
+            video,
+            out,
+            voice=voice,
+            voice_public=bool(job.get("voice_public")),
+            force_mock=bool(job.get("force_mock")),
         )
-    except Exception as exc:  # noqa: BLE001 — keep the server up and show a short error
-        _set_job(job_id, status="failed", stage=None, error=str(exc)[:500], finished_at=_now())
+    identities = _attach_identities(result, tracks_path)
+    _set_job(job_id, stage="guardando")
+    time.sleep(sleep)
+    fresh = get_job(job_id) or job
+    envelope = _envelope(fresh, result, identities)
+    _persist_envelope(job_id, envelope)
+    with _lock:
+        _results[job_id] = envelope
+    _set_job(
+        job_id,
+        status="done",
+        stage=None,
+        run_id=str(result.get("run_id") or job_id),
+        finished_at=_now(),
+        error=None,
+        naive_count=result.get("naive_count"),
+        unique_count=result.get("unique_count"),
+        is_mock=bool(result.get("is_mock")),
+    )
+
+
+def _process(job_id: str) -> None:
+    """Run a job. Network failures are retried twice, then the job fails."""
+    tries = 0
+    while True:
+        try:
+            _process_once(job_id)
+            return
+        except Exception as exc:  # noqa: BLE001 — keep the server up and show a short error
+            if _network_error(exc) and tries < 2:
+                tries += 1
+                _set_job(
+                    job_id,
+                    status="processing",
+                    stage="descargando",
+                    error=f"retry {tries}: {exc}"[:200],
+                )
+                time.sleep(_retry_sleep())
+                continue
+            _set_job(job_id, status="failed", stage=None, error=str(exc)[:500], finished_at=_now())
+            return
 
 
 def _now() -> str:
@@ -385,30 +530,32 @@ def create_upload_job(
 ) -> dict[str, Any]:
     alias = PACK_ALIASES.get(pack)
     if alias is None:
-        raise ValueError("unknown pack")
-    if content_type not in ACCEPTED_TYPES and not filename.lower().endswith((".mp4", ".mov")):
-        raise ValueError("only mp4 or mov")
+        raise UploadError("unknown pack", 400)
     if not filename or len(filename) > 200:
-        raise ValueError("invalid filename")
+        raise UploadError("invalid filename", 400)
     if len(body) <= 0:
-        raise ValueError("empty file")
+        raise UploadError("empty file", 400)
     if len(body) > MAX_UPLOAD_BYTES:
-        raise ValueError("file exceeds 50 MB")
+        raise UploadError("file exceeds 50 MB", 413)
+    ext = video_ext_from_bytes(body, content_type, filename)
+    if voice_name and len(voice_name) > 200:
+        raise UploadError("invalid voice filename", 400)
+    # Voice is checked before any video bytes are written.
+    validate_voice(voice_name, voice_type, voice_body)
     job_id = uuid.uuid4().hex[:12]
-    ext = ACCEPTED_TYPES.get(content_type) or (".mov" if filename.lower().endswith(".mov") else ".mp4")
     dest = jobs_dir() / job_id / f"upload{ext}"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(body)
-    voice_path = None
-    if voice_body:
-        if voice_name and len(voice_name) > 200:
-            raise ValueError("invalid voice filename")
-        live_voice = key_status()["meta"]
-        suffix = Path(voice_name or "note.wav").suffix.lower()
-        if live_voice and suffix != ".wav":
-            raise ValueError("live voice notes must be WAV")
-        voice_path = str(dest.parent / "note.wav")
-        Path(voice_path).write_bytes(voice_body)
+    voice_path = str(dest.parent / "note.wav") if voice_body else None
+    try:
+        dest.write_bytes(body)
+        duration = video_duration_s(dest)
+        if duration > MAX_DURATION_S:
+            raise UploadError("Video is longer than 120 seconds.", 400)
+        if voice_body and voice_path:
+            Path(voice_path).write_bytes(voice_body)
+    except Exception:
+        shutil.rmtree(dest.parent, ignore_errors=True)
+        raise
     job = {
         "id": job_id,
         "status": "queued",
@@ -494,7 +641,9 @@ def reset_state() -> None:
 
 
 def hydrate() -> None:
+    """Load jobs from disk. A restart cannot finish a half-run, so those fail."""
     root = jobs_dir()
+    interrupted: list[dict[str, Any]] = []
     with _lock:
         if not root.exists():
             return
@@ -509,6 +658,12 @@ def hydrate() -> None:
             except json.JSONDecodeError:
                 continue
             job_id = str(job.get("id") or folder.name)
+            if job.get("status") in {"queued", "processing"}:
+                job["status"] = "failed"
+                job["stage"] = None
+                job["error"] = "interrupted"
+                job["finished_at"] = _now()
+                interrupted.append(dict(job))
             _jobs[job_id] = job
             env_file = folder / "envelope.json"
             if env_file.exists():
@@ -516,6 +671,8 @@ def hydrate() -> None:
                     _results[job_id] = json.loads(env_file.read_text(encoding="utf-8"))
                 except json.JSONDecodeError:
                     pass
+    for job in interrupted:
+        _persist_job(job)
 
 
 def parse_multipart(body: bytes, content_type: str) -> dict[str, Any]:
@@ -560,7 +717,7 @@ class Handler(BaseHTTPRequestHandler):
     def _read_body(self, limit: int) -> bytes:
         length = int(self.headers.get("Content-Length") or "0")
         if length < 0 or length > limit:
-            raise ValueError("body too large")
+            raise UploadError("file exceeds 50 MB", 413)
         return self.rfile.read(length) if length else b""
 
     def do_GET(self) -> None:  # noqa: N802
@@ -646,6 +803,9 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 self._send(415, {"error": "send JSON {sample_id}, a video body, or multipart"})
                 return
+        except UploadError as exc:
+            self._send(exc.status, {"error": str(exc)})
+            return
         except ValueError as exc:
             self._send(400, {"error": str(exc)})
             return
@@ -655,11 +815,14 @@ class Handler(BaseHTTPRequestHandler):
         self._send(201, {k: v for k, v in job.items() if k not in {"video_path", "voice_path"}})
 
 
-def serve(host: str = "0.0.0.0", port: int | None = None) -> None:
+def serve(host: str | None = None, port: int | None = None) -> None:
     hydrate()
+    # Local runs bind localhost. Compose sets RASTRO_BIND=0.0.0.0 so other
+    # containers can call http://api:8787, and publishes only 127.0.0.1:8787.
+    chosen_host = host or os.environ.get("RASTRO_BIND", "127.0.0.1")
     chosen = port if port is not None else int(os.environ.get("PORT", "8787"))
-    httpd = ThreadingHTTPServer((host, chosen), Handler)
-    print(f"rastro-api listening on {host}:{chosen} mock_mode={mock_mode()}", flush=True)
+    httpd = ThreadingHTTPServer((chosen_host, chosen), Handler)
+    print(f"rastro-api listening on {chosen_host}:{chosen} mock_mode={mock_mode()}", flush=True)
     httpd.serve_forever()
 
 
