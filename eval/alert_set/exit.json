@@ -1,0 +1,11 @@
+{
+  "id": "farm_leaves",
+  "status": "NOT VERIFIED",
+  "clip": null,
+  "zone": "pen",
+  "class": "goat",
+  "sustain_s": 3,
+  "points_norm": {
+    "inside_then_outside": "three seconds inside, then five seconds outside, fires at the third second outside"
+  }
+}

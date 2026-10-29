@@ -877,7 +877,21 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/jobs":
             self._send(200, {"jobs": list_jobs()})
             return
+        if path == "/api/cameras":
+            from .cameras import inbox, list_cameras
+
+            self._send(200, {"cameras": list_cameras(), "inbox": inbox(), "simulated": True})
+            return
         parts = [p for p in path.split("/") if p]
+        if len(parts) == 3 and parts[0] == "api" and parts[1] == "cameras":
+            from .cameras import get_camera
+
+            camera = get_camera(parts[2])
+            if not camera:
+                self._send(404, {"error": "camera not found"})
+                return
+            self._send(200, {"camera": camera})
+            return
         if len(parts) == 3 and parts[0] == "api" and parts[1] == "jobs":
             job = get_job(parts[2])
             if not job:
@@ -901,9 +915,39 @@ class Handler(BaseHTTPRequestHandler):
             return
         self._send(404, {"error": "not found"})
 
+    def _camera_post(self, parts: list[str]) -> None:
+        from .cameras import decide, set_zone
+
+        try:
+            data = json.loads((self._read_body(64_000) or b"{}").decode("utf-8"))
+        except json.JSONDecodeError:
+            self._send(400, {"error": "invalid JSON"})
+            return
+        camera_id = parts[2]
+        try:
+            if len(parts) == 4 and parts[3] == "zone":
+                camera = set_zone(camera_id, data.get("polygon"))
+            elif len(parts) == 5 and parts[3] == "alerts":
+                action = data.get("action")
+                if not isinstance(action, str):
+                    self._send(400, {"error": "action required"})
+                    return
+                camera = decide(camera_id, parts[4], action)
+            else:
+                self._send(404, {"error": "not found"})
+                return
+        except ValueError as exc:
+            self._send(400, {"error": str(exc)})
+            return
+        self._send(200, {"camera": camera})
+
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         path = parsed.path.rstrip("/") or "/"
+        parts = [p for p in path.split("/") if p]
+        if len(parts) >= 3 and parts[0] == "api" and parts[1] == "cameras":
+            self._camera_post(parts)
+            return
         if path != "/api/jobs":
             self._send(404, {"error": "not found"})
             return

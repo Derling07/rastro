@@ -1,0 +1,49 @@
+{
+  "id": "farm-pen",
+  "version": "0.1.0",
+  "locale": "en",
+  "jurisdiction": "global",
+  "description": "A pen or corral the owner draws. A wild animal inside, or a farm animal outside, raises an in-app alert only after it stays that way for sustain_s seconds (default 3). No SMS. No real field clip yet: alerts are NOT VERIFIED.",
+  "targets": [
+    { "prompt": "cow", "class": "cow" },
+    { "prompt": "goat", "class": "goat" },
+    { "prompt": "coyote", "class": "coyote", "fallbacks": ["fox", "dog"] }
+  ],
+  "sampling": { "fps": 1, "mode": "video_track" },
+  "geometry": {
+    "zones": [
+      {
+        "id": "pen",
+        "polygon": [[0.2, 0.2], [0.8, 0.2], [0.8, 0.8], [0.2, 0.8]]
+      }
+    ],
+    "lines": []
+  },
+  "metrics": ["unique_count", "zone_alerts"],
+  "alerts": [
+    {
+      "id": "wild_enters",
+      "kind": "wild_enters_zone",
+      "severity": "emergency",
+      "sustain_s": 3,
+      "message": "Wild animal entered the pen and stayed {sustain_s} s"
+    },
+    {
+      "id": "farm_leaves",
+      "kind": "farm_leaves_zone",
+      "severity": "high",
+      "sustain_s": 3,
+      "message": "Farm animal left the pen and stayed out {sustain_s} s"
+    }
+  ],
+  "privacy": {
+    "blur": ["person"],
+    "identity": false,
+    "store": "alerts_and_boxes"
+  },
+  "station_defaults": {
+    "station": "north-pen",
+    "local_tz_offset_hours": -6
+  },
+  "output": { "annotated_video": false }
+}

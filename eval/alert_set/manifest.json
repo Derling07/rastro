@@ -1,0 +1,21 @@
+{
+  "note": "Rule fixtures are synthetic. A status of NOT VERIFIED means no labeled field clip exists, so the UI and README must say so.",
+  "alerts": [
+    {
+      "id": "wild_enters",
+      "title": "Wild animal enters the pen",
+      "clip": null,
+      "status": "NOT VERIFIED",
+      "sustain_s": 3,
+      "expect": "Fires only after the wild animal has stayed inside the zone for sustain_s."
+    },
+    {
+      "id": "farm_leaves",
+      "title": "Farm animal leaves the pen",
+      "clip": null,
+      "status": "NOT VERIFIED",
+      "sustain_s": 3,
+      "expect": "Fires only after the farm animal has stayed outside the zone for sustain_s, and only if it was inside first."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "wild_enters",
+  "status": "NOT VERIFIED",
+  "clip": null,
+  "zone": "pen",
+  "class": "coyote",
+  "sustain_s": 3,
+  "points_norm": {
+    "outside_then_inside": "two seconds outside, then five seconds inside, fires at the third second inside"
+  }
+}

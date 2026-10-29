@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertList } from "@/components/AlertList";
 import { PartialBanner } from "@/components/PartialBanner";
@@ -375,7 +376,17 @@ export function Studio() {
     <div className="mx-auto grid max-w-6xl gap-6 px-4 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_240px]">
       <div>
         <header className="mb-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-          <h1 className="font-display text-4xl font-bold tracking-tight">Rastro</h1>
+          <div>
+            <div className="flex flex-wrap items-baseline gap-4">
+              <h1 className="font-display text-4xl font-bold tracking-tight">Rastro</h1>
+              <Link href="/cameras" className="text-sm text-muted underline">
+                Cameras
+              </Link>
+            </div>
+            <p className="mt-1 max-w-xl text-sm text-muted">
+              Rastro counts each individual once — and uses that to alert what matters.
+            </p>
+          </div>
           <p className="text-sm text-muted">
             {serverMock
               ? "Mock mode. No API keys — samples and uploads use the mock tracker."

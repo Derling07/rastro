@@ -1,6 +1,6 @@
 # Rastro
 
-Count each individual once, even when it leaves the frame and comes back. SAM 3.1 tracks objects through the video, the rules engine stitches a re-entry into the same individual, and Muse Spark writes the report without changing those numbers.
+Rastro counts each individual once — and uses that to alert what matters. SAM 3.1 tracks objects through the video, the rules engine stitches a re-entry into the same individual, and Muse Spark writes the report without changing those numbers. The proof is the stored DSCF0112 run: **90 raw detections → 2 unique coyotes**.
 
 A sector is defined by a JSON pack.
 
@@ -58,6 +58,13 @@ A sector is defined by a JSON pack.
 | Fauna | `packs/fauna.json` | Unique animals, re-entry stitch, alerts |
 | Transit | `packs/transito.json` | Vehicles and a turn matrix. **Not a verified traffic count.** |
 | Crowd | `packs/multitudes.json` | People per zone and density. **No re-identification.** One alert: 6 people/m² (high / crush risk). |
+| Farm | `packs/farm.json` | A pen the owner draws. Wild animal inside, or farm animal outside, only after it stays that way for 3 seconds. In-app confirm or dismiss. **NOT VERIFIED** — no labeled field clip. |
+
+## Cameras
+
+A camera in this app is not a live stream. It is a clip counted once, cached, and played back on a loop. Alerts are tied to `t_s`. Every camera is labeled **Simulated camera**.
+
+Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **North pen** is the farm example. **Trap line** replays DSCF0112 (90 → 2). The alert inbox stays in the app: no SMS and no push. Farm alerts are **NOT VERIFIED** until a labeled field clip exists (`eval/alert_set/`).
 
 ## Meta models
 
