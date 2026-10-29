@@ -44,14 +44,11 @@ export function IdentityBoard({
 }: Props) {
   const merged = naive > unique;
   const span = Math.max(0.1, ...identities.map((row) => row.end_s), 1);
-  const useRaw =
-    typeof detectionsTotal === "number" && detectionsTotal > unique && naive === unique;
-
-  const base = useRaw
-    ? `${detectionsTotal} raw detections → ${unique} unique ${noun}`
-    : merged
-      ? `${naive} sightings, ${unique} unique ${noun}`
-      : `${unique} unique ${noun}. No repeat sighting was merged.`;
+  const hasRaw = typeof detectionsTotal === "number";
+  const left = hasRaw ? detectionsTotal : naive;
+  const base = hasRaw
+    ? `${left} raw detections → ${unique} unique ${noun}`
+    : `${left} sightings → ${unique} unique ${noun}`;
   const sentence = headline ?? (unverified ? `${base} · NOT VERIFIED` : base);
 
   return (

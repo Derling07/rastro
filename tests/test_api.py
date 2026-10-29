@@ -118,7 +118,7 @@ def test_upload_in_mock_mode_is_not_counted_as_the_sample(monkeypatch):
     assert result["is_mock"] is True
     assert result["unique_count"] == 0
     assert result["naive_count"] == 0
-    assert result["report"]["gancho_demo"] == "Mock result — not computed from your video"
+    assert result["report"]["gancho_demo"] == "Sample result, not from your video"
 
 
 def test_upload_rejects_bad_bytes_and_long_videos(monkeypatch, tmp_path):

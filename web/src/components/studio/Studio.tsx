@@ -139,9 +139,14 @@ function crowdHeadline(result: RastroResult): string {
   return `Up to ${people} people at once · peak ${densityText(density)} people/m²`;
 }
 
-function nounFor(pack: PackKey): string {
+function nounFor(pack: PackKey, byClass?: Record<string, number>): string {
   if (pack === "transito") return "vehicles";
   if (pack === "multitudes") return "people";
+  const names = Object.entries(byClass ?? {}).filter(([, count]) => count > 0);
+  if (names.length === 1) {
+    const name = names[0][0];
+    return names[0][1] === 1 || name.endsWith("s") ? name : `${name}s`;
+  }
   return "individuals";
 }
 
@@ -563,7 +568,7 @@ export function Studio() {
               </div>
               {envelope.uncomputed ? (
                 <p className="rounded-lg border border-pack bg-panel p-4 font-display text-3xl leading-tight">
-                  Mock result — not computed from your video
+                  Sample result, not from your video
                 </p>
               ) : envelope.reidentifies ? (
                 <IdentityBoard
@@ -571,7 +576,7 @@ export function Studio() {
                   naive={parsed.naive_count}
                   unique={parsed.unique_count}
                   detectionsTotal={parsed.detections_total}
-                  noun={nounFor(pack)}
+                  noun={nounFor(pack, parsed.by_class)}
                   headline={pack === "transito" ? transitHeadline(parsed) : undefined}
                   unverified={false}
                   onSeek={seek}
@@ -579,14 +584,6 @@ export function Studio() {
               ) : (
                 <p className="rounded-lg border border-line bg-panel p-4 font-display text-3xl">
                   {crowdHeadline(parsed)}
-                </p>
-              )}
-              {envelope.reidentifies && parsed.detections_total !== null && (
-                <p className="text-sm text-muted">
-                  {parsed.detections_total} raw detections on these tracks.
-                  {Object.entries(parsed.by_class)
-                    .map(([name, count]) => ` ${name} ${count}`)
-                    .join(" ·")}
                 </p>
               )}
               {envelope.reidentifies && (

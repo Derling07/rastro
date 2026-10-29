@@ -341,7 +341,7 @@ def _engine_result(
 
 def _hint(job: dict[str, Any], result: dict[str, Any]) -> str:
     if result.get("uncomputed"):
-        return "Mock result — not computed from your video"
+        return "Sample result, not from your video"
     if job.get("kind") == "stored-run":
         text = "Stored SAM run. This server did not call the model again."
     elif result.get("is_mock"):
@@ -385,7 +385,7 @@ def _scrub_abs(value: Any) -> Any:
 def uncomputed_upload_result(job_id: str, filename: str) -> dict[str, Any]:
     """Mock mode must not invent counts for a file the tracker did not read."""
     name = Path(filename).name or "upload.mp4"
-    line = "Mock result — not computed from your video"
+    line = "Sample result, not from your video"
     return {
         "schema_version": "1.1",
         "run_id": job_id,
@@ -404,7 +404,7 @@ def uncomputed_upload_result(job_id: str, filename: str) -> dict[str, Any]:
         "agent_log": [],
         "report": {
             "titulo": line,
-            "resumen": "No API key is set, so this file was not tracked. Sample counts are not from your video.",
+            "resumen": "No API key is set, so this file was not tracked. Sample result, not from your video.",
             "gancho_demo": line,
             "recomendaciones": [],
         },
