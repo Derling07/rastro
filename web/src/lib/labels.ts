@@ -16,6 +16,9 @@ const PACK_LABEL: Record<string, string> = {
 /** Longest pack id first so fauna-camtrap is not rewritten as "Wildlife camera-camtrap". */
 const PACK_KEYS = Object.entries(PACK_LABEL).sort((a, b) => b[0].length - a[0].length);
 
+/** Uncalibrated crowd area. The only copy of this mark in the UI. */
+export const DENSITY_MARK = "(NOT VERIFIED: area not calibrated)";
+
 /** Add one final period when the text does not already end with punctuation. */
 export function finishSentence(text: string): string {
   const cleaned = text.trim();

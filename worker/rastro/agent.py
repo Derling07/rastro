@@ -126,13 +126,11 @@ def tracking_line(
 
 def crowd_line(density: float | None, zone: str | None = None) -> str:
     """Density only. A missing per-frame series is not a person count."""
-    from .display_names import finish_sentence, zone_label
+    from .display_names import DENSITY_MARK, finish_sentence, zone_label
 
     if not isinstance(density, (int, float)):
         return finish_sentence("No verified person count")
-    line = finish_sentence(
-        f"Peak density {float(density):g} people/m² (NOT VERIFIED (area not calibrated))"
-    )
+    line = finish_sentence(f"Peak density {float(density):g} people/m² {DENSITY_MARK}")
     label = zone_label(zone)
     if not label:
         return line

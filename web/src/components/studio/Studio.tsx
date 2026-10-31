@@ -16,7 +16,7 @@ import {
 } from "@/lib/result";
 import { buildTurnMatrix } from "@/lib/transito";
 import { AlertCard, type FieldNote } from "@/components/notebook/AlertCard";
-import { clipLabel, finishSentence, moduleLabel, zoneLabel } from "@/lib/labels";
+import { DENSITY_MARK, clipLabel, finishSentence, moduleLabel, zoneLabel } from "@/lib/labels";
 import { saveFieldNote } from "@/lib/saveNote";
 import { NotebookShell } from "@/components/notebook/Shell";
 import { Viewfinder } from "@/components/notebook/Viewfinder";
@@ -105,7 +105,7 @@ function transitHeadline(result: RastroResult): string {
 function historyCount(item: Job): string {
   if (item.pack === "multitudes") {
     if (typeof item.peak_density_per_m2 === "number") {
-      return ` · Peak density ${item.peak_density_per_m2} people/m² (NOT VERIFIED (area not calibrated))`;
+      return ` · Peak density ${item.peak_density_per_m2} people/m² ${DENSITY_MARK}`;
     }
     return "";
   }
@@ -135,7 +135,7 @@ function crowdHeadline(result: RastroResult): string {
   if (typeof density !== "number") return "No verified person count";
   const zone = zoneLabel(result.peak_density?.zone);
   const line = finishSentence(
-    `Peak density ${densityText(density)} people/m² (NOT VERIFIED (area not calibrated))`,
+    `Peak density ${densityText(density)} people/m² ${DENSITY_MARK}`,
   );
   return zone ? `${line} ${finishSentence(zone)}` : line;
 }

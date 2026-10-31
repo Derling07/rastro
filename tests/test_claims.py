@@ -80,10 +80,16 @@ def _assert_seed_density_thresholds_are_six() -> None:
 
 def _assert_transit_text_has_no_count_beside_people_or_vehicles() -> None:
     pack = json.loads((REPO / "packs" / "transito.json").read_text(encoding="utf-8"))
+    templates = [str(alert["message"]) for alert in pack["alerts"]]
+    for template in templates:
+        assert "{unique_count}" not in template
+        assert "{count}" not in template
     rendered = [
-        str(alert["message"]).format(station="corner", unique_count=1, **{"class": "person"})
-        for alert in pack["alerts"]
+        template.format(station="corner", unique_count=1, **{"class": "person"})
+        for template in templates
     ]
     blob = "\n".join(rendered)
     assert "Person detected in the intersection" in blob
+    assert "Heavy car flow detected (NOT VERIFIED)" in blob
+    assert "Motorcycles detected (NOT VERIFIED)" in blob
     assert _COUNT_BESIDE.search(blob) is None

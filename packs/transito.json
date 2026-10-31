@@ -66,7 +66,7 @@
       "id": "flujo_alto_autos",
       "when": "class == 'car' AND unique_count >= 20",
       "severity": "medium",
-      "message": "Heavy car flow at {station}: {unique_count} unique"
+      "message": "Heavy car flow detected (NOT VERIFIED)"
     },
     {
       "id": "presencia_peatones",
@@ -78,7 +78,7 @@
       "id": "motos_presentes",
       "when": "class == 'motorcycle' AND unique_count >= 3",
       "severity": "info",
-      "message": "Motorcycles detected at {station}: {unique_count}"
+      "message": "Motorcycles detected (NOT VERIFIED)"
     }
   ],
   "voice": {

@@ -212,7 +212,7 @@ def test_crowd_report_is_density_only_and_has_no_absolute_path():
     assert done["status"] == "done", done.get("error")
     envelope = api.get_result(job["id"])
     report = envelope["result"]["report"]
-    assert "Peak density 5.4 people/m² (NOT VERIFIED (area not calibrated))" in report["gancho_demo"]
+    assert "Peak density 5.4 people/m² (NOT VERIFIED: area not calibrated)" in report["gancho_demo"]
     assert "Zone 1" in report["gancho_demo"]
     assert ".." not in report["gancho_demo"]
     assert ".." not in report["resumen"]
@@ -324,7 +324,7 @@ def test_ui_uploads_only_through_engine():
     assert "Not verified" in text
     assert "PartialBanner" in text
     assert 'item.status === "queued" || item.status === "processing"' in text
-    assert "Peak density" in text and "NOT VERIFIED" in text
+    assert "Peak density" in text and "DENSITY_MARK" in text
     assert "No verified vehicle count" in text
     assert "people at once" not in text
     assert "saveFieldNote" in text

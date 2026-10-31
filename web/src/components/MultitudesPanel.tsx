@@ -5,7 +5,7 @@ import type {
   PeakDensity,
   ZoneInfo,
 } from "@/lib/result";
-import { zoneLabel } from "@/lib/labels";
+import { DENSITY_MARK, zoneLabel } from "@/lib/labels";
 import {
   densityColor,
   formatDensity,
@@ -78,7 +78,7 @@ export function MultitudesPanel({
                   {formatDensity(peakInfo.peak.density_per_m2)}
                   <span className="ml-1 text-lg font-normal text-muted">people/m²</span>
                 </p>
-                <p className="mt-1 text-sm text-muted">NOT VERIFIED (area not calibrated)</p>
+                <p className="mt-1 text-sm text-muted">{DENSITY_MARK}</p>
                 <p className="mt-1 text-sm text-muted">
                   {zoneLabel(peakInfo.peak.zone)} · t={peakInfo.peak.t_s.toFixed(1)}s
                 </p>
@@ -133,7 +133,7 @@ export function MultitudesPanel({
                   <span>
                     {dens !== null ? (
                       <span className="text-xs" style={{ color: densityColor(dens) }}>
-                        {formatDensity(dens)}/m² (NOT VERIFIED (area not calibrated))
+                        {formatDensity(dens)}/m² {DENSITY_MARK}
                       </span>
                     ) : (
                       <span className="text-xs text-muted">no area</span>

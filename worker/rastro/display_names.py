@@ -33,6 +33,9 @@ def report_title(pack: str | None) -> str:
     return f"Rastro report — {label}"
 
 
+DENSITY_MARK = "(NOT VERIFIED: area not calibrated)"
+
+
 def finish_sentence(text: str) -> str:
     """Add one final period when the text does not already end with punctuation."""
     cleaned = (text or "").strip()
