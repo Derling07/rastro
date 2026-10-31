@@ -30,6 +30,11 @@ def test_pages_keep_one_numbered_guide():
     cameras = (WEB / "components/cameras/Cameras.tsx").read_text(encoding="utf-8")
     assert "Simulated camera" in cameras
     assert "does not notify authorities" in cameras
+    assert "Left the zone here" in cameras
+    assert "Seen inside the zone" in cameras
+    assert "Safe zone" in cameras
+    assert "Protected zone" in cameras
+    assert ">Trigger<" not in cameras
 
 
 def test_alert_card_separates_the_engine_count_from_the_summary():

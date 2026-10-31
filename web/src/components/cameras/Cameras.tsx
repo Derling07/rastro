@@ -68,6 +68,77 @@ type CameraCard = {
 
 const SIZE = 1000;
 
+function markerWords(kind: string): string {
+  if (kind === "farm_leaves") return "Left the zone here";
+  return "Seen inside the zone";
+}
+
+function zoneWords(module: string): string {
+  if (module === "protected") return "Protected zone";
+  if (module === "farm") return "Safe zone";
+  return "Zone";
+}
+
+function chipWidth(text: string, fontSize: number): number {
+  return Math.ceil(text.length * fontSize * 0.62) + fontSize;
+}
+
+function chipHitsBox(x: number, y: number, w: number, h: number, box: number[]): boolean {
+  const [x1, y1, x2, y2] = box;
+  return x < x2 && x + w > x1 && y < y2 && y + h > y1;
+}
+
+function placeChip(
+  frameW: number,
+  frameH: number,
+  chipW: number,
+  chipH: number,
+  boxes: number[][],
+  side: "left" | "right",
+): { x: number; y: number } {
+  const right = Math.max(8, frameW - chipW - 8);
+  const bottom = Math.max(8, frameH - chipH - 8);
+  const spots =
+    side === "left"
+      ? [
+          { x: 8, y: 8 },
+          { x: 8, y: bottom },
+          { x: right, y: 8 },
+        ]
+      : [
+          { x: right, y: 8 },
+          { x: right, y: bottom },
+          { x: 8, y: bottom },
+        ];
+  for (const spot of spots) {
+    if (!boxes.some((box) => chipHitsBox(spot.x, spot.y, chipW, chipH, box))) return spot;
+  }
+  return spots[0];
+}
+
+function ContrastChip({
+  x,
+  y,
+  text,
+  fontSize,
+}: {
+  x: number;
+  y: number;
+  text: string;
+  fontSize: number;
+}) {
+  const width = chipWidth(text, fontSize);
+  const height = fontSize + 14;
+  return (
+    <g>
+      <rect x={x} y={y} width={width} height={height} rx={4} fill="#1c1814" />
+      <text x={x + 8} y={y + fontSize + 2} fill="#f4efe6" fontSize={fontSize} fontFamily="var(--font-facts)">
+        {text}
+      </text>
+    </g>
+  );
+}
+
 export function Cameras() {
   const [cards, setCards] = useState<CameraCard[]>([]);
   const [inbox, setInbox] = useState<AlertRow[]>([]);
@@ -244,6 +315,25 @@ export function Cameras() {
   }
 
   const polygon = draft.length >= 3 ? draft : camera?.zone?.polygon ?? [];
+  const frameW = camera?.frame_width || SIZE;
+  const frameH = camera?.frame_height || SIZE;
+  const boxesNow = frame?.objects.map((object) => object.bbox) ?? [];
+  const legendFont = Math.max(16, frameW / 42);
+  const legendText = zoneWords(camera?.module || "");
+  const legendW = chipWidth(legendText, legendFont);
+  const legendH = legendFont + 14;
+  const legendSpot = placeChip(frameW, frameH, legendW, legendH, boxesNow, "left");
+  const markerText = liveAlert ? markerWords(liveAlert.kind) : "";
+  const markerSpot = markerText
+    ? placeChip(
+        frameW,
+        frameH,
+        chipWidth(markerText, legendFont),
+        legendH,
+        [...boxesNow, [legendSpot.x, legendSpot.y, legendSpot.x + legendW, legendSpot.y + legendH]],
+        "right",
+      )
+    : null;
 
   return (
     <NotebookShell current="cameras">
@@ -333,62 +423,95 @@ export function Cameras() {
                   viewBox={`0 0 ${camera.frame_width || SIZE} ${camera.frame_height || SIZE}`}
                   className={camera.video_url ? "absolute inset-0 h-full w-full" : "block aspect-video w-full"}
                   role="img"
-                  aria-label="Recorded camera frame"
+                  aria-label={`Recorded camera frame.${polygon.length >= 3 ? ` ${legendText}.` : ""}${markerText ? ` ${markerText}.` : ""}`}
                   onClick={onStageClick}
                 >
                   {!camera.video_url && <rect width={SIZE} height={SIZE} fill="var(--viewfinder)" />}
-                  {polygon.length >= 2 && (
-                    <polygon
-                      points={polygon.map(([x, y]) => `${x * (camera.frame_width || SIZE)},${y * (camera.frame_height || SIZE)}`).join(" ")}
-                      fill="var(--tick)"
-                      fillOpacity={0.12}
-                      stroke="var(--tick)"
-                      strokeWidth={4}
-                    />
+                  {polygon.length >= 3 && (
+                    <g>
+                      <polygon
+                        points={polygon.map(([x, y]) => `${x * (camera.frame_width || SIZE)},${y * (camera.frame_height || SIZE)}`).join(" ")}
+                        fill="#f2d48a"
+                        fillOpacity={0.16}
+                        stroke="#1c1814"
+                        strokeWidth={Math.max(8, (camera.frame_width || SIZE) / 80)}
+                      />
+                      <polygon
+                        points={polygon.map(([x, y]) => `${x * (camera.frame_width || SIZE)},${y * (camera.frame_height || SIZE)}`).join(" ")}
+                        fill="none"
+                        stroke="#f4efe6"
+                        strokeWidth={Math.max(3, (camera.frame_width || SIZE) / 180)}
+                      />
+                    </g>
                   )}
                   {draft.map(([x, y], index) => (
-                    <circle key={index} cx={x * (camera.frame_width || SIZE)} cy={y * (camera.frame_height || SIZE)} r={8} fill="var(--tick)" />
+                    <circle key={`draft-${index}`} cx={x * (camera.frame_width || SIZE)} cy={y * (camera.frame_height || SIZE)} r={8} fill="var(--tick)" />
                   ))}
                   {frame?.objects.map((object, index) => {
                     const [x1, y1, x2, y2] = object.bbox;
                     const blurred = object.class === "person" || camera.module === "protected";
+                    const snapshotHit = (liveAlert?.snapshot?.boxes ?? []).some((box) =>
+                      box.bbox.every((value, corner) => Math.abs(value - object.bbox[corner]) < 8),
+                    );
+                    const isHit = Boolean(
+                      liveAlert &&
+                        ((liveAlert.track_id && object.track_id === liveAlert.track_id) ||
+                          snapshotHit ||
+                          (liveAlert.kind === "person_in_zone" && object.class === "person")),
+                    );
+                    const muted = Boolean(liveAlert) && !isHit;
+                    const label = isHit && object.track_id && !blurred ? trackerLabel(object.track_id, object.class) : "";
+                    const fontSize = Math.max(18, (camera.frame_width || SIZE) / 36);
+                    const labelH = fontSize + 14;
+                    const labelW = label ? chipWidth(label, fontSize) : 0;
+                    const otherBoxes = (frame?.objects ?? [])
+                      .filter((_, objectIndex) => objectIndex !== index)
+                      .map((other) => other.bbox);
+                    const labelSpots = [
+                      { x: x1, y: y1 - labelH - 8 },
+                      { x: x1, y: y2 + 8 },
+                      { x: x2 + 8, y: y1 },
+                    ];
+                    const labelSpot =
+                      labelSpots.find(
+                        (spot) =>
+                          spot.x > 4 &&
+                          spot.y > 4 &&
+                          spot.x + labelW < (camera.frame_width || SIZE) - 4 &&
+                          !otherBoxes.some((box) => chipHitsBox(spot.x, spot.y, labelW, labelH, box)),
+                      ) ?? { x: x1, y: Math.max(8, y1 - labelH - 8) };
                     return (
-                      <g key={object.track_id || index}>
+                      <g key={`${index}-${object.track_id ?? object.class}`}>
                         <rect
                           x={x1}
                           y={y1}
                           width={Math.max(0, x2 - x1)}
                           height={Math.max(0, y2 - y1)}
                           fill={blurred ? "#c9c2b2" : "none"}
-                          fillOpacity={blurred ? 0.8 : 0}
-                          stroke="var(--tick)"
-                          strokeWidth={4}
+                          fillOpacity={blurred ? (isHit ? 0.92 : 0.45) : 0}
+                          stroke={isHit ? "#fffaf3" : "#f4efe6"}
+                          strokeOpacity={muted ? 0.28 : 1}
+                          strokeWidth={isHit ? Math.max(6, (camera.frame_width || SIZE) / 100) : 3}
                         />
-                        <text x={x1} y={Math.max(24, y1 - 8)} fill="var(--tick)" fontSize={28}>
-                          {blurred ? "blurred" : object.class}
-                        </text>
+                        {label && <ContrastChip x={labelSpot.x} y={labelSpot.y} text={label} fontSize={fontSize} />}
                       </g>
                     );
                   })}
+                  {polygon.length >= 3 && (
+                    <ContrastChip x={legendSpot.x} y={legendSpot.y} text={legendText} fontSize={legendFont} />
+                  )}
+                  {liveAlert && markerSpot && (
+                    <ContrastChip x={markerSpot.x} y={markerSpot.y} text={markerText} fontSize={legendFont} />
+                  )}
                   {liveAlert?.trigger && (
-                    <g aria-label="Trigger">
-                      <circle
-                        cx={liveAlert.trigger.x * (camera.frame_width || SIZE)}
-                        cy={liveAlert.trigger.y * (camera.frame_height || SIZE)}
-                        r={18}
-                        fill="none"
-                        stroke="var(--alta)"
-                        strokeWidth={4}
-                      />
-                      <text
-                        x={liveAlert.trigger.x * (camera.frame_width || SIZE) + 22}
-                        y={liveAlert.trigger.y * (camera.frame_height || SIZE)}
-                        fill="var(--tick)"
-                        fontSize={28}
-                      >
-                        Trigger
-                      </text>
-                    </g>
+                    <circle
+                      cx={liveAlert.trigger.x * (camera.frame_width || SIZE)}
+                      cy={liveAlert.trigger.y * (camera.frame_height || SIZE)}
+                      r={14}
+                      fill="none"
+                      stroke="#8f1d1d"
+                      strokeWidth={4}
+                    />
                   )}
                 </svg>
                 </div>

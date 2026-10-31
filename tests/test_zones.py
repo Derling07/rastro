@@ -177,6 +177,11 @@ def test_farm_and_protected_cameras_reach_the_inbox():
     farm_alerts = [alert for alert in goats["alerts"] if alert["kind"] == "farm_leaves"]
     assert farm_alerts, "Goat lane did not show a sustained exit"
     assert farm_alerts[0]["message"] == "Animal left the safe zone"
+    near = min(goats["frames"], key=lambda row: abs(row["t_s"] - farm_alerts[0]["t_s"]))
+    ids = [obj.get("track_id") for obj in near["objects"]]
+    assert farm_alerts[0]["track_id"] in ids
+    assert len(ids) == len(set(ids))
+    assert all("track_id" not in obj for frame in trail["frames"] for obj in frame["objects"])
     assert farm_alerts[0]["severity"] == "high"
     assert farm_alerts[0]["snapshot"]["boxes"]
     person_alerts = trail["alerts"]

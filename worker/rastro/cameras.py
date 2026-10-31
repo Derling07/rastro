@@ -88,6 +88,32 @@ def _tracks(frames: list[dict[str, Any]], classes: set[str], width: float, heigh
     return [track for track in tracks if len(track.detections) >= 2]
 
 
+def _stamp_track_ids(frames_out: list[dict[str, Any]], tracks: list[Track]) -> None:
+    """Write the stitched track id onto each box. The class name is not an id."""
+    lookup: list[tuple[int, float, float, float, float, str]] = []
+    for track in tracks:
+        for det in track.detections:
+            box = det.box
+            lookup.append((det.frame, box.x1, box.y1, box.x2, box.y2, track.track_id))
+    for frame in frames_out:
+        frame_no = int(round(float(frame["t_s"]) * 100))
+        for obj in frame.get("objects") or []:
+            x1, y1, x2, y2 = [float(v) for v in obj.get("bbox") or [0, 0, 0, 0]]
+            best: str | None = None
+            best_dist = 1e9
+            for frame_id, ax1, ay1, ax2, ay2, track_id in lookup:
+                if frame_id != frame_no:
+                    continue
+                dist = abs(ax1 - x1) + abs(ay1 - y1) + abs(ax2 - x2) + abs(ay2 - y2)
+                if dist < best_dist:
+                    best_dist = dist
+                    best = track_id
+            if best is not None and best_dist < 4:
+                obj["track_id"] = best
+            else:
+                obj.pop("track_id", None)
+
+
 def _extent(frames: list[dict[str, Any]]) -> tuple[float, float]:
     width, height = 1.0, 1.0
     for frame in frames:
@@ -108,8 +134,6 @@ def _real_camera(spec: dict[str, Any]) -> dict[str, Any]:
             if classes and obj.get("class") not in classes:
                 continue
             row: dict[str, Any] = {"class": obj["class"], "bbox": obj["bbox"]}
-            if not spec.get("strip_ids"):
-                row["track_id"] = str(obj["class"])
             objects.append(row)
         frames_out.append({"frame": frame["frame"], "t_s": frame["t_s"], "objects": objects})
     zone_spec = spec.get("zone") or None
@@ -120,8 +144,11 @@ def _real_camera(spec: dict[str, Any]) -> dict[str, Any]:
     if polygon and spec.get("sustain_s") is not None:
         width = float(spec.get("width") or 0) or _extent(frames_out)[0]
         height = float(spec.get("height") or 0) or _extent(frames_out)[1]
+        tracks = _tracks(frames_out, classes, width, height)
+        if not spec.get("strip_ids"):
+            _stamp_track_ids(frames_out, tracks)
         alerts = sustained_zone_alerts(
-            _tracks(frames_out, classes, width, height),
+            tracks,
             {"id": (zone_spec or {}).get("id") or "zone", "polygon": polygon},
             fps=100,
             sustain_s=float(spec["sustain_s"]),
