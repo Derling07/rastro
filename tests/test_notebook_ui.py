@@ -59,6 +59,10 @@ def test_density_views_use_two_states_and_save_is_shared():
     assert "b[0].length - a[0].length" in labels
     assert "saveFieldNote" in cameras
     assert "void decideNote" not in cameras
+    board = (WEB / "components/studio/IdentityBoard.tsx").read_text(encoding="utf-8")
+    assert "trackerLabel" in board
+    assert "· id" not in board
+    assert "sighting.object_id" not in board
     assert "server error (" in (WEB / "lib/saveNote.ts").read_text(encoding="utf-8")
 
 

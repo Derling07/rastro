@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .display_names import camera_name, public_copy, report_title, zone_label
+from .display_names import camera_name, finish_sentence, public_copy, report_title
 from .feeds import state_lock
 
 REPO = Path(__file__).resolve().parents[2]
@@ -307,10 +307,7 @@ def note_for_camera(camera_id: str) -> dict[str, Any] | None:
 
 
 def _sentence(text: str) -> str:
-    cleaned = text.strip()
-    if not cleaned.endswith((".", "!", "?")):
-        cleaned += "."
-    return cleaned
+    return finish_sentence(text)
 
 
 def _local_summary(camera: dict[str, Any], alert: dict[str, Any], low: bool) -> str:
@@ -476,9 +473,12 @@ def note_for_result(result: dict[str, Any] | None, *, run_id: str, pack: str | N
         density = peak.get("density_per_m2")
         # No per-frame series means the person field is not a headcount. Do not print it.
         if isinstance(density, (int, float)):
-            label = zone_label(str(peak.get("zone") or ""))
-            count = f"Peak density {float(density):g} people/m² (NOT VERIFIED)"
-            note["engine_count"] = f"{count}. {label}." if label else count
+            from .agent import crowd_line
+
+            note["engine_count"] = crowd_line(
+                float(density),
+                str(peak.get("zone") or "") or None,
+            )
         else:
             note["engine_count"] = NO_COUNT
     note["run_id"] = run_id

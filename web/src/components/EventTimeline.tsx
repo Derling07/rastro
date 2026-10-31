@@ -1,5 +1,6 @@
 "use client";
 
+import { trackerLabel } from "@/lib/labels";
 import type { RastroEvent } from "@/lib/result";
 
 type Props = {
@@ -70,7 +71,7 @@ export function EventTimeline({
                 <span className="text-muted">{ev.kind ?? "evento"}</span>
                 {ev.track_id && (
                   <span className="ml-auto text-xs text-muted">
-                    {ev.track_id}
+                    {trackerLabel(ev.track_id, ev.class)}
                   </span>
                 )}
                 {ev.class && <span className="text-xs">{ev.class}</span>}

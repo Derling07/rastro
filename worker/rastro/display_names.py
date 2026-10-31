@@ -33,6 +33,14 @@ def report_title(pack: str | None) -> str:
     return f"Rastro report — {label}"
 
 
+def finish_sentence(text: str) -> str:
+    """Add one final period when the text does not already end with punctuation."""
+    cleaned = (text or "").strip()
+    if not cleaned or cleaned[-1] in ".!?":
+        return cleaned
+    return f"{cleaned}."
+
+
 def zone_label(zone: str | None) -> str:
     """zone_1 and zona_1 are the same place name: Zone 1."""
     if not zone:

@@ -236,7 +236,10 @@ def test_active_run_note_uses_that_runs_numbers():
     crowd_result = api.get_result(crowd["id"])["result"]
     crowd_note = note_for_result(crowd_result, run_id=crowd["id"], pack="multitudes")
     assert crowd_note is not None
-    assert crowd_note["engine_count"] == "Peak density 5.4 people/m² (NOT VERIFIED). Zone 1."
+    assert crowd_note["engine_count"] == (
+        "Peak density 5.4 people/m² (NOT VERIFIED (area not calibrated)). Zone 1."
+    )
+    assert ".." not in crowd_note["engine_count"]
     assert crowd_note["why"]["sam"] == "SAM 3.1 detected people per frame. No re-identification."
     assert "unique" not in crowd_note["why"]["sam"]
     assert "135" not in crowd_note["engine_count"]
@@ -275,7 +278,7 @@ def test_crowd_text_without_a_series_has_no_person_number():
         "peak_density": {"zone": "zone_1", "t_s": 6, "persons": 135, "density_per_m2": 5.4},
         "report": {
             "titulo": "Crowd density",
-            "resumen": "Peak density 5.4 people/m² (NOT VERIFIED). Zone 1.",
+            "resumen": "Peak density 5.4 people/m² (NOT VERIFIED (area not calibrated)). Zone 1.",
             "_source": "local",
         },
         "is_mock": True,
@@ -287,7 +290,8 @@ def test_crowd_text_without_a_series_has_no_person_number():
     visible = note["summary"] + note["engine_count"] + note["why"]["sam"] + note["title"]
     assert "135" not in visible
     assert "people in one frame" not in visible
-    assert "Peak density 5.4 people/m² (NOT VERIFIED)" in note["engine_count"]
+    assert "Peak density 5.4 people/m² (NOT VERIFIED (area not calibrated))" in note["engine_count"]
+    assert ".." not in note["engine_count"]
     assert "Zone 1" in note["engine_count"]
     bare = crowd_line(None)
     assert "135" not in bare

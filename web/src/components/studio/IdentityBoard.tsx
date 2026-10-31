@@ -1,5 +1,6 @@
 "use client";
 
+import { trackerLabel } from "@/lib/labels";
 import { colorForTrack } from "@/lib/result";
 
 export type Sighting = {
@@ -71,7 +72,7 @@ export function IdentityBoard({
                 className="merge-chip"
                 style={{ borderColor: colorForTrack(row.track_id), color: "var(--ink)" }}
               >
-                {row.class} · id {String(sighting.object_id)}
+                {trackerLabel(row.track_id, row.class)}
               </li>
             )),
           )}
@@ -87,10 +88,10 @@ export function IdentityBoard({
                 type="button"
                 className="identity-label"
                 onClick={() => onSeek?.(row.start_s)}
-                title={`${row.track_id}. ${row.sightings.length} sighting${row.sightings.length === 1 ? "" : "s"}. Jump to first appearance.`}
+                title={`${trackerLabel(row.track_id, row.class)}. ${row.sightings.length} sighting${row.sightings.length === 1 ? "" : "s"}. Jump to first appearance.`}
               >
                 <span className="identity-swatch" style={{ background: color }} />
-                <span className="font-display text-lg">{row.track_id}</span>
+                <span className="font-display text-lg">{trackerLabel(row.track_id, row.class)}</span>
                 {row.reidentified && (
                   <span className="text-xs text-muted">
                     {row.sightings.length} sightings merged
@@ -111,7 +112,7 @@ export function IdentityBoard({
                         background: color,
                         animationDelay: `${index * 90}ms`,
                       }}
-                      title={`Sighting ${index + 1}, tracker id ${String(sighting.object_id)}, ${sighting.start_s.toFixed(1)}s–${sighting.end_s.toFixed(1)}s`}
+                      title={`Sighting ${index + 1}, ${trackerLabel(row.track_id, row.class)}, ${sighting.start_s.toFixed(1)}s–${sighting.end_s.toFixed(1)}s`}
                     />
                   );
                 })}

@@ -72,7 +72,7 @@
       "id": "presencia_peatones",
       "when": "class == 'person' AND unique_count >= 5",
       "severity": "info",
-      "message": "People in the intersection at {station}: {unique_count}"
+      "message": "Person detected in the intersection"
     },
     {
       "id": "motos_presentes",

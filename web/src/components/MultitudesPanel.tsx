@@ -78,7 +78,7 @@ export function MultitudesPanel({
                   {formatDensity(peakInfo.peak.density_per_m2)}
                   <span className="ml-1 text-lg font-normal text-muted">people/m²</span>
                 </p>
-                <p className="mt-1 text-sm text-muted">(NOT VERIFIED)</p>
+                <p className="mt-1 text-sm text-muted">NOT VERIFIED (area not calibrated)</p>
                 <p className="mt-1 text-sm text-muted">
                   {zoneLabel(peakInfo.peak.zone)} · t={peakInfo.peak.t_s.toFixed(1)}s
                 </p>
@@ -133,7 +133,7 @@ export function MultitudesPanel({
                   <span>
                     {dens !== null ? (
                       <span className="text-xs" style={{ color: densityColor(dens) }}>
-                        {formatDensity(dens)}/m² (NOT VERIFIED)
+                        {formatDensity(dens)}/m² (NOT VERIFIED (area not calibrated))
                       </span>
                     ) : (
                       <span className="text-xs text-muted">no area</span>

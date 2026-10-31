@@ -612,7 +612,7 @@ def run_pipeline(
         )
         report["titulo"] = "Crowd density"
         report["resumen"] = (
-            f"{line}. This sector measures how many people are in view at once. "
+            f"{line} This sector measures how many people are in view at once. "
             "It does not re-identify them."
         )
         report["gancho_demo"] = line

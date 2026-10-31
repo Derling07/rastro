@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -50,3 +51,39 @@ def test_claims_match_sources():
     assert thresholds["high"] == 6
     assert "media" not in thresholds
     assert "4" not in json.dumps(thresholds)
+
+    _assert_seed_density_thresholds_are_six()
+    _assert_transit_text_has_no_count_beside_people_or_vehicles()
+
+
+_COUNT_BESIDE = re.compile(
+    r"\b(?:people|person|persons|vehicles|vehicle)\b(?:[^.\n]{0,48}?)\d+"
+    r"|\d+(?:[^.\n]{0,48}?)\b(?:people|person|persons|vehicles|vehicle)\b",
+    re.IGNORECASE,
+)
+
+
+def _assert_seed_density_thresholds_are_six() -> None:
+    """Seed SQL is generated from the packs. Density alerts are 6, not 4."""
+    seeds = sorted((REPO / "supabase").glob("seed*.sql"))
+    assert seeds
+    saw_density = False
+    for path in seeds:
+        text = path.read_text(encoding="utf-8")
+        assert ">= 4" not in text
+        assert ">=4" not in text.replace(" ", "")
+        for raw in re.findall(r"density_per_m2\s*>=\s*([0-9.]+)", text):
+            saw_density = True
+            assert float(raw) == 6, f"{path.name} density threshold {raw}"
+    assert saw_density
+
+
+def _assert_transit_text_has_no_count_beside_people_or_vehicles() -> None:
+    pack = json.loads((REPO / "packs" / "transito.json").read_text(encoding="utf-8"))
+    rendered = [
+        str(alert["message"]).format(station="corner", unique_count=1, **{"class": "person"})
+        for alert in pack["alerts"]
+    ]
+    blob = "\n".join(rendered)
+    assert "Person detected in the intersection" in blob
+    assert _COUNT_BESIDE.search(blob) is None

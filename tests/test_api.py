@@ -212,8 +212,10 @@ def test_crowd_report_is_density_only_and_has_no_absolute_path():
     assert done["status"] == "done", done.get("error")
     envelope = api.get_result(job["id"])
     report = envelope["result"]["report"]
-    assert "Peak density 5.4 people/m² (NOT VERIFIED)" in report["gancho_demo"]
+    assert "Peak density 5.4 people/m² (NOT VERIFIED (area not calibrated))" in report["gancho_demo"]
     assert "Zone 1" in report["gancho_demo"]
+    assert ".." not in report["gancho_demo"]
+    assert ".." not in report["resumen"]
     assert "135" not in report["gancho_demo"]
     assert "135" not in report["resumen"]
     assert "people/m²" in report["gancho_demo"]
@@ -233,7 +235,14 @@ def test_transit_report_does_not_call_people_vehicles():
     job = api.create_sample_job("transito-intersection")
     done = _wait(job["id"], timeout=60)
     assert done["status"] == "done", done.get("error")
-    report = api.get_result(job["id"])["result"]["report"]
+    result = api.get_result(job["id"])["result"]
+    report = result["report"]
+    messages = [row["message"] for row in result["alerts"]]
+    assert "Person detected in the intersection" in messages
+    for message in messages:
+        lowered = message.lower()
+        if any(word in lowered for word in ("people", "person", "vehicle")):
+            assert not any(char.isdigit() for char in message)
     assert report["gancho_demo"] == "16 sightings in this clip. No verified vehicle count."
     assert report["resumen"].startswith("16 sightings in this clip. No verified vehicle count.")
     assert "unique" not in (report["gancho_demo"] + report["resumen"]).lower()

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Viewfinder } from "@/components/notebook/Viewfinder";
+import { trackerLabel } from "@/lib/labels";
 import { colorForTrack, type Frame } from "@/lib/result";
 
 type Props = {
@@ -79,7 +80,7 @@ export function FrameStage({ frames, time, onTime, isMock }: Props) {
               <g key={object.track_id + String(object.bbox)}>
                 <rect x={x} y={y} width={w} height={h} fill={color} fillOpacity={0.18} stroke={color} strokeWidth={Math.max(2, size.w / 400)} />
                 <text x={x + 4} y={Math.max(18, y - 6)} fill={color} fontSize={Math.max(14, size.w / 70)} fontFamily="var(--font-display)">
-                  {object.track_id}
+                  {trackerLabel(object.track_id, object.class)}
                 </text>
               </g>
             );

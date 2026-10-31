@@ -16,6 +16,13 @@ const PACK_LABEL: Record<string, string> = {
 /** Longest pack id first so fauna-camtrap is not rewritten as "Wildlife camera-camtrap". */
 const PACK_KEYS = Object.entries(PACK_LABEL).sort((a, b) => b[0].length - a[0].length);
 
+/** Add one final period when the text does not already end with punctuation. */
+export function finishSentence(text: string): string {
+  const cleaned = text.trim();
+  if (!cleaned || ".!?".includes(cleaned[cleaned.length - 1])) return cleaned;
+  return `${cleaned}.`;
+}
+
 export function zoneLabel(zone: string | undefined | null): string {
   const raw = (zone || "").trim();
   const match = /^(?:zone|zona)[_\s-]*(\d+)$/i.exec(raw);
@@ -46,4 +53,14 @@ export function moduleLabel(pack: string | undefined): string {
 
 export function placeLabel(name: string): string {
   return name;
+}
+
+/** Visible tracker name. Raw track and object ids stay in the result JSON. */
+export function trackerLabel(trackId: string, className?: string): string {
+  const id = trackId || "";
+  const numbered = /^(.*?)-(\d+)$/.exec(id);
+  const rawName = (className || (numbered ? numbered[1] : id) || "track").replace(/[_-]+/g, " ").trim();
+  const index = numbered ? String(Number(numbered[2])) : "1";
+  const name = rawName.replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
+  return `${name} ${index}`;
 }
