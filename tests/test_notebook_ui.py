@@ -12,11 +12,17 @@ def _text(*parts: str) -> str:
     return "\n".join((WEB.joinpath(*part.split("/")).read_text(encoding="utf-8")) for part in parts)
 
 
-def test_pages_explain_the_three_steps_and_the_viewfinder():
+def test_pages_keep_one_numbered_guide():
     shell = (WEB / "components/notebook/Shell.tsx").read_text(encoding="utf-8")
-    assert "Pick a module" in shell
-    assert "Watch the video" in shell
-    assert "Read the count and the alerts" in shell
+    assert "Pick a module" not in shell
+    assert "Rastro connects a count to a decision." in shell
+    studio = (WEB / "components/studio/Studio.tsx").read_text(encoding="utf-8")
+    assert "1 · Module" in studio
+    assert "2 · Video" in studio
+    assert "3 · Run" in studio
+    assert "4 · Results" in studio
+    assert "fauna.json" not in studio
+    assert "field-note?run=" in studio
     css = (WEB / "app/globals.css").read_text(encoding="utf-8")
     assert "--paper:" in css
     assert "--viewfinder:" in css
@@ -28,13 +34,16 @@ def test_pages_explain_the_three_steps_and_the_viewfinder():
 
 def test_alert_card_separates_the_engine_count_from_the_summary():
     card = (WEB / "components/notebook/AlertCard.tsx").read_text(encoding="utf-8")
-    assert "Muse Spark summary" in card
+    assert "note.summary_label" in card
+    assert "line-clamp-3" in card
+    assert 'data-unsure={note.not_sure ? "true" : "false"}' in card
+    assert "Saved in this demo session only. No message sent." in card
     assert "Engine count" in card
     assert "The summary cannot change this number." in card
     assert "Example data" in card
     assert "not_sure" in card
     studio = (WEB / "components/studio/Studio.tsx").read_text(encoding="utf-8")
-    assert "clip=DSCF0112" in studio
+    assert "field-note?run=" in studio
     assert "Mock mode." in studio and "Live keys." in studio
 
 

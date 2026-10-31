@@ -176,7 +176,7 @@ def peak_view(module: str) -> dict[str, Any]:
         "badge": badge,
         "real_runs": len(real),
         "needed_runs": NEEDED_REAL_RUNS,
-        "not_verified": module == "traffic",
+        "not_verified": module == "traffic" or not yours,
         "unit": "vehicles" if module == "traffic" else "people",
         "weekdays": WEEKDAYS,
         "heatmap": heat,

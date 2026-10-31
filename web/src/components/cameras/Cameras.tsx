@@ -73,6 +73,7 @@ export function Cameras() {
   const [error, setError] = useState<string | null>(null);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [note, setNote] = useState<FieldNote | null>(null);
+  const [clipMissing, setClipMissing] = useState(false);
 
   const loadList = useCallback(async () => {
     const res = await fetch("/engine/api/cameras", { cache: "no-store" });
@@ -108,6 +109,7 @@ export function Cameras() {
   useEffect(() => {
     let ignore = false;
     setCamera(null);
+    setClipMissing(false);
     setTime(0);
     setDraft([]);
     setError(null);
@@ -248,7 +250,7 @@ export function Cameras() {
 
   return (
     <NotebookShell current="cameras">
-    <div data-module={camera?.module || "farm"}>
+    <div className="min-w-0" data-module={camera?.module || "fauna"}>
       <div className="mb-4 border border-line bg-panel p-4">
         <p className="font-note text-2xl">Cameras</p>
         <p className="mt-1 text-sm text-muted">
@@ -262,8 +264,8 @@ export function Cameras() {
         </p>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
-        <aside>
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,240px)_minmax(0,1fr)]">
+        <aside className="min-w-0">
           <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-muted">Sites</h2>
           <ul className="mt-2 space-y-2">
             {cards.map((card) => (
@@ -271,7 +273,7 @@ export function Cameras() {
                 <button
                   type="button"
                   className={
-                    "w-full rounded-lg border px-3 py-2 text-left " +
+                    "w-full min-w-0 rounded-lg border px-3 py-2 text-left " +
                     (card.id === selected ? "border-pack bg-panel" : "border-line hover:border-pack")
                   }
                   aria-pressed={card.id === selected}
@@ -315,14 +317,20 @@ export function Cameras() {
                 {camera.video_url && (
                   <video
                     key={camera.id}
-                    className="block aspect-video w-full bg-black"
+                    className="block aspect-video w-full max-w-full bg-black"
                     src={camera.video_url}
                     muted
                     playsInline
                     loop
                     autoPlay={!reduceMotion}
+                    onError={() => setClipMissing(true)}
                     onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
                   />
+                )}
+                {camera.video_url && clipMissing && (
+                  <p className="absolute inset-0 flex items-center justify-center bg-[var(--viewfinder)] px-4 text-center text-sm text-[#f3f6f1]">
+                    Clip not available
+                  </p>
                 )}
                 <svg
                   viewBox={`0 0 ${camera.frame_width || SIZE} ${camera.frame_height || SIZE}`}
@@ -428,7 +436,7 @@ export function Cameras() {
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div>
                         <p className="text-xs uppercase tracking-wide text-muted">
-                          {alert.camera_name} · {alert.t_s.toFixed(1)}s · {alert.severity}
+                          {alert.camera_name} · {alert.t_s.toFixed(1)}s · {note && alert.camera_id === note.camera_id ? note.severity : alert.severity}
                           {alert.verification === "NOT VERIFIED" ? " · Not verified" : ""}
                         </p>
                         <p className="mt-1 font-display text-2xl leading-tight">{alert.message}</p>

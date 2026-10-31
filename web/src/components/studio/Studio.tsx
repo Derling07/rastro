@@ -11,7 +11,6 @@ import { AgentLog } from "@/components/AgentLog";
 import {
   PACKS,
   parseResult,
-  packByKey,
   type PackKey,
   type RastroResult,
 } from "@/lib/result";
@@ -71,13 +70,7 @@ const ACCENT: Record<PackKey, string> = {
   multitudes: "#7A3040",
 };
 
-const NOTE_QUERY: Record<PackKey, string> = {
-  fauna: "clip=DSCF0112",
-  transito: "camera=wicker-park",
-  multitudes: "camera=plaza-mayor",
-};
-
-const SECTOR_HINT: Record<PackKey, string> = {
+const MODULE_HINT: Record<PackKey, string> = {
   fauna: "Camera traps. Counts animals, not every time one walks through.",
   transito: "Intersection. Counts vehicles and the turns they take.",
   multitudes: "Crowd density. How many people, never who.",
@@ -192,14 +185,20 @@ export function Studio() {
   }, [pack]);
 
   useEffect(() => {
+    if (!job || job.status !== "done") {
+      setNote(null);
+      return;
+    }
     let cancel = false;
-    fetch(`/engine/api/field-note?${NOTE_QUERY[pack]}`, { cache: "no-store" })
+    const runId = job.id;
+    fetch(`/engine/api/field-note?run=${encodeURIComponent(runId)}`, { cache: "no-store" })
       .then(async (res) => {
+        if (res.status === 404) return null;
         if (!res.ok) throw new Error("note");
         return (await res.json()) as { note: FieldNote };
       })
       .then((body) => {
-        if (!cancel) setNote(body.note);
+        if (!cancel) setNote(body?.note ?? null);
       })
       .catch(() => {
         if (!cancel) setNote(null);
@@ -207,7 +206,7 @@ export function Studio() {
     return () => {
       cancel = true;
     };
-  }, [pack]);
+  }, [job]);
 
   async function decideNote(action: "confirm" | "dismiss" | "review") {
     if (!note) return;
@@ -404,7 +403,6 @@ export function Studio() {
     }
   }
 
-  const meta = packByKey(pack);
   const showFrames = Boolean(parsed && envelope && !envelope.empty && envelope.reidentifies);
   const seek = useCallback((t: number) => setTime(t), []);
 
@@ -426,9 +424,9 @@ export function Studio() {
 
         <section aria-labelledby="sector-h" className="mb-6">
           <h2 id="sector-h" className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
-            1 · Sector
+            1 · Module
           </h2>
-          <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Sector">
+          <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Module">
             {PACKS.map((item) => (
               <button
                 key={item.key}
@@ -442,29 +440,20 @@ export function Studio() {
               >
                 <span className="block font-bold">{item.label}</span>
                 <span className="mt-0.5 block text-[11px] font-normal leading-snug opacity-80">
-                  {SECTOR_HINT[item.key]}
+                  {MODULE_HINT[item.key]}
                 </span>
               </button>
             ))}
           </div>
-          <p className="mt-2 text-sm text-muted">
-            {SECTOR_HINT[pack]}{" "}
-            <span className="text-pack" title="The sector is this JSON file.">
-              {meta.file}
-            </span>
-          </p>
         </section>
 
-        <div className="grid items-start gap-4 lg:grid-cols-2">
-          {!showFrames && (
-            <Viewfinder label="Simulated camera">
-              <div className="flex aspect-video items-center justify-center px-6 text-center text-sm text-[#d7e0d8]">
-                Pick a module, then run a sample. The clip plays in this frame.
-              </div>
-            </Viewfinder>
-          )}
-          {note && <AlertCard note={note} onAction={(action) => void decideNote(action)} />}
-        </div>
+        {!showFrames && (
+          <Viewfinder label="Simulated camera">
+            <div className="flex aspect-video items-center justify-center px-6 text-center text-sm text-[#d7e0d8]">
+              Pick a module, then run a sample. The clip plays in this frame.
+            </div>
+          </Viewfinder>
+        )}
 
         <section aria-labelledby="video-h" className="mb-6 mt-6">
           <h2 id="video-h" className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
@@ -530,7 +519,7 @@ export function Studio() {
               type="button"
               className="demo-primary"
               disabled={busy || !file}
-              title={file ? "Track this file with the selected sector." : "Choose a video first."}
+              title={file ? "Track this file with the selected module." : "Choose a video first."}
               onClick={() => void runUpload()}
             >
               Run this file
@@ -594,7 +583,7 @@ export function Studio() {
               {envelope?.empty
                 ? "Empty result. This mock path finished with no counts."
                 : pack === "multitudes"
-                  ? "Nothing yet. A run reports how many people are in view at once. This sector does not re-identify them."
+                  ? "Nothing yet. A run reports how many people are in view at once. This module does not re-identify them."
                   : pack === "transito"
                     ? "Nothing yet. A run counts vehicles and the turns they take. Traffic counts are not verified."
                     : "Nothing yet. After a run, repeat appearances of the same individual collapse into one count."}
@@ -633,6 +622,7 @@ export function Studio() {
                   {crowdHeadline(parsed)}
                 </p>
               )}
+              {note && <AlertCard note={note} onAction={(action) => decideNote(action)} />}
               {envelope.reidentifies && (
                 <FrameStage frames={parsed.frames} time={time} onTime={setTime} isMock={parsed.is_mock} />
               )}

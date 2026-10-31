@@ -64,7 +64,7 @@ A sector is defined by a JSON pack.
 
 A camera in this app is not a live stream. It is a clip counted once, cached, and played back on a loop. Alerts are tied to `t_s`. Every camera is labeled **Simulated camera**.
 
-Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **Organ Mountains** and **Goat lane** are the farm examples: a zone, a 3 second wait, then Confirm or Dismiss. **Forest trail** is a protected area: the alert is “Person detected in protected zone at HH:MM”, the person box is blurred, and nothing identifies the person. The ranger presses **Review**. Rastro does not notify authorities. The label is **Possible intrusion — needs review**. **Trap line** replays DSCF0112 (90 → 2). **Wicker Park** stays **NOT VERIFIED**. The inbox stays in the app: no SMS and no push. PASS on a camera means a local detector matched a hand label (`eval/alert_set/`). It is not a new paid SAM call.
+Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **Organ Mountains** is a camera trap (a gray fox at a bait station, not a livestock pen). **Goat lane** is the farm example: a zone, a 3 second wait, then Confirm or Dismiss. **Forest trail** is a protected area: the alert is “Person detected in protected zone at HH:MM”, the person box is blurred, and nothing identifies the person. The ranger presses **Review**. Rastro does not notify authorities. The label is **Possible intrusion — needs review**. **Trap line** replays DSCF0112 (90 → 2). **Wicker Park** stays **NOT VERIFIED**. The inbox stays in the app: no SMS and no push. PASS on a camera means a local detector matched a hand label (`eval/alert_set/`). It is not a new paid SAM call.
 
 ## Peak hours
 
@@ -80,6 +80,10 @@ curl -s http://127.0.0.1:8787/api/open/events
 ```
 
 `POST /api/webhooks` stores a subscriber URL in memory. Delivery is off: confirming a field note queues a payload and does not POST it. `POST /api/streams` with an `rtsp`, HLS (`.m3u8`), or MJPEG URL classifies the address and stays on a **simulated** clip. The stream is not opened.
+
+Camera MP4s are optional. `scripts/fetch_open_clips.py` downloads only openly licensed clips (Wicker Park CC BY 3.0, and the other CC BY / CC BY-SA files listed in that script). It checks that each download is complete and writes `web/public/cameras/CREDITS.md`. It does not download Chiang Mai. If a clip file is missing, the page says **Clip not available**.
+
+`POST /api/webhooks` and `POST /api/field-note` accept writes from localhost when `RASTRO_WRITE_TOKEN` is unset. Set that variable to require the `X-Rastro-Token` header. Subscriptions, the outbox, and note statuses stay in memory, 50 entries each. `GET /api/webhooks` masks URLs.
 
 `GET /api/field-note?clip=DSCF0112` returns the hero field note. The counts are the stored engine numbers. The prose is the Muse Spark reply already saved in that run. Opening the note does not call SAM or Muse Spark.
 

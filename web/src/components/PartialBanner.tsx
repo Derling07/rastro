@@ -13,7 +13,7 @@ export function PartialBanner({ partial }: Props) {
   if (partial !== true) return null;
   return (
     <div
-      className="rounded-lg border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-sm text-amber-200"
+      className="rounded-lg border border-amber-700 bg-amber-100 px-3 py-2 text-sm text-amber-900"
       role="status"
     >
       Partial count: more than 16 objects in a frame.

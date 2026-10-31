@@ -13,7 +13,7 @@ def test_example_badge_until_enough_real_runs():
     crowd = peak_view("crowd")
     assert crowd["badge"] == "Example data"
     assert crowd["real_runs"] == 0
-    assert crowd["not_verified"] is False
+    assert crowd["not_verified"] is True
     assert len(crowd["heatmap"]) == 7
     assert len(crowd["heatmap"][0]) == 24
     assert len(crowd["series"]) == 24
@@ -44,6 +44,24 @@ def test_your_data_replaces_the_example_after_seven_real_runs():
     assert view["series"][8] == 3 * NEEDED_REAL_RUNS
     # Tuesday 2026-10-27 is weekday 1.
     assert view["heatmap"][1][8] == 3 * NEEDED_REAL_RUNS
+
+
+def test_crowd_example_stays_unverified_until_the_runs_are_real():
+    assert peak_view("crowd")["not_verified"] is True
+    for _ in range(NEEDED_REAL_RUNS):
+        note_finished_run(
+            "multitudes",
+            {
+                "is_mock": False,
+                "local_hour": 12,
+                "station": "plaza",
+                "peak_density": {"persons": 10},
+                "created_at": "2026-10-26T18:00:00+00:00",
+            },
+        )
+    view = peak_view("crowd")
+    assert view["badge"] == "Your data"
+    assert view["not_verified"] is False
 
 
 def test_mock_runs_and_other_packs_are_not_stored():

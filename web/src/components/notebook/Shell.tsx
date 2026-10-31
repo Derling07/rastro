@@ -1,12 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 
-const STEPS = [
-  { n: "01", title: "Pick a module", text: "Camera trap, traffic, crowd, or a camera on the next page." },
-  { n: "02", title: "Watch the video", text: "The clip sits in the dark frame, like a camera viewfinder." },
-  { n: "03", title: "Read the count and the alerts", text: "The engine number stays fixed. You confirm or dismiss." },
-] as const;
-
 export function NotebookShell({
   current,
   children,
@@ -41,15 +35,6 @@ export function NotebookShell({
           Rastro connects a count to a decision. SAM 3.1 marks what is in the frame. Muse Spark writes
           one field note. A person confirms it before anything leaves the notebook.
         </p>
-        <ol className="guide mt-5" aria-label="How to use Rastro">
-          {STEPS.map((step) => (
-            <li key={step.n}>
-              <p className="num">{step.n}</p>
-              <p className="mt-1 font-note text-xl leading-tight">{step.title}</p>
-              <p className="mt-1 text-sm text-muted">{step.text}</p>
-            </li>
-          ))}
-        </ol>
       </header>
       {children}
     </div>

@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import secrets
 import shutil
 import subprocess
 import threading
@@ -917,17 +918,23 @@ class Handler(BaseHTTPRequestHandler):
             )
             return
         if path == "/api/field-note":
-            from .field_note import get_note, note_dscf0112, note_for_camera
+            from .field_note import get_note, note_for_camera, note_for_result
 
             query = parse_qs(parsed.query)
             clip = (query.get("clip") or [""])[0]
             camera_id = (query.get("camera") or [""])[0]
-            if clip:
+            run_id = (query.get("run") or [""])[0]
+            if run_id:
+                job = get_job(run_id)
+                envelope = get_result(run_id) if job and job.get("status") == "done" else None
+                result = envelope.get("result") if isinstance(envelope, dict) else None
+                note = note_for_result(result, run_id=run_id, pack=(job or {}).get("pack"))
+            elif clip:
                 note = get_note(f"clip:{clip}")
             elif camera_id:
                 note = note_for_camera(camera_id)
             else:
-                note = note_dscf0112()
+                note = None
             if note is None:
                 self._send(404, {"error": "note not found"})
                 return
@@ -1093,9 +1100,23 @@ class Handler(BaseHTTPRequestHandler):
             return None
         return data
 
+    def _writes_allowed(self) -> bool:
+        """Unset RASTRO_WRITE_TOKEN allows localhost only. A set token must match the header."""
+        expected = os.environ.get("RASTRO_WRITE_TOKEN")
+        if expected:
+            got = self.headers.get("X-Rastro-Token") or ""
+            return secrets.compare_digest(got, expected)
+        host = self.client_address[0]
+        if host.startswith("::ffff:"):
+            host = host.removeprefix("::ffff:")
+        return host in {"127.0.0.1", "::1"}
+
     def _field_note_post(self) -> None:
         from .field_note import decide_note
 
+        if not self._writes_allowed():
+            self._send(401, {"error": "write token required"})
+            return
         data = self._json_body()
         if data is None:
             return
@@ -1114,6 +1135,9 @@ class Handler(BaseHTTPRequestHandler):
     def _webhook_post(self) -> None:
         from .feeds import subscribe_webhook
 
+        if not self._writes_allowed():
+            self._send(401, {"error": "write token required"})
+            return
         data = self._json_body()
         if data is None:
             return

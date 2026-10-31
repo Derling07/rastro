@@ -39,7 +39,7 @@ def test_cifs_export_is_example_data_and_not_a_partnership():
         assert row["polyline"].startswith("9.928069 -84.090725")
         assert " " in row["polyline"]
     types = {row["type"] for row in feed["incidents"]}
-    assert types == {"HAZARD", "JAM"}
+    assert types == {"HAZARD"}
     link = feed["links"][0]["waze_ul"]
     assert link == waze_ul()
     assert link.startswith("https://www.waze.com/ul?ll=9.928069,-84.090725")
@@ -50,11 +50,17 @@ def test_cifs_xml_carries_the_same_incidents():
     rows = root.findall("incident")
     assert len(rows) == 2
     assert rows[0].findtext("type") == "HAZARD"
-    assert rows[1].findtext("type") == "JAM"
+    assert rows[1].findtext("type") == "HAZARD"
     assert "Example road" in rows[0].findtext("street")
+    xml = cifs_xml()
+    assert xml.index("<!-- Example data. NOT VERIFIED. Not submitted to Waze. -->") < xml.index("<incidents>")
 
 
-def test_webhook_queues_without_delivery_and_rejects_secrets():
+def test_webhook_queues_without_delivery_and_rejects_secrets(monkeypatch):
+    monkeypatch.setattr(
+        "rastro.feeds.socket.getaddrinfo",
+        lambda *args, **kwargs: [(2, 1, 6, "", ("93.184.216.34", 0))],
+    )
     try:
         subscribe_webhook("http://user:secret@example.com/hook")
         raise AssertionError("secret in url must fail")
@@ -73,7 +79,19 @@ def test_webhook_queues_without_delivery_and_rejects_secrets():
     assert listed["outbox"][0]["delivered"] is False
     assert listed["outbox"][0]["event"]["engine"]["unique_count"] == 2
     assert listed["outbox"][0]["event"]["engine_count"].startswith("90 raw detections")
-    assert api_list["webhooks"][0]["url"] == "https://example.com/rastro"
+    assert api_list["webhooks"][0]["url"] == "https://example.com/***"
+    for blocked in (
+        "http://10.1.2.3/hook",
+        "http://127.0.0.1/hook",
+        "http://169.254.1.1/hook",
+        "http://[::ffff:192.168.1.1]/hook",
+        "http://[::1]/hook",
+    ):
+        try:
+            subscribe_webhook(blocked)
+            raise AssertionError(blocked)
+        except ValueError:
+            pass
 
 
 def test_stream_adapter_classifies_and_stays_simulated():
@@ -96,6 +114,38 @@ def test_stream_adapter_classifies_and_stays_simulated():
         raise AssertionError("plain file must fail")
     except ValueError:
         pass
+
+
+def test_write_token_is_required_when_set(monkeypatch):
+    monkeypatch.setenv("RASTRO_WRITE_TOKEN", "demo-token")
+    server = ThreadingHTTPServer(("127.0.0.1", 0), api.Handler)
+    port = server.server_address[1]
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    base = f"http://127.0.0.1:{port}"
+    try:
+        bare = urllib.request.Request(
+            f"{base}/api/field-note",
+            data=json.dumps({"id": "clip:DSCF0112", "action": "dismiss"}).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            urllib.request.urlopen(bare, timeout=5)
+            raise AssertionError("missing token should fail")
+        except urllib.error.HTTPError as exc:
+            assert exc.code == 401
+        ok = urllib.request.Request(
+            f"{base}/api/field-note",
+            data=json.dumps({"id": "clip:DSCF0112", "action": "dismiss"}).encode(),
+            headers={"Content-Type": "application/json", "X-Rastro-Token": "demo-token"},
+            method="POST",
+        )
+        with urllib.request.urlopen(ok, timeout=5) as res:
+            body = json.loads(res.read().decode())
+        assert body["note"]["status"] == "dismissed"
+    finally:
+        server.shutdown()
 
 
 def test_http_open_endpoints():

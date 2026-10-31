@@ -40,7 +40,7 @@ export function densityColor(d: number | null | undefined): string {
     case "high":
       return "#ef4444";
     case "ok":
-      return "#22c55e";
+      return "#15803d";
     default:
       return "var(--muted)";
   }

@@ -161,7 +161,7 @@ export function createMockJobsAdapter(opts?: {
           ...job,
           status: "queued",
           stage: null,
-          error: "Fallo simulado del worker (reintento).",
+          error: "Simulated worker failure (retry).",
           worker: null,
         });
       } else {
@@ -169,7 +169,7 @@ export function createMockJobsAdapter(opts?: {
           ...job,
           status: "failed",
           stage: null,
-          error: "El worker falló tras 3 intentos (simulado).",
+          error: "The worker failed after 3 tries (simulated).",
           finished_at: nowIso(),
         });
         stop(id);

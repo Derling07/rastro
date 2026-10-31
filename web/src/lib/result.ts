@@ -618,20 +618,20 @@ export function colorForTrack(trackId: string): string {
 export async function fetchRun(runId: string): Promise<RastroResult> {
   const res = await fetch(`/runs/${runId}/result.json`);
   if (!res.ok) {
-    throw new Error(`No se pudo cargar la corrida ${runId} (${res.status})`);
+    throw new Error(`Could not load run ${runId} (${res.status})`);
   }
   return parseResult(await res.json(), runId);
 }
 
 export async function fetchRunsIndex(): Promise<RunsIndex> {
   const res = await fetch("/runs/index.json");
-  if (!res.ok) throw new Error("No se pudo cargar el índice de corridas");
+  if (!res.ok) throw new Error("Could not load the run index");
   return res.json();
 }
 
 /** Stub CORE — no cablear aún (supabase/README.md). */
 export async function fetchRunOverviewFromSupabase(): Promise<never> {
   throw new Error(
-    "Supabase aún no cableado. Usá /runs/<id>/result.json.",
+    "Supabase is not wired yet. Use /runs/<id>/result.json.",
   );
 }

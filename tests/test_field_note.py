@@ -28,7 +28,7 @@ def test_dscf0112_uses_engine_counts_and_recorded_prose():
     assert note["engine"]["naive_count"] == result["naive_count"] == 2
     assert note["engine_count"] == "90 raw detections → 2 unique coyotes"
     assert note["summary"] == result["report"]["resumen"]
-    assert note["summary_label"] == "Muse Spark summary"
+    assert note["summary_label"] == "Muse Spark summary (recorded)"
     assert note["not_sure"] is False
     assert note["severity"] == "info"
     assert note["confidence"] == "high"
@@ -88,6 +88,9 @@ def test_low_confidence_is_not_sure_and_a_person_decides():
     assert note["severity"] == "not sure"
     assert note["not_sure"] is True
     assert note["context"]["label"] == "Example data"
+    assert note["summary_label"] == "Rules engine note"
+    assert "The engine has no verified count for this clip." in note["why"]["sam"]
+    assert "No verified count." not in note["why"]["sam"]
 
 
 def test_protected_review_does_not_confirm_and_farm_can_confirm():
@@ -106,12 +109,14 @@ def test_protected_review_does_not_confirm_and_farm_can_confirm():
     reviewed = decide_note(protected["id"], "review")
     assert reviewed["status"] == "reviewed"
 
-    farm = note_for_camera("gray-fox")
-    assert farm is not None
-    assert farm["not_sure"] is False
-    assert "confirm" in farm["actions"]
-    assert farm["context"]["example_data"] is False
-    confirmed = decide_note(farm["id"], "confirm")
+    fox = note_for_camera("gray-fox")
+    assert fox is not None
+    assert fox["module"] == "fauna"
+    assert fox["severity"] == "info"
+    assert fox["not_sure"] is False
+    assert "confirm" in fox["actions"]
+    assert fox["context"]["example_data"] is False
+    confirmed = decide_note(fox["id"], "confirm")
     assert confirmed["status"] == "confirmed"
 
 
@@ -123,3 +128,70 @@ def test_traffic_note_does_not_invent_a_vehicle_total():
     assert note["engine_count"] == "No verified vehicle count"
     assert note["engine"]["unique_count"] is None
     assert note["paid_call"] is False
+
+
+def test_dscf0112_shares_one_status_and_confirm_is_idempotent(monkeypatch):
+    from rastro.feeds import list_webhooks, reset_feeds, subscribe_webhook
+
+    monkeypatch.setattr(
+        "rastro.feeds.socket.getaddrinfo",
+        lambda *args, **kwargs: [(2, 1, 6, "", ("93.184.216.34", 0))],
+    )
+    reset_feeds()
+    subscribe_webhook("https://example.com/rastro")
+    first = decide_note("clip:DSCF0112", "confirm")
+    again = decide_note("camera:trap-dscf0112", "confirm")
+    assert first["status"] == "confirmed"
+    assert again["id"] == "clip:DSCF0112"
+    assert again["status"] == "confirmed"
+    assert len(list_webhooks()["outbox"]) == 1
+
+
+def test_crop_uses_frame_size_from_the_result():
+    from rastro.field_note import _crop
+
+    crop = _crop(
+        {
+            "frame_width": 1920,
+            "frame_height": 1080,
+            "frames": [{"t_s": 1.0, "objects": [{"class": "coyote", "bbox": [10, 20, 30, 40]}]}],
+        },
+        "coyote",
+    )
+    assert crop is not None
+    assert crop["width"] == 1920
+    assert crop["height"] == 1080
+    assert crop["class"] == "coyote"
+
+
+def test_active_run_note_uses_that_runs_numbers():
+    import time
+
+    from rastro import api
+    from rastro.field_note import note_for_result
+
+    api.reset_state()
+    fauna = api.create_sample_job("fauna-trap")
+    crowd = api.create_sample_job("multitudes-plaza")
+    empty = api.create_sample_job("mock-empty")
+    for job in (fauna, crowd, empty):
+        for _ in range(200):
+            current = api.get_job(job["id"])
+            if current and current["status"] in {"done", "failed"}:
+                break
+            time.sleep(0.02)
+    fauna_result = api.get_result(fauna["id"])["result"]
+    fauna_note = note_for_result(fauna_result, run_id=fauna["id"], pack="fauna")
+    assert fauna_note is not None
+    assert fauna_note["engine"]["detections_total"] == fauna_result["detections_total"] == 210
+    assert fauna_note["engine"]["unique_count"] == fauna_result["unique_count"] == 4
+    assert fauna_note["engine_count"].startswith("210 raw detections → 4 unique")
+    assert fauna_note["summary_label"] == "Rules engine note"
+    assert fauna_note["not_sure"] is True
+    crowd_result = api.get_result(crowd["id"])["result"]
+    crowd_note = note_for_result(crowd_result, run_id=crowd["id"], pack="multitudes")
+    assert crowd_note is not None
+    assert crowd_note["engine_count"] == "Peak 5.4 people/m²"
+    assert crowd_note["engine"]["unique_count"] == crowd_result["unique_count"]
+    assert crowd_note["summary_label"] == "Rules engine note"
+    assert note_for_result(api.get_result(empty["id"])["result"], run_id=empty["id"], pack="fauna") is None

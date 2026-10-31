@@ -12,6 +12,8 @@ async function forward(req: NextRequest, path: string[]): Promise<Response> {
   const headers = new Headers();
   const contentType = req.headers.get("content-type");
   if (contentType) headers.set("content-type", contentType);
+  const writeToken = req.headers.get("x-rastro-token");
+  if (writeToken) headers.set("x-rastro-token", writeToken);
   headers.set("accept", req.headers.get("accept") || "application/json");
   const hasBody = req.method !== "GET" && req.method !== "HEAD";
   try {

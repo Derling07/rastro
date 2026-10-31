@@ -69,7 +69,7 @@ export function IdentityBoard({
               <li
                 key={`${row.track_id}-${index}`}
                 className="merge-chip"
-                style={{ borderColor: colorForTrack(row.track_id), color: colorForTrack(row.track_id) }}
+                style={{ borderColor: colorForTrack(row.track_id), color: "var(--ink)" }}
               >
                 {row.class} · id {String(sighting.object_id)}
               </li>
