@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .display_names import camera_name, public_copy, report_title
+from .display_names import camera_name, public_copy, report_title, zone_label
 from .feeds import state_lock
 
 REPO = Path(__file__).resolve().parents[2]
@@ -474,15 +474,11 @@ def note_for_result(result: dict[str, Any] | None, *, run_id: str, pack: str | N
         note["summary"] = "This run measures how many people are in view at once. It does not re-identify them."
         peak = result.get("peak_density") if isinstance(result.get("peak_density"), dict) else {}
         density = peak.get("density_per_m2")
-        persons = peak.get("persons")
-        frame_peak = _frame_peak_persons(result)
-        # A person total is shown only when the series max is not the same figure as unique_count.
-        if isinstance(frame_peak, int) and frame_peak != result.get("unique_count"):
-            note["engine_count"] = f"Peak {frame_peak} people in one frame"
-        elif isinstance(density, (int, float)):
-            note["engine_count"] = f"Peak {density:g} people/m²"
-        elif isinstance(persons, int) and persons != result.get("unique_count"):
-            note["engine_count"] = f"Peak {persons} people in one frame"
+        # No per-frame series means the person field is not a headcount. Do not print it.
+        if isinstance(density, (int, float)):
+            label = zone_label(str(peak.get("zone") or ""))
+            count = f"Peak density {float(density):g} people/m² (NOT VERIFIED)"
+            note["engine_count"] = f"{count}. {label}." if label else count
         else:
             note["engine_count"] = NO_COUNT
     note["run_id"] = run_id

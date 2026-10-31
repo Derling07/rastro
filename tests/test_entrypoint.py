@@ -28,6 +28,7 @@ def test_confirm_from_module_entrypoint(tmp_path):
     env.pop("RASTRO_WRITE_TOKEN", None)
     env.pop("META_API_KEY", None)
     env.pop("BASETEN_API_KEY", None)
+    env.pop("RASTRO_LIVE", None)
     proc = subprocess.Popen(
         [sys.executable, "-m", "rastro.api"],
         cwd=ROOT,

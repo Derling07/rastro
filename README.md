@@ -10,7 +10,7 @@ The code in this repository was written during the event (from 26 Oct 2026). Lic
 
 ## Run it
 
-Docker is the path that serves the app and the worker together. With no keys, every run stays in **mock** mode (synthetic tracker, local report). Sample clips never call a paid API. An uploaded video uses SAM when `META_API_KEY` is set, and Muse Spark when `BASETEN_API_KEY` is set.
+Docker is the path that serves the app and the worker together. The server stays in **mock** mode unless `RASTRO_LIVE=1`. Without that flag, a run stays on the mock tracker even if `META_API_KEY` or `BASETEN_API_KEY` is set. Sample clips never call a paid API. With `RASTRO_LIVE=1`, an uploaded video uses SAM when `META_API_KEY` is set, and Muse Spark when `BASETEN_API_KEY` is set.
 
 ```bash
 docker compose up --build
@@ -91,7 +91,7 @@ Without `RASTRO_WRITE_TOKEN`, field-note writes work only when the API sees loca
 
 | Model | Role | When |
 |---|---|---|
-| **SAM 3.1** | Video tracking, one concept per request | Meta Model API (`META_API_KEY`). Mock client if the key is absent, and always for sample clips. |
+| **SAM 3.1** | Video tracking, one concept per request | Meta Model API (`META_API_KEY`). Mock client unless `RASTRO_LIVE=1` and the key is set, and always for sample clips. |
 | **Muse Voice Transcribe 1.0** | Field note → text, speaker per turn | Meta Model API. Mock note if the key is absent. Live notes must be WAV. |
 | **Muse Spark Open** | One field note: severity, a short why, and “not sure” when confidence is low. It cannot change the engine count. | Baseten, `meta-models/muse-spark-open-1026` (`BASETEN_API_KEY`). The DSCF0112 card replays a recorded reply. Local rules cover the other modules. No paid call on page load. |
 

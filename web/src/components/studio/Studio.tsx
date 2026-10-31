@@ -16,7 +16,8 @@ import {
 } from "@/lib/result";
 import { buildTurnMatrix } from "@/lib/transito";
 import { AlertCard, type FieldNote } from "@/components/notebook/AlertCard";
-import { clipLabel, moduleLabel } from "@/lib/labels";
+import { clipLabel, moduleLabel, zoneLabel } from "@/lib/labels";
+import { saveFieldNote } from "@/lib/saveNote";
 import { NotebookShell } from "@/components/notebook/Shell";
 import { Viewfinder } from "@/components/notebook/Viewfinder";
 import { FrameStage } from "./FrameStage";
@@ -97,25 +98,25 @@ function densityText(value: number): string {
 }
 
 function transitHeadline(result: RastroResult): string {
-  void result;
-  return "No verified vehicle count";
+  if (typeof result.naive_count !== "number") return "No verified vehicle count";
+  return `${result.naive_count} sightings in this clip. No verified vehicle count.`;
 }
 
 function historyCount(item: Job): string {
   if (item.pack === "multitudes") {
-    if (typeof item.peak_persons === "number" && item.peak_persons !== item.unique_count) {
-      return ` · Peak ${item.peak_persons} people in one frame`;
-    }
     if (typeof item.peak_density_per_m2 === "number") {
-      return ` · Peak ${item.peak_density_per_m2} people/m²`;
+      return ` · Peak density ${item.peak_density_per_m2} people/m² (NOT VERIFIED)`;
     }
     return "";
   }
-  if (item.pack === "transito" && typeof item.naive_count === "number" && typeof item.vehicle_count === "number") {
-    return ` · ${item.naive_count} → ${item.vehicle_count} vehicles · not verified`;
+  if (item.pack === "transito") {
+    if (typeof item.naive_count === "number") {
+      return ` · ${item.naive_count} sightings in this clip. No verified vehicle count.`;
+    }
+    return " · No verified vehicle count";
   }
   if (typeof item.unique_count !== "number") {
-    return item.pack === "transito" ? " · not verified" : "";
+    return "";
   }
   const left =
     item.pack !== "transito" &&
@@ -126,19 +127,15 @@ function historyCount(item: Job): string {
   if (typeof left !== "number") {
     return item.pack === "transito" ? " · not verified" : "";
   }
-  const verified = item.pack === "transito" ? " · not verified" : "";
-  return ` · ${left} → ${item.unique_count}${verified}`;
+  return ` · ${left} → ${item.unique_count}`;
 }
 
 function crowdHeadline(result: RastroResult): string {
-  const persons = result.peak_density?.persons;
   const density = result.peak_density?.density_per_m2;
-  // unique_count is not a headcount. Show a person total only when the peak differs from it.
-  const personPeak = typeof persons === "number" && persons !== result.unique_count ? persons : null;
-  if (personPeak === null && (density === null || density === undefined)) return "No verified person count";
-  if (personPeak === null) return `Peak ${densityText(density as number)} people/m²`;
-  if (density === null || density === undefined) return `Up to ${personPeak} people at once`;
-  return `Up to ${personPeak} people at once · peak ${densityText(density)} people/m²`;
+  if (typeof density !== "number") return "No verified person count";
+  const zone = zoneLabel(result.peak_density?.zone);
+  const line = `Peak density ${densityText(density)} people/m² (NOT VERIFIED)`;
+  return zone ? `${line}. ${zone}.` : line;
 }
 
 function nounFor(pack: PackKey, byClass?: Record<string, number>): string {
@@ -207,16 +204,7 @@ export function Studio() {
   async function decideNote(action: "confirm" | "dismiss" | "review") {
     if (!note) return;
     setError(null);
-    const res = await fetch("/api/field-note", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: note.id, action }),
-    });
-    const body = (await res.json()) as { note?: FieldNote; error?: string };
-    if (!res.ok || !body.note) {
-      throw new Error(body.error || "Could not update the field note.");
-    }
-    setNote(body.note);
+    setNote(await saveFieldNote(note.id, action));
   }
 
   useEffect(() => {
@@ -407,8 +395,8 @@ export function Studio() {
       <div>
         <p className="mb-4 text-sm text-muted">
           {serverMock
-            ? "Mock mode. No API keys — samples and uploads use the mock tracker."
-            : "Live keys. Uploads can call SAM and Muse Spark. Samples stay on the mock tracker."}
+            ? "Mock mode. Set RASTRO_LIVE=1 before a key can call a model. Samples stay on the mock tracker."
+            : "Live keys. RASTRO_LIVE=1 is set, so uploads can call SAM and Muse Spark. Samples stay on the mock tracker."}
         </p>
 
         {offline && (

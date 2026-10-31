@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import type { DensitySample } from "@/lib/result";
+import { zoneLabel } from "@/lib/labels";
 import {
   DENSITY_HIGH,
   densityColor,
@@ -16,7 +17,7 @@ type Props = {
 };
 
 /**
- * Density over time. One line: 6 people/m², high / crush risk.
+ * Density over time. Two states: below 6 people/m², and from 6 (crush risk).
  */
 export function DensityChart({ density, zone, empty, onSeek }: Props) {
   const series = useMemo(() => {
@@ -66,18 +67,20 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
     .map((s) => s.density_per_m2)
     .filter((d): d is number => d !== null);
   const hasDens = densVals.length > 0;
-  const yMax = hasDens
-    ? Math.max(DENSITY_HIGH * 1.25, ...densVals)
-    : Math.max(1, ...series.map((s) => s.persons));
+  if (!hasDens) {
+    return (
+      <p className="text-sm text-muted" role="status">
+        No density series.
+      </p>
+    );
+  }
+  const yMax = Math.max(DENSITY_HIGH * 1.25, ...densVals);
 
   const xOf = (t: number) => padL + ((t - tMin) / (tMax - tMin)) * plotW;
   const yOf = (v: number) => padT + plotH - (v / yMax) * plotH;
 
   const points = series
-    .map((s) => {
-      const v = hasDens ? (s.density_per_m2 ?? 0) : s.persons;
-      return `${xOf(s.t_s).toFixed(1)},${yOf(v).toFixed(1)}`;
-    })
+    .map((s) => `${xOf(s.t_s).toFixed(1)},${yOf(s.density_per_m2 ?? 0).toFixed(1)}`)
     .join(" ");
 
   const yHigh = yOf(DENSITY_HIGH);
@@ -88,11 +91,11 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
         <h3 className="text-sm font-bold text-muted">
           Density over time
           {zone ? (
-            <span className="ml-1 font-normal text-pack">{zone}</span>
+            <span className="ml-1 font-normal text-pack">{zoneLabel(zone)}</span>
           ) : null}
         </h3>
         <p className="text-[10px] uppercase tracking-wide text-muted">
-          {hasDens ? "people/m²" : "people (no area)"}
+          people/m²
         </p>
       </div>
       <svg
@@ -101,28 +104,24 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
         role="img"
         aria-label="Density over time"
       >
-        {hasDens && (
-          <>
-            <line
-              x1={padL}
-              x2={W - padR}
-              y1={yHigh}
-              y2={yHigh}
-              stroke="#ef4444"
-              strokeDasharray="4 3"
-              strokeWidth={1}
-            />
-            <text
-              x={W - padR}
-              y={yHigh - 3}
-              textAnchor="end"
-              fill="#ef4444"
-              fontSize={9}
-            >
-              6 crush risk
-            </text>
-          </>
-        )}
+        <line
+          x1={padL}
+          x2={W - padR}
+          y1={yHigh}
+          y2={yHigh}
+          stroke="#ef4444"
+          strokeDasharray="2 2"
+          strokeWidth={1}
+        />
+        <text
+          x={W - padR}
+          y={yHigh - 3}
+          textAnchor="end"
+          fill="#ef4444"
+          fontSize={9}
+        >
+          6 crush risk
+        </text>
         <polyline
           fill="none"
           stroke="var(--pack)"
@@ -130,21 +129,20 @@ export function DensityChart({ density, zone, empty, onSeek }: Props) {
           points={points}
         />
         {series.map((s) => {
-          const v = hasDens ? s.density_per_m2 : null;
-          const yv = hasDens ? (s.density_per_m2 ?? 0) : s.persons;
+          const v = s.density_per_m2;
           const cx = xOf(s.t_s);
-          const cy = yOf(yv);
+          const cy = yOf(v ?? 0);
           return (
             <g key={`${s.zone}-${s.t_s}`}>
               <circle
                 cx={cx}
                 cy={cy}
                 r={3.5}
-                fill={hasDens ? densityColor(v) : "var(--pack)"}
+                fill={densityColor(v)}
                 className={onSeek ? "cursor-pointer" : undefined}
                 onClick={() => onSeek?.(s.t_s)}
               >
-                <title>{`t=${s.t_s.toFixed(1)}s · ${s.persons} people${v !== null && v !== undefined ? ` · ${v.toFixed(2)}/m²` : ""}`}</title>
+                <title>{`t=${s.t_s.toFixed(1)}s · ${v !== null && v !== undefined ? `${v.toFixed(2)}/m²` : "no density"}`}</title>
               </circle>
             </g>
           );

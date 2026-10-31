@@ -604,9 +604,12 @@ def run_pipeline(
     if image_mode:
         from .agent import crowd_line
 
-        persons = int((peak_dens or {}).get("persons") or counted.unique_count)
         dens = None if not peak_dens else peak_dens.get("density_per_m2")
-        line = crowd_line(persons, float(dens) if dens is not None else None)
+        zone = None if not peak_dens else peak_dens.get("zone")
+        line = crowd_line(
+            float(dens) if isinstance(dens, (int, float)) else None,
+            str(zone) if zone else None,
+        )
         report["titulo"] = "Crowd density"
         report["resumen"] = (
             f"{line}. This sector measures how many people are in view at once. "

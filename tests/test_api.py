@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+import http.client
 import json
-import os
 import threading
 import time
 import urllib.request
@@ -24,6 +24,8 @@ def _isolated(monkeypatch, tmp_path):
     monkeypatch.delenv("SUPABASE_URL", raising=False)
     monkeypatch.delenv("SUPABASE_SERVICE_ROLE_KEY", raising=False)
     monkeypatch.delenv("RASTRO_ALLOW_LIVE", raising=False)
+    monkeypatch.delenv("RASTRO_LIVE", raising=False)
+    monkeypatch.delenv("RASTRO_WRITE_TOKEN", raising=False)
     monkeypatch.setenv("RASTRO_RETRY_SLEEP", "0")
     api.reset_state()
     yield
@@ -210,7 +212,10 @@ def test_crowd_report_is_density_only_and_has_no_absolute_path():
     assert done["status"] == "done", done.get("error")
     envelope = api.get_result(job["id"])
     report = envelope["result"]["report"]
-    assert report["gancho_demo"].startswith("Up to ")
+    assert "Peak density 5.4 people/m² (NOT VERIFIED)" in report["gancho_demo"]
+    assert "Zone 1" in report["gancho_demo"]
+    assert "135" not in report["gancho_demo"]
+    assert "135" not in report["resumen"]
     assert "people/m²" in report["gancho_demo"]
     assert "unique" not in report["resumen"].lower()
     blob = json.dumps(envelope["result"])
@@ -229,15 +234,17 @@ def test_transit_report_does_not_call_people_vehicles():
     done = _wait(job["id"], timeout=60)
     assert done["status"] == "done", done.get("error")
     report = api.get_result(job["id"])["result"]["report"]
-    assert "unique vehicles" in report["gancho_demo"]
-    assert "person" in report["gancho_demo"].lower()
+    assert report["gancho_demo"] == "16 sightings in this clip. No verified vehicle count."
+    assert report["resumen"].startswith("16 sightings in this clip. No verified vehicle count.")
+    assert "unique" not in (report["gancho_demo"] + report["resumen"]).lower()
     assert done["naive_count"] == 16
     assert done["unique_count"] == 11
     assert done["vehicle_count"] == 10
     blob = json.dumps(report)
     assert "/tmp/" not in blob and "/data/" not in blob
     assert "placeholder" not in report["resumen"]
-    assert "Intersection.mp4" in report["resumen"]
+    assert ".mp4" not in report["resumen"]
+    assert "fps" not in report["resumen"].lower()
 
 
 def test_upload_rejects_unknown_pack_and_empty_file():
@@ -288,8 +295,14 @@ def test_http_roundtrip_sample_job():
 def test_keys_switch_mock_mode(monkeypatch):
     assert api.mock_mode() is True
     monkeypatch.setenv("META_API_KEY", "not-a-real-key")
+    monkeypatch.setenv("BASETEN_API_KEY", "not-a-real-key")
+    assert api.mock_mode() is True
+    monkeypatch.setenv("RASTRO_LIVE", "1")
     assert api.mock_mode() is False
     monkeypatch.delenv("META_API_KEY")
+    monkeypatch.delenv("BASETEN_API_KEY")
+    assert api.mock_mode() is True
+    monkeypatch.delenv("RASTRO_LIVE")
 
 
 def test_ui_uploads_only_through_engine():
@@ -302,7 +315,10 @@ def test_ui_uploads_only_through_engine():
     assert "Not verified" in text
     assert "PartialBanner" in text
     assert 'item.status === "queued" || item.status === "processing"' in text
-    assert "Up to" in text and "people at once" in text
+    assert "Peak density" in text and "NOT VERIFIED" in text
+    assert "No verified vehicle count" in text
+    assert "people at once" not in text
+    assert "saveFieldNote" in text
     assert "busiest frame" not in text
     assert "Mock mode." in text and "Live keys." in text
     assert not (studio.parents[1] / "DemoPanel.tsx").exists()
@@ -317,3 +333,75 @@ def test_history_lists_finished_job():
     assert match["status"] == "done"
     assert match["is_mock"] is True
     assert match["naive_count"] > match["unique_count"]
+
+
+def test_live_flag_is_required_before_keys_leave_mock(monkeypatch):
+    from pathlib import Path
+
+    monkeypatch.setenv("META_API_KEY", "not-a-real-key")
+    assert api.mock_mode() is True
+    monkeypatch.setenv("RASTRO_LIVE", "true")
+    assert api.mock_mode() is True
+    monkeypatch.setenv("RASTRO_LIVE", "1")
+    assert api.mock_mode() is False
+    root = Path(__file__).resolve().parents[1]
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    example = (root / ".env.example").read_text(encoding="utf-8")
+    assert "RASTRO_LIVE=1" in readme
+    assert "even if" in readme
+    assert "RASTRO_LIVE=" in example
+
+
+def test_keys_without_live_flag_do_not_run_the_pipeline(monkeypatch):
+    monkeypatch.setenv("META_API_KEY", "not-a-real-key")
+    monkeypatch.setenv("BASETEN_API_KEY", "not-a-real-key")
+    monkeypatch.setattr(api, "video_duration_s", lambda _path: 2.0)
+    monkeypatch.setattr(api, "_engine_result", lambda *_a, **_k: (_ for _ in ()).throw(AssertionError("live")))
+    job = api.create_upload_job("fauna", "fake.mp4", "video/mp4", _ftyp())
+    done = _wait(job["id"])
+    assert done["status"] == "done", done.get("error")
+    assert api.get_result(job["id"])["uncomputed"] is True
+
+
+def test_tokenless_posts_on_one_connection_both_return_401(monkeypatch):
+    monkeypatch.setenv("RASTRO_WRITE_TOKEN", "secret")
+    server = ThreadingHTTPServer(("127.0.0.1", 0), api.Handler)
+    port = server.server_address[1]
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    body = b'{"id":"clip:DSCF0112","action":"confirm"}'
+    try:
+        conn = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
+        for _ in range(2):
+            conn.request(
+                "POST",
+                "/api/field-note",
+                body=body,
+                headers={"Content-Type": "application/json", "Content-Length": str(len(body))},
+            )
+            res = conn.getresponse()
+            assert res.status == 401
+            assert res.getheader("Connection") != "close"
+            res.read()
+        conn.close()
+        bad = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
+        bad.putrequest("POST", "/api/field-note")
+        bad.putheader("Content-Type", "application/json")
+        bad.endheaders()
+        missing = bad.getresponse()
+        assert missing.status == 400
+        assert missing.getheader("Connection") == "close"
+        missing.read()
+        bad.close()
+        huge = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
+        huge.putrequest("POST", "/api/field-note")
+        huge.putheader("Content-Type", "application/json")
+        huge.putheader("Content-Length", str(64 * 1024 + 1))
+        huge.endheaders()
+        oversized = huge.getresponse()
+        assert oversized.status == 413
+        assert oversized.getheader("Connection") == "close"
+        oversized.read()
+        huge.close()
+    finally:
+        server.shutdown()

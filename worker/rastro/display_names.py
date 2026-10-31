@@ -33,6 +33,16 @@ def report_title(pack: str | None) -> str:
     return f"Rastro report — {label}"
 
 
+def zone_label(zone: str | None) -> str:
+    """zone_1 and zona_1 are the same place name: Zone 1."""
+    if not zone:
+        return ""
+    match = re.fullmatch(r"(?:zone|zona)[_\s-]*(\d+)", str(zone).strip(), flags=re.IGNORECASE)
+    if match:
+        return f"Zone {match.group(1)}"
+    return str(zone).replace("_", " ")
+
+
 def camera_name(camera_id: str, fallback: str = "") -> str:
     return CAMERA_DISPLAY.get(camera_id, fallback or camera_id)
 
@@ -53,6 +63,12 @@ def public_copy(text: str) -> str:
     cleaned = re.sub(r"\b[\w.-]+\.(?:mp4|mov|webm|ogv)\b", "", cleaned, flags=re.IGNORECASE)
     for raw, label in sorted(PACK_DISPLAY.items(), key=lambda item: -len(item[0])):
         cleaned = re.sub(rf"\b{re.escape(raw)}\b", label, cleaned)
+    cleaned = re.sub(
+        r"\b(?:zone|zona)[_\s-]*(\d+)\b",
+        lambda match: f"Zone {match.group(1)}",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
     cleaned = re.sub(r"\s+at demo\b", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\s{2,}", " ", cleaned)
     cleaned = re.sub(r"\s+([.,])", r"\1", cleaned)

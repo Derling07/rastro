@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type MouseEvent } from "react";
 import { AlertCard, type FieldNote } from "@/components/notebook/AlertCard";
 import { placeLabel } from "@/lib/labels";
+import { saveFieldNote } from "@/lib/saveNote";
 import { NotebookShell } from "@/components/notebook/Shell";
 import { Viewfinder } from "@/components/notebook/Viewfinder";
 import { PeakHours } from "@/components/PeakHours";
@@ -148,16 +149,8 @@ export function Cameras() {
   async function decideNote(action: "confirm" | "dismiss" | "review") {
     if (!note) return;
     setError(null);
-    const res = await fetch("/api/field-note", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: note.id, action }),
-    });
-    const body = (await res.json()) as { note?: FieldNote; error?: string };
-    if (!res.ok || !body.note) {
-      throw new Error(body.error || "Could not update the field note.");
-    }
-    setNote(body.note);
+    const updated = await saveFieldNote(note.id, action);
+    setNote(updated);
     if (action === "review" || action === "confirm" || action === "dismiss") {
       await loadList();
     }
@@ -418,7 +411,7 @@ export function Cameras() {
             </div>
           )}
 
-          {note && <AlertCard note={note} onAction={(action) => void decideNote(action)} />}
+          {note && <AlertCard note={note} onAction={(action) => decideNote(action)} />}
 
           <section aria-labelledby="inbox-h">
             <h2 id="inbox-h" className="text-xs font-bold uppercase tracking-[0.16em] text-muted">

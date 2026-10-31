@@ -89,9 +89,6 @@ def build_report(
     return report, log
 
 
-_PEOPLE = {"person", "persona", "people", "pedestrian"}
-
-
 def _clip_name(video: str) -> str:
     name = Path(video).name
     return name or "clip"
@@ -100,17 +97,6 @@ def _clip_name(video: str) -> str:
 def _is_crowd(pack_id: str) -> bool:
     pid = pack_id.lower()
     return "multitud" in pid or "crowd" in pid or "densidad" in pid
-
-
-def _split_counts(by_class: dict[str, int]) -> tuple[int, int]:
-    people = 0
-    vehicles = 0
-    for name, count in by_class.items():
-        if name.lower() in _PEOPLE:
-            people += int(count)
-        else:
-            vehicles += int(count)
-    return vehicles, people
 
 
 def unique_noun(by_class: dict[str, int]) -> str:
@@ -138,20 +124,24 @@ def tracking_line(
     return f"{left} {word} → {unique} unique {unique_noun(by_class)}"
 
 
-def crowd_line(persons: int, density: float | None) -> str:
-    if density is None:
-        return f"Up to {persons} people at once"
-    text = f"{density:g}"
-    return f"Up to {persons} people at once · peak {text} people/m²"
+def crowd_line(density: float | None, zone: str | None = None) -> str:
+    """Density only. A missing per-frame series is not a person count."""
+    from .display_names import zone_label
+
+    if not isinstance(density, (int, float)):
+        return "No verified person count."
+    line = f"Peak density {float(density):g} people/m² (NOT VERIFIED)"
+    label = zone_label(zone)
+    return f"{line}. {label}." if label else line
 
 
 def _local_report(summary: RunSummary) -> dict[str, Any]:
     notas = list(summary.notes or [])
     clip = _clip_name(summary.video)
     if _is_crowd(summary.pack_id):
-        line = crowd_line(summary.unique_count, None)
+        line = crowd_line(None)
         resumen = (
-            f"{line}. This sector measures how many people are in view at once. "
+            f"{line} This sector measures how many people are in view at once. "
             "It does not re-identify them."
         )
         gancho = line
@@ -160,19 +150,9 @@ def _local_report(summary: RunSummary) -> dict[str, Any]:
             "Read the peak as density, not as unique people.",
         ]
     elif "transito" in summary.pack_id.lower() or "transit" in summary.pack_id.lower():
-        vehicles, people = _split_counts(summary.by_class)
-        resumen = (
-            f"Clip {clip}: {summary.naive_count} sightings, "
-            f"{vehicles} unique vehicles"
-            + (f", {people} {'person' if people == 1 else 'people'}" if people else "")
-            + ". Traffic counts are not verified."
-        )
-        gancho = f"{vehicles} unique vehicles" + (
-            f" · {people} {'person' if people == 1 else 'people'}" if people else ""
-        )
-        especies = [
-            {"clase": k, "individuos": v} for k, v in sorted(summary.by_class.items())
-        ]
+        resumen = f"{summary.naive_count} sightings in this clip. No verified vehicle count."
+        gancho = resumen
+        especies = []
         recomendaciones = [
             "Do not treat this as a verified traffic count.",
         ]

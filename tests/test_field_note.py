@@ -236,7 +236,7 @@ def test_active_run_note_uses_that_runs_numbers():
     crowd_result = api.get_result(crowd["id"])["result"]
     crowd_note = note_for_result(crowd_result, run_id=crowd["id"], pack="multitudes")
     assert crowd_note is not None
-    assert crowd_note["engine_count"] == "Peak 5.4 people/m²"
+    assert crowd_note["engine_count"] == "Peak density 5.4 people/m² (NOT VERIFIED). Zone 1."
     assert crowd_note["why"]["sam"] == "SAM 3.1 detected people per frame. No re-identification."
     assert "unique" not in crowd_note["why"]["sam"]
     assert "135" not in crowd_note["engine_count"]
@@ -260,3 +260,35 @@ def test_active_run_note_uses_that_runs_numbers():
     assert ".mp4" not in visible
     assert "fauna-camtrap" not in visible
     assert note_for_result(api.get_result(empty["id"])["result"], run_id=empty["id"], pack="fauna") is None
+
+
+def test_crowd_text_without_a_series_has_no_person_number():
+    from rastro.agent import crowd_line
+    from rastro.field_note import _frame_peak_persons, note_for_result
+
+    result = {
+        "unique_count": 135,
+        "naive_count": 900,
+        "detections_total": 900,
+        "sampling_mode": "image_sample",
+        "by_class": {"person": 135},
+        "peak_density": {"zone": "zone_1", "t_s": 6, "persons": 135, "density_per_m2": 5.4},
+        "report": {
+            "titulo": "Crowd density",
+            "resumen": "Peak density 5.4 people/m² (NOT VERIFIED). Zone 1.",
+            "_source": "local",
+        },
+        "is_mock": True,
+        "frames": [],
+    }
+    assert _frame_peak_persons(result) is None
+    note = note_for_result(result, run_id="noseries", pack="multitudes")
+    assert note is not None
+    visible = note["summary"] + note["engine_count"] + note["why"]["sam"] + note["title"]
+    assert "135" not in visible
+    assert "people in one frame" not in visible
+    assert "Peak density 5.4 people/m² (NOT VERIFIED)" in note["engine_count"]
+    assert "Zone 1" in note["engine_count"]
+    bare = crowd_line(None)
+    assert "135" not in bare
+    assert bare == "No verified person count."

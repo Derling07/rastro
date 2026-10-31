@@ -21,8 +21,7 @@ type Props = {
 
 /**
  * Heat overlay por zona sincronizado al tiempo del video (muestra más cercana).
- * Green below 6 people/m², red at crush risk. Always show the number.
- * Sin area_m2 / density_per_m2 null → solo persons, sin color de umbral.
+ * Two states only: green below 6 people/m², red from 6. No person count.
  */
 export function ZoneHeatOverlay({
   zones,
@@ -47,7 +46,6 @@ export function ZoneHeatOverlay({
       {zones.map((z) => {
         const sample = near.get(z.id);
         const dens = sample?.density_per_m2 ?? null;
-        const persons = sample?.persons ?? 0;
         const hasArea = z.area_m2 !== null && z.area_m2 !== undefined;
         const showDensity = hasArea && dens !== null;
         const pts = z.polygon
@@ -67,9 +65,7 @@ export function ZoneHeatOverlay({
           ? densityFill(dens, 0.4)
           : "rgba(92,200,224,0.2)";
         const stroke = showDensity ? densityColor(dens) : "var(--pack)";
-        const label = showDensity
-          ? `${persons} · ${formatDensity(dens)}/m²`
-          : `${persons} pers`;
+        const label = showDensity ? `${formatDensity(dens)}/m²` : "—";
 
         return (
           <g key={z.id}>

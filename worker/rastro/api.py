@@ -1,8 +1,9 @@
 """HTTP API and in-process job worker for Rastro.
 
-No keys → mock SAM and a local report. META_API_KEY / BASETEN_API_KEY on an
-uploaded video use the live models. Placeholder samples never call a paid API,
-because they are not real media. Secrets are never printed.
+Mock SAM and a local report unless RASTRO_LIVE=1. Keys alone do not leave
+mock mode. With that flag, META_API_KEY / BASETEN_API_KEY on an uploaded video
+use the live models. Placeholder samples never call a paid API, because they
+are not real media. Secrets are never printed.
 
   python -m rastro.api
 """
@@ -28,6 +29,7 @@ from urllib.parse import parse_qs, urlparse
 REPO = Path(__file__).resolve().parents[2]
 MAX_UPLOAD_BYTES = 50 * 1024 * 1024
 MAX_VOICE_BYTES = 32 * 1024 * 1024
+JSON_BODY_LIMIT = 64 * 1024
 MAX_DURATION_S = 120.0
 ACCEPTED_TYPES = {"video/mp4": ".mp4", "video/quicktime": ".mov"}
 _MP4_BRANDS = {
@@ -50,6 +52,14 @@ class UploadError(ValueError):
     """Rejected upload. status is the HTTP code (400 or 413)."""
 
     def __init__(self, message: str, status: int = 400) -> None:
+        super().__init__(message)
+        self.status = status
+
+
+class BodyReadError(ValueError):
+    """Content-Length is missing, invalid, or over the cap. Close the connection."""
+
+    def __init__(self, message: str, status: int) -> None:
         super().__init__(message)
         self.status = status
 
@@ -87,7 +97,7 @@ def validate_voice(name: str | None, content_type: str | None, body: bytes | Non
     mp3 = suffix == ".mp3" or ctype in {"audio/mpeg", "audio/mp3"}
     if not wav and not mp3:
         raise UploadError("Voice note must be WAV or MP3.", 400)
-    if key_status()["meta"] and not wav:
+    if live_requested() and key_status()["meta"] and not wav:
         raise UploadError("Live voice notes must be WAV.", 400)
     if wav and (len(body) < 12 or not body.startswith(b"RIFF") or body[8:12] != b"WAVE"):
         raise UploadError("Voice note is not a WAV file.", 400)
@@ -201,8 +211,15 @@ def key_status() -> dict[str, bool]:
     return {"meta": meta, "baseten": baseten, "supabase": supabase}
 
 
+def live_requested() -> bool:
+    """Live model calls require this exact flag. Any other value stays in mock."""
+    return os.environ.get("RASTRO_LIVE") == "1"
+
+
 def mock_mode() -> bool:
-    """Server-level mock: true when Meta and Baseten keys are both absent."""
+    """Mock unless RASTRO_LIVE=1 and a Meta or Baseten key is set."""
+    if not live_requested():
+        return True
     keys = key_status()
     return not (keys["meta"] or keys["baseten"])
 
@@ -343,8 +360,9 @@ def _engine_result(
     from .pipeline import run_pipeline
 
     keys = key_status()
-    mock_sam = True if force_mock or not keys["meta"] else False
-    use_spark = bool(keys["baseten"] and not force_mock and not mock_sam)
+    live = live_requested()
+    mock_sam = True if force_mock or not live or not keys["meta"] else False
+    use_spark = bool(live and keys["baseten"] and not force_mock and not mock_sam)
     bundle = run_pipeline(
         pack=pack,
         video=video,
@@ -469,12 +487,35 @@ def empty_result(job_id: str) -> dict[str, Any]:
     }
 
 
+def _clean_visible_text(result: dict[str, Any]) -> None:
+    """Report and alert strings sent to the client. File names stay in the stored JSON."""
+    from .display_names import public_copy
+
+    report = result.get("report")
+    if isinstance(report, dict):
+        for key in ("titulo", "resumen", "gancho_demo"):
+            if isinstance(report.get(key), str):
+                report[key] = public_copy(report[key])
+        notes = report.get("recomendaciones")
+        if isinstance(notes, list):
+            report["recomendaciones"] = [
+                public_copy(item) if isinstance(item, str) else item for item in notes
+            ]
+    alerts = result.get("alerts")
+    if isinstance(alerts, list):
+        for alert in alerts:
+            if isinstance(alert, dict) and isinstance(alert.get("message"), str):
+                alert["message"] = public_copy(alert["message"])
+
+
 def _envelope(
     job: dict[str, Any],
     result: dict[str, Any],
     identities: list[dict[str, Any]],
 ) -> dict[str, Any]:
     result = _scrub_abs(result)
+    if isinstance(result, dict):
+        _clean_visible_text(result)
     crowd = result.get("sampling_mode") == "image_sample" or job.get("pack") == "multitudes"
     if crowd:
         result["count_labels"] = {
@@ -544,7 +585,7 @@ def _process_once(job_id: str) -> None:
         time.sleep(sleep)
         result = empty_result(job_id)
         tracks_path = None
-    elif job["kind"] == "upload" and not key_status()["meta"]:
+    elif job["kind"] == "upload" and (not live_requested() or not key_status()["meta"]):
         time.sleep(sleep)
         result = uncomputed_upload_result(job_id, str(job.get("original_name") or "upload.mp4"))
         tracks_path = None
@@ -786,7 +827,8 @@ def health() -> dict[str, Any]:
         "keys_configured": keys,
         "supabase_queue": False,
         "note": (
-            "Uploads use SAM when META_API_KEY is set and Muse Spark when "
+            "The server stays in mock mode unless RASTRO_LIVE=1. With that flag, "
+            "uploads use SAM when META_API_KEY is set and Muse Spark when "
             "BASETEN_API_KEY is set. Sample clips stay on the mock tracker."
         ),
     }
@@ -868,23 +910,46 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt: str, *args: Any) -> None:
         return
 
-    def _send(self, code: int, payload: dict[str, Any]) -> None:
+    def _send(self, code: int, payload: dict[str, Any], *, close: bool = False) -> None:
         raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-        self._send_raw(code, raw, "application/json; charset=utf-8")
+        self._send_raw(code, raw, "application/json; charset=utf-8", close=close)
 
-    def _send_raw(self, code: int, raw: bytes, content_type: str) -> None:
+    def _send_raw(self, code: int, raw: bytes, content_type: str, *, close: bool = False) -> None:
+        if close:
+            self.close_connection = True
         self.send_response(code)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(raw)))
         self.send_header("Cache-Control", "no-store")
+        if close:
+            self.send_header("Connection", "close")
         self.end_headers()
         self.wfile.write(raw)
 
-    def _read_body(self, limit: int) -> bytes:
-        length = int(self.headers.get("Content-Length") or "0")
-        if length < 0 or length > limit:
-            raise UploadError("file exceeds 50 MB", 413)
+    def _read_body(self, limit: int = JSON_BODY_LIMIT) -> bytes:
+        """Read Content-Length bytes. Missing, invalid, or oversized lengths close the socket."""
+        raw_length = self.headers.get("Content-Length")
+        if raw_length is None or not str(raw_length).strip():
+            raise BodyReadError("Content-Length required", 400)
+        text = str(raw_length).strip()
+        if not text.isdigit():
+            raise BodyReadError("invalid Content-Length", 400)
+        length = int(text)
+        if length > limit:
+            raise BodyReadError("body exceeds limit", 413)
         return self.rfile.read(length) if length else b""
+
+    def _post_body_limit(self) -> int:
+        """JSON writes stay at 64 KB. Video uploads keep the 50 MB cap."""
+        path = (urlparse(self.path).path.rstrip("/") or "/")
+        if path != "/api/jobs":
+            return JSON_BODY_LIMIT
+        mime = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+        if mime in ACCEPTED_TYPES or mime == "application/octet-stream":
+            return MAX_UPLOAD_BYTES
+        if mime.startswith("multipart/"):
+            return MAX_UPLOAD_BYTES + 8_000_000
+        return JSON_BODY_LIMIT
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
@@ -1005,7 +1070,7 @@ class Handler(BaseHTTPRequestHandler):
         from .cameras import decide, set_zone
 
         try:
-            data = json.loads((self._read_body(64_000) or b"{}").decode("utf-8"))
+            data = json.loads((getattr(self, "_body", b"") or b"{}").decode("utf-8"))
         except json.JSONDecodeError:
             self._send(400, {"error": "invalid JSON"})
             return
@@ -1028,6 +1093,12 @@ class Handler(BaseHTTPRequestHandler):
         self._send(200, {"camera": camera})
 
     def do_POST(self) -> None:  # noqa: N802
+        try:
+            self._body = self._read_body(self._post_body_limit())
+        except BodyReadError as exc:
+            self.close_connection = True
+            self._send(exc.status, {"error": str(exc)}, close=True)
+            return
         parsed = urlparse(self.path)
         path = parsed.path.rstrip("/") or "/"
         parts = [p for p in path.split("/") if p]
@@ -1050,7 +1121,7 @@ class Handler(BaseHTTPRequestHandler):
         mime = ctype.split(";")[0].strip().lower()
         try:
             if mime == "application/json":
-                data = json.loads((self._read_body(64_000) or b"{}").decode("utf-8"))
+                data = json.loads((self._body or b"{}").decode("utf-8"))
                 sample_id = data.get("sample_id")
                 if not isinstance(sample_id, str):
                     self._send(400, {"error": "sample_id required"})
@@ -1060,7 +1131,7 @@ class Handler(BaseHTTPRequestHandler):
                 qs = parse_qs(parsed.query)
                 pack = (qs.get("pack") or [""])[0]
                 filename = (qs.get("filename") or ["upload.mp4"])[0]
-                raw = self._read_body(MAX_UPLOAD_BYTES)
+                raw = self._body
                 job = create_upload_job(
                     pack,
                     filename,
@@ -1068,7 +1139,7 @@ class Handler(BaseHTTPRequestHandler):
                     raw,
                 )
             elif mime.startswith("multipart/"):
-                form = parse_multipart(self._read_body(MAX_UPLOAD_BYTES + 8_000_000), ctype)
+                form = parse_multipart(self._body, ctype)
                 video = form["files"].get("video")
                 if not video:
                     self._send(400, {"error": "video file required"})
@@ -1100,7 +1171,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _json_body(self) -> dict[str, Any] | None:
         try:
-            data = json.loads((self._read_body(64_000) or b"{}").decode("utf-8"))
+            data = json.loads((getattr(self, "_body", b"") or b"{}").decode("utf-8"))
         except json.JSONDecodeError:
             self._send(400, {"error": "invalid JSON"})
             return None

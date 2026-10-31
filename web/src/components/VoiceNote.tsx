@@ -1,5 +1,6 @@
 "use client";
 
+import { clipLabel } from "@/lib/labels";
 import type { ReportSection, VoiceNote as Voice } from "@/lib/result";
 
 type Props = {
@@ -39,7 +40,7 @@ export function VoiceNotePanel({ voice, report }: Props) {
               <span className="ml-2 text-xs text-muted">
                 {t.start_s.toFixed(1)}s–{t.end_s.toFixed(1)}s
               </span>
-              <p className="leading-relaxed">{t.transcript}</p>
+              <p className="leading-relaxed">{clipLabel(t.transcript)}</p>
             </li>
           ))}
         </ul>
@@ -50,7 +51,7 @@ export function VoiceNotePanel({ voice, report }: Props) {
               ? "Agent summary · private note"
               : "No voice note on this run"}
           </p>
-          <p className="text-sm leading-relaxed">{agentSummary}</p>
+          <p className="text-sm leading-relaxed">{clipLabel(agentSummary)}</p>
           {turns.length > 0 && (
             <p className="mt-2 text-xs text-muted">
               {turns.length} transcribed turn(s), hidden because the note is not public.

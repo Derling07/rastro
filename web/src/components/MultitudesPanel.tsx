@@ -5,6 +5,7 @@ import type {
   PeakDensity,
   ZoneInfo,
 } from "@/lib/result";
+import { zoneLabel } from "@/lib/labels";
 import {
   densityColor,
   formatDensity,
@@ -68,33 +69,22 @@ export function MultitudesPanel({
             <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
               Peak density
             </p>
-            {peakInfo ? (
+            {peakInfo && peakInfo.peak.density_per_m2 !== null ? (
               <>
                 <p
                   className="mt-1 font-display text-4xl font-bold"
-                  style={{
-                    color:
-                      peakInfo.peak.density_per_m2 !== null
-                        ? densityColor(peakInfo.peak.density_per_m2)
-                        : "var(--pack)",
-                  }}
+                  style={{ color: densityColor(peakInfo.peak.density_per_m2) }}
                 >
-                  {peakInfo.peak.density_per_m2 !== null
-                    ? `${formatDensity(peakInfo.peak.density_per_m2)}`
-                    : peakInfo.peak.persons}
-                  <span className="ml-1 text-lg font-normal text-muted">
-                    {peakInfo.peak.density_per_m2 !== null
-                      ? "people/m²"
-                      : "people"}
-                  </span>
+                  {formatDensity(peakInfo.peak.density_per_m2)}
+                  <span className="ml-1 text-lg font-normal text-muted">people/m²</span>
                 </p>
+                <p className="mt-1 text-sm text-muted">(NOT VERIFIED)</p>
                 <p className="mt-1 text-sm text-muted">
-                  {peakInfo.peak.zone} · t={peakInfo.peak.t_s.toFixed(1)}s ·{" "}
-                  {peakInfo.peak.persons} people
+                  {zoneLabel(peakInfo.peak.zone)} · t={peakInfo.peak.t_s.toFixed(1)}s
                 </p>
               </>
             ) : (
-              <p className="mt-1 text-sm text-muted">No peak reported.</p>
+              <p className="mt-1 text-sm text-muted">No verified person count.</p>
             )}
           </div>
           {peakInfo && peakInfo.area_m2 !== null && (
@@ -125,7 +115,7 @@ export function MultitudesPanel({
 
       {/* persons_per_zone */}
       <div className="rounded-lg border border-line bg-panel p-3">
-        <h3 className="mb-2 text-sm font-bold text-muted">People per zone</h3>
+        <h3 className="mb-2 text-sm font-bold text-muted">Density per zone</h3>
         {zoneEntries.length === 0 ? (
           <p className="text-sm text-muted">No data.</p>
         ) : (
@@ -139,20 +129,14 @@ export function MultitudesPanel({
                   key={zid}
                   className="flex items-baseline justify-between gap-2 text-sm"
                 >
-                  <span className="text-pack">{zid}</span>
+                  <span className="text-pack">{zoneLabel(zid)}</span>
                   <span>
-                    <span className="font-display text-lg font-bold">{n}</span>
                     {dens !== null ? (
-                      <span
-                        className="ml-2 text-xs"
-                        style={{ color: densityColor(dens) }}
-                      >
-                        {formatDensity(dens)}/m²
+                      <span className="text-xs" style={{ color: densityColor(dens) }}>
+                        {formatDensity(dens)}/m² (NOT VERIFIED)
                       </span>
                     ) : (
-                      <span className="ml-2 text-xs text-muted">
-                        no area — people only
-                      </span>
+                      <span className="text-xs text-muted">no area</span>
                     )}
                   </span>
                 </li>

@@ -47,6 +47,21 @@ def test_alert_card_separates_the_engine_count_from_the_summary():
     assert "Mock mode." in studio and "Live keys." in studio
 
 
+def test_density_views_use_two_states_and_save_is_shared():
+    chart = (WEB / "components/DensityChart.tsx").read_text(encoding="utf-8")
+    overlay = (WEB / "components/ZoneHeatOverlay.tsx").read_text(encoding="utf-8")
+    levels = (WEB / "lib/multitudes.ts").read_text(encoding="utf-8")
+    labels = (WEB / "lib/labels.ts").read_text(encoding="utf-8")
+    cameras = (WEB / "components/cameras/Cameras.tsx").read_text(encoding="utf-8")
+    assert "4 · proposed" not in chart and "4 · proposed" not in overlay
+    assert "DENSITY_HIGH" in chart
+    assert "medium" not in levels
+    assert "b[0].length - a[0].length" in labels
+    assert "saveFieldNote" in cameras
+    assert "void decideNote" not in cameras
+    assert "server error (" in (WEB / "lib/saveNote.ts").read_text(encoding="utf-8")
+
+
 def test_copy_does_not_claim_a_waze_partnership():
     blob = _text(
         "components/PeakHours.tsx",
