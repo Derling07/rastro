@@ -57,7 +57,7 @@ export function TurnMatrix({ matrix, empty, isMock }: Props) {
             Mock
           </span>
         ) : (
-          <span className="rounded-full bg-pack px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-ink">
+          <span className="border border-pack px-2 py-0.5 font-facts text-[11px] font-bold uppercase tracking-wide text-ink">
             Measured
           </span>
         )}

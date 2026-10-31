@@ -1,33 +1,40 @@
 import type { Metadata } from "next";
-import { Atkinson_Hyperlegible, Barlow_Condensed } from "next/font/google";
+import { Fraunces, IBM_Plex_Mono, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 
-const atkinson = Atkinson_Hyperlegible({
-  weight: ["400", "700"],
+const source = Source_Sans_3({
+  weight: ["400", "600", "700"],
   subsets: ["latin"],
-  variable: "--font-atkinson",
+  variable: "--font-source",
   display: "swap",
 });
 
-const barlow = Barlow_Condensed({
-  weight: ["600", "700"],
+const plex = IBM_Plex_Mono({
+  weight: ["400", "600"],
   subsets: ["latin"],
-  variable: "--font-barlow",
+  variable: "--font-plex",
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  weight: ["500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-note",
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Rastro",
   description:
-    "Count each individual once in video, even after it leaves the frame and comes back. Sectors are JSON packs for camera traps, traffic, and crowds.",
+    "Count each individual once, then ask a person before the alert leaves the notebook. SAM 3.1 tracks the frame. Muse Spark writes the field note.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${atkinson.variable} ${barlow.variable}`}>
-      <body className="min-h-screen bg-ink text-[var(--text)] antialiased">
+    <html lang="en" className={`${source.variable} ${plex.variable} ${fraunces.variable}`}>
+      <body className="min-h-screen bg-paper text-[var(--text)] antialiased">
         {children}
       </body>
     </html>

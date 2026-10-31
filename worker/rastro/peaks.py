@@ -150,7 +150,10 @@ def open_peak_hours() -> dict[str, Any]:
         "badge": view["badge"],
         "not_verified": True,
         "stores": "aggregates_only",
-        "description": "Read-only peak hours per camera. Ready to connect to routing apps (for example Waze for Cities).",
+        "description": (
+            "Read-only peak hours per camera. Exports in a standard format compatible with Waze for Cities. "
+            "This server does not send the feed to Waze. Real ingestion requires joining Waze for Cities."
+        ),
         "cameras": cameras,
     }
 

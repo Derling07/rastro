@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertList } from "@/components/AlertList";
 import { PartialBanner } from "@/components/PartialBanner";
@@ -17,6 +16,9 @@ import {
   type RastroResult,
 } from "@/lib/result";
 import { buildTurnMatrix } from "@/lib/transito";
+import { AlertCard, type FieldNote } from "@/components/notebook/AlertCard";
+import { NotebookShell } from "@/components/notebook/Shell";
+import { Viewfinder } from "@/components/notebook/Viewfinder";
 import { FrameStage } from "./FrameStage";
 import { IdentityBoard, type Identity } from "./IdentityBoard";
 
@@ -57,13 +59,6 @@ type Envelope = {
   result: unknown;
 };
 
-const STEPS = [
-  { id: 1, label: "Sector" },
-  { id: 2, label: "Video" },
-  { id: 3, label: "Run" },
-  { id: 4, label: "Results" },
-] as const;
-
 const STAGES = [
   { id: "descargando", label: "Read" },
   { id: "motor", label: "Track" },
@@ -71,9 +66,15 @@ const STAGES = [
 ] as const;
 
 const ACCENT: Record<PackKey, string> = {
-  fauna: "#F2A93B",
-  transito: "#C8E34A",
-  multitudes: "#5CC8E0",
+  fauna: "#8C4A16",
+  transito: "#1B4F72",
+  multitudes: "#7A3040",
+};
+
+const NOTE_QUERY: Record<PackKey, string> = {
+  fauna: "clip=DSCF0112",
+  transito: "camera=wicker-park",
+  multitudes: "camera=plaza-mayor",
 };
 
 const SECTOR_HINT: Record<PackKey, string> = {
@@ -177,6 +178,7 @@ export function Studio() {
   const [voice, setVoice] = useState<File | null>(null);
   const [voicePublic, setVoicePublic] = useState(false);
   const [time, setTime] = useState(0);
+  const [note, setNote] = useState<FieldNote | null>(null);
 
   const refreshHistory = useCallback(async () => {
     const res = await fetch("/engine/api/jobs", { cache: "no-store" });
@@ -188,6 +190,40 @@ export function Studio() {
   useEffect(() => {
     document.documentElement.style.setProperty("--pack", ACCENT[pack]);
   }, [pack]);
+
+  useEffect(() => {
+    let cancel = false;
+    fetch(`/engine/api/field-note?${NOTE_QUERY[pack]}`, { cache: "no-store" })
+      .then(async (res) => {
+        if (!res.ok) throw new Error("note");
+        return (await res.json()) as { note: FieldNote };
+      })
+      .then((body) => {
+        if (!cancel) setNote(body.note);
+      })
+      .catch(() => {
+        if (!cancel) setNote(null);
+      });
+    return () => {
+      cancel = true;
+    };
+  }, [pack]);
+
+  async function decideNote(action: "confirm" | "dismiss" | "review") {
+    if (!note) return;
+    setError(null);
+    const res = await fetch("/engine/api/field-note", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: note.id, action }),
+    });
+    const body = (await res.json()) as { note?: FieldNote; error?: string };
+    if (!res.ok || !body.note) {
+      setError(body.error || "Could not update the field note.");
+      return;
+    }
+    setNote(body.note);
+  }
 
   useEffect(() => {
     let cancel = false;
@@ -368,48 +404,19 @@ export function Studio() {
     }
   }
 
-  const step = envelope ? 4 : job && (job.status === "queued" || job.status === "processing") ? 3 : 2;
   const meta = packByKey(pack);
+  const showFrames = Boolean(parsed && envelope && !envelope.empty && envelope.reidentifies);
   const seek = useCallback((t: number) => setTime(t), []);
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-6 px-4 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_240px]">
+    <NotebookShell current="analyze">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_240px]" data-module={pack}>
       <div>
-        <header className="mb-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-          <div>
-            <div className="flex flex-wrap items-baseline gap-4">
-              <h1 className="font-display text-4xl font-bold tracking-tight">Rastro</h1>
-              <Link href="/cameras" className="text-sm text-muted underline">
-                Cameras
-              </Link>
-            </div>
-            <p className="mt-1 max-w-xl text-sm text-muted">
-              Rastro counts each individual once — and uses that to alert what matters.
-            </p>
-          </div>
-          <p className="text-sm text-muted">
-            {serverMock
-              ? "Mock mode. No API keys — samples and uploads use the mock tracker."
-              : "Live keys. Uploads can call SAM and Muse Spark. Samples stay on the mock tracker."}
-          </p>
-        </header>
-
-        <ol className="mb-5 flex flex-wrap gap-2" aria-label="Steps">
-          {STEPS.map((item) => {
-            const state = item.id < step ? "done" : item.id === step ? "now" : "wait";
-            return (
-              <li
-                key={item.id}
-                className="step-pip"
-                data-state={state}
-                aria-current={state === "now" ? "step" : undefined}
-              >
-                <span className="font-display text-lg">{item.id}</span>
-                {item.label}
-              </li>
-            );
-          })}
-        </ol>
+        <p className="mb-4 text-sm text-muted">
+          {serverMock
+            ? "Mock mode. No API keys — samples and uploads use the mock tracker."
+            : "Live keys. Uploads can call SAM and Muse Spark. Samples stay on the mock tracker."}
+        </p>
 
         {offline && (
           <p className="mb-4 rounded-lg border border-alta/50 bg-panel p-3 text-sm" role="alert">
@@ -427,10 +434,8 @@ export function Studio() {
                 key={item.key}
                 type="button"
                 className={
-                  "max-w-xs rounded-2xl border px-3 py-2 text-left text-sm " +
-                  (item.key === pack
-                    ? "border-pack bg-pack text-ink"
-                    : "border-line text-muted hover:border-pack")
+                  "chip max-w-xs px-3 py-2 text-sm " +
+                  (item.key === pack ? "" : "text-[var(--ink)]")
                 }
                 aria-pressed={item.key === pack}
                 onClick={() => setPack(item.key)}
@@ -450,7 +455,18 @@ export function Studio() {
           </p>
         </section>
 
-        <section aria-labelledby="video-h" className="mb-6">
+        <div className="grid items-start gap-4 lg:grid-cols-2">
+          {!showFrames && (
+            <Viewfinder label="Simulated camera">
+              <div className="flex aspect-video items-center justify-center px-6 text-center text-sm text-[#d7e0d8]">
+                Pick a module, then run a sample. The clip plays in this frame.
+              </div>
+            </Viewfinder>
+          )}
+          {note && <AlertCard note={note} onAction={(action) => void decideNote(action)} />}
+        </div>
+
+        <section aria-labelledby="video-h" className="mb-6 mt-6">
           <h2 id="video-h" className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
             2 · Video
           </h2>
@@ -710,5 +726,6 @@ export function Studio() {
         </p>
       </footer>
     </div>
+    </NotebookShell>
   );
 }

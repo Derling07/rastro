@@ -43,7 +43,7 @@ export function PackSwitcher({ active, packStatus, onChange }: Props) {
               className={
                 "rounded-full border px-3.5 py-1.5 text-sm transition-colors " +
                 (pressed
-                  ? "border-pack bg-pack text-ink"
+                  ? "chip border-pack"
                   : "border-line text-muted hover:border-pack hover:text-[var(--text)]")
               }
               aria-pressed={pressed}

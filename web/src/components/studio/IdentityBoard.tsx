@@ -53,7 +53,7 @@ export function IdentityBoard({
 
   return (
     <section className="rounded-lg border border-line bg-panel p-4" aria-label="Individuals">
-      <p className="font-display text-3xl leading-tight text-[var(--text)] sm:text-4xl" aria-live="polite">
+      <p className="font-facts text-2xl leading-tight text-[var(--text)] sm:text-3xl" aria-live="polite">
         {sentence}
       </p>
       <p className="mt-1 text-sm text-muted">

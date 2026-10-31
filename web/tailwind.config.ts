@@ -17,8 +17,8 @@ export default {
         alta: "var(--alta)",
       },
       fontFamily: {
-        sans: ["var(--font-atkinson)", "system-ui", "sans-serif"],
-        display: ["var(--font-barlow)", "Arial Narrow", "sans-serif"],
+        sans: ["var(--font-source)", "Source Sans 3", "system-ui", "sans-serif"],
+        display: ["var(--font-note)", "Fraunces", "Georgia", "serif"],
       },
       fontSize: {
         hero: ["120px", { lineHeight: "1", fontWeight: "700" }],

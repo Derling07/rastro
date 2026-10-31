@@ -53,7 +53,7 @@ export function PeakHours() {
               type="button"
               className={
                 "rounded-full border px-3 py-1 text-sm " +
-                (module === item ? "border-pack bg-pack text-ink" : "border-line text-muted")
+                (module === item ? "chip border-pack" : "border border-line text-muted")
               }
               aria-pressed={module === item}
               onClick={() => setModule(item)}
@@ -67,7 +67,7 @@ export function PeakHours() {
         Counts added up by hour and weekday. The chart uses example numbers until this server has{" "}
         {data?.needed_runs ?? 7} real runs, then it switches to your data.
         {module === "traffic"
-          ? " A read-only feed of these hours is ready to connect to routing apps (for example Waze for Cities). Traffic counts are not verified."
+          ? " Exports in a standard format compatible with Waze for Cities. This app does not send the feed. Traffic counts are not verified."
           : ""}
       </p>
       {error && (
@@ -111,7 +111,7 @@ export function PeakHours() {
                       <td key={hour} className="p-0.5">
                         <span
                           className="block h-4 w-4 rounded-sm"
-                          style={{ background: `rgba(92, 200, 224, ${0.12 + (value / maxCell) * 0.88})` }}
+                          style={{ background: `rgba(20, 36, 28, ${0.12 + (value / maxCell) * 0.88})` }}
                           title={`${data.weekdays[day]} ${hour}:00 · ${value} ${data.unit}`}
                         />
                       </td>
@@ -126,7 +126,7 @@ export function PeakHours() {
             {data.series.map((value, hour) => (
               <div key={hour} className="flex flex-1 flex-col items-center justify-end">
                 <span
-                  className="block w-full rounded-sm bg-pack"
+                  className="block w-full bg-[var(--ink)]"
                   style={{ height: `${Math.max(4, (value / maxBar) * 96)}px` }}
                   title={`${hour}:00 · ${value} ${data.unit}`}
                 />

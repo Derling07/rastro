@@ -1,6 +1,6 @@
 # Rastro
 
-Rastro counts each individual once — and uses that to alert what matters. SAM 3.1 tracks objects through the video, the rules engine stitches a re-entry into the same individual, and Muse Spark writes the report without changing those numbers. The proof is the stored DSCF0112 run: **90 raw detections → 2 unique coyotes**.
+Rastro is a field notebook for cameras, not a one-off image analyzer. A module (camera trap, farm, crowd, or traffic) decides what matters. SAM 3.1 tracks objects through the video, the rules engine stitches a re-entry into the same individual, and Muse Spark writes one field note without changing those numbers. A person confirms or dismisses the note in the app. The proof is the stored DSCF0112 run: **90 raw detections → 2 unique coyotes**.
 
 A sector is defined by a JSON pack.
 
@@ -58,13 +58,13 @@ A sector is defined by a JSON pack.
 | Fauna | `packs/fauna.json` | Unique animals, re-entry stitch, alerts |
 | Transit | `packs/transito.json` | Vehicles and a turn matrix. **Not a verified traffic count.** |
 | Crowd | `packs/multitudes.json` | People per zone and density. **No re-identification.** One alert: 6 people/m² (high / crush risk). |
-| Farm | `packs/farm.json` | A pen the owner draws. Wild animal inside, or farm animal outside, only after it stays that way for 3 seconds. In-app confirm or dismiss. **NOT VERIFIED** — no labeled field clip. |
+| Farm | `packs/farm.json` | A pen the owner draws. Wild animal inside, or farm animal outside, only after it stays that way for 3 seconds. In-app confirm or dismiss. The camera replays are a local detector against a hand label, not a new SAM survey. |
 
 ## Cameras
 
 A camera in this app is not a live stream. It is a clip counted once, cached, and played back on a loop. Alerts are tied to `t_s`. Every camera is labeled **Simulated camera**.
 
-Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **North pen** is the farm example. **Ridge gate** is a protected area: the only alert is “Person detected in protected zone at HH:MM”, the face box is blurred, and nothing identifies the person. The ranger presses **Review**. Rastro does not notify authorities. The label is **Possible intrusion — needs review**. **Trap line** replays DSCF0112 (90 → 2). The inbox stays in the app: no SMS and no push. Farm and protected alerts are **NOT VERIFIED** until a labeled field clip exists (`eval/alert_set/`).
+Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **Organ Mountains** and **Goat lane** are the farm examples: a zone, a 3 second wait, then Confirm or Dismiss. **Forest trail** is a protected area: the alert is “Person detected in protected zone at HH:MM”, the person box is blurred, and nothing identifies the person. The ranger presses **Review**. Rastro does not notify authorities. The label is **Possible intrusion — needs review**. **Trap line** replays DSCF0112 (90 → 2). **Wicker Park** stays **NOT VERIFIED**. The inbox stays in the app: no SMS and no push. PASS on a camera means a local detector matched a hand label (`eval/alert_set/`). It is not a new paid SAM call.
 
 ## Peak hours
 
@@ -72,11 +72,16 @@ Crowd and traffic counts can be added up by hour and weekday. The chart on the C
 
 ## Open peak-hour feed
 
-`GET /api/open/peak-hours` (through the app: `/engine/api/open/peak-hours`) is a read-only JSON list of peak hours per camera. It is ready to connect to routing apps (for example Waze for Cities). Traffic counts in that feed are not verified. The feed does not push data anywhere; another app would have to read it.
+`GET /api/open/peak-hours` (through the app: `/engine/api/open/peak-hours`) is a read-only JSON list of peak hours per camera. Exports in a standard format compatible with Waze for Cities live at `GET /api/open/events` (JSON) and `GET /api/open/events.xml`. This is not a partnership. The server does not send the file to Waze. Real ingestion requires joining Waze for Cities. The incidents use an example coordinate in San José and are labeled **Example data** and **NOT VERIFIED**. A deep link (`GET /api/open/waze-link`, `https://www.waze.com/ul?ll=...`) only opens a map. It does not publish an incident.
 
 ```bash
 curl -s http://127.0.0.1:8787/api/open/peak-hours
+curl -s http://127.0.0.1:8787/api/open/events
 ```
+
+`POST /api/webhooks` stores a subscriber URL in memory. Delivery is off: confirming a field note queues a payload and does not POST it. `POST /api/streams` with an `rtsp`, HLS (`.m3u8`), or MJPEG URL classifies the address and stays on a **simulated** clip. The stream is not opened.
+
+`GET /api/field-note?clip=DSCF0112` returns the hero field note. The counts are the stored engine numbers. The prose is the Muse Spark reply already saved in that run. Opening the note does not call SAM or Muse Spark.
 
 ## Meta models
 
@@ -84,9 +89,9 @@ curl -s http://127.0.0.1:8787/api/open/peak-hours
 |---|---|---|
 | **SAM 3.1** | Video tracking, one concept per request | Meta Model API (`META_API_KEY`). Mock client if the key is absent, and always for sample clips. |
 | **Muse Voice Transcribe 1.0** | Field note → text, speaker per turn | Meta Model API. Mock note if the key is absent. Live notes must be WAV. |
-| **Muse Spark Open** | Report and alerts from the counts. The model is not allowed to change the numbers. | Baseten, `meta-models/muse-spark-open-1026` (`BASETEN_API_KEY`). Local report if the key is absent or the run is a mock sample. |
+| **Muse Spark Open** | One field note: severity, a short why, and “not sure” when confidence is low. It cannot change the engine count. | Baseten, `meta-models/muse-spark-open-1026` (`BASETEN_API_KEY`). The DSCF0112 card replays a recorded reply. Local rules cover the other modules. No paid call on page load. |
 
-Counts come from the rules engine. The agent writes prose.
+Counts come from the rules engine. The UI prints that engine number beside the note. The summary is interpretation, not a second count. With no keys, samples stay on the mock tracker. See `HACKATHON.md` for what was committed during the event.
 
 ## Architecture
 

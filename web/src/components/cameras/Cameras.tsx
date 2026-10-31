@@ -1,7 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type MouseEvent } from "react";
+import { AlertCard, type FieldNote } from "@/components/notebook/AlertCard";
+import { NotebookShell } from "@/components/notebook/Shell";
+import { Viewfinder } from "@/components/notebook/Viewfinder";
 import { PeakHours } from "@/components/PeakHours";
 
 type Point = [number, number];
@@ -70,6 +72,7 @@ export function Cameras() {
   const [draft, setDraft] = useState<Point[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [note, setNote] = useState<FieldNote | null>(null);
 
   const loadList = useCallback(async () => {
     const res = await fetch("/engine/api/cameras", { cache: "no-store" });
@@ -119,6 +122,44 @@ export function Cameras() {
       ignore = true;
     };
   }, [loadCamera, selected]);
+
+  useEffect(() => {
+    let ignore = false;
+    setNote(null);
+    fetch(`/engine/api/field-note?camera=${selected}`, { cache: "no-store" })
+      .then(async (res) => {
+        if (!res.ok) throw new Error("note");
+        return (await res.json()) as { note: FieldNote };
+      })
+      .then((body) => {
+        if (!ignore) setNote(body.note);
+      })
+      .catch(() => {
+        if (!ignore) setNote(null);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [selected]);
+
+  async function decideNote(action: "confirm" | "dismiss" | "review") {
+    if (!note) return;
+    setError(null);
+    const res = await fetch("/engine/api/field-note", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: note.id, action }),
+    });
+    const body = (await res.json()) as { note?: FieldNote; error?: string };
+    if (!res.ok || !body.note) {
+      setError(body.error || "Could not update the field note.");
+      return;
+    }
+    setNote(body.note);
+    if (action === "review" || action === "confirm" || action === "dismiss") {
+      await loadList();
+    }
+  }
 
   useEffect(() => {
     if (!playing || !camera || reduceMotion) return;
@@ -206,25 +247,12 @@ export function Cameras() {
   const polygon = draft.length >= 3 ? draft : camera?.zone?.polygon ?? [];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6">
-      <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="flex flex-wrap items-baseline gap-4">
-            <h1 className="font-display text-4xl font-bold tracking-tight">Rastro</h1>
-            <Link href="/" className="text-sm text-muted underline">
-              Analyze a clip
-            </Link>
-          </div>
-          <p className="mt-1 max-w-xl text-sm text-muted">
-            Rastro counts each individual once — and uses that to alert what matters.
-          </p>
-        </div>
-      </header>
-
-      <div className="mb-4 rounded-lg border border-line bg-panel p-4">
-        <p className="font-display text-2xl">Cameras</p>
+    <NotebookShell current="cameras">
+    <div data-module={camera?.module || "farm"}>
+      <div className="mb-4 border border-line bg-panel p-4">
+        <p className="font-note text-2xl">Cameras</p>
         <p className="mt-1 text-sm text-muted">
-          Each camera plays a real clip under an open license. It is not a live stream. Alerts are tied to the second they happened.
+          Each camera is a simulated camera: a real open-license clip, played back, not a live stream. Alerts are tied to the second they happened.
         </p>
       </div>
 
@@ -270,8 +298,8 @@ export function Cameras() {
           {camera && camera.id === selected && (
             <div data-camera-id={camera.id}>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-pack px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-pack">
-                  {camera.video_url ? "Recorded clip" : "Stored run"}
+                <span className="border border-pack px-2 py-0.5 font-facts text-[11px] font-bold uppercase tracking-wide text-pack">
+                  Simulated camera
                 </span>
                 {!camera.verified && (
                   <span className="rounded-full border border-alta px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-alta">
@@ -282,7 +310,7 @@ export function Cameras() {
               <p className="font-display text-3xl leading-tight">{camera.headline}</p>
               <p className="text-sm text-muted">{camera.verification_note}</p>
 
-              <div className="rounded-lg border border-line bg-black p-2">
+              <Viewfinder label="Simulated camera">
                 <div className="relative">
                 {camera.video_url && (
                   <video
@@ -307,17 +335,18 @@ export function Cameras() {
                   {polygon.length >= 2 && (
                     <polygon
                       points={polygon.map(([x, y]) => `${x * (camera.frame_width || SIZE)},${y * (camera.frame_height || SIZE)}`).join(" ")}
-                      fill="#5cc8e0"
+                      fill="#e7d3a1"
                       fillOpacity={0.12}
-                      stroke="#5cc8e0"
+                      stroke="#e7d3a1"
                       strokeWidth={4}
                     />
                   )}
                   {draft.map(([x, y], index) => (
-                    <circle key={index} cx={x * (camera.frame_width || SIZE)} cy={y * (camera.frame_height || SIZE)} r={8} fill="#f2a93b" />
+                    <circle key={index} cx={x * (camera.frame_width || SIZE)} cy={y * (camera.frame_height || SIZE)} r={8} fill="#e7d3a1" />
                   ))}
                   {frame?.objects.map((object, index) => {
                     const [x1, y1, x2, y2] = object.bbox;
+                    const blurred = object.class === "person" || camera.module === "protected";
                     return (
                       <g key={object.track_id || index}>
                         <rect
@@ -325,18 +354,20 @@ export function Cameras() {
                           y={y1}
                           width={Math.max(0, x2 - x1)}
                           height={Math.max(0, y2 - y1)}
-                          fill="none"
-                          stroke="#f2a93b"
+                          fill={blurred ? "#c9c2b2" : "none"}
+                          fillOpacity={blurred ? 0.8 : 0}
+                          stroke="#e7d3a1"
                           strokeWidth={4}
                         />
-                        <text x={x1} y={Math.max(24, y1 - 8)} fill="#f2a93b" fontSize={28}>
-                          {object.class}
+                        <text x={x1} y={Math.max(24, y1 - 8)} fill="#e7d3a1" fontSize={28}>
+                          {blurred ? "blurred" : object.class}
                         </text>
                       </g>
                     );
                   })}
                 </svg>
                 </div>
+              </Viewfinder>
                 <div className="mt-2 flex flex-wrap items-center gap-3 px-1 text-sm">
                   <button type="button" className="demo-secondary" onClick={() => setPlaying((value) => !value)}>
                     {playing ? "Pause" : "Play loop"}
@@ -358,7 +389,6 @@ export function Cameras() {
                   </label>
                   {liveAlert && <span className="text-alta">Now: {liveAlert.message}</span>}
                 </div>
-              </div>
 
               {camera.zone_editable && (
                 <div className="rounded-lg border border-dashed border-line p-3 text-sm">
@@ -379,6 +409,8 @@ export function Cameras() {
               )}
             </div>
           )}
+
+          {note && <AlertCard note={note} onAction={(action) => void decideNote(action)} />}
 
           <section aria-labelledby="inbox-h">
             <h2 id="inbox-h" className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
@@ -458,6 +490,7 @@ export function Cameras() {
         </ul>
       </footer>
     </div>
+    </NotebookShell>
   );
 }
 

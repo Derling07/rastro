@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Viewfinder } from "@/components/notebook/Viewfinder";
 import { colorForTrack, type Frame } from "@/lib/result";
 
 type Props = {
@@ -53,9 +54,11 @@ export function FrameStage({ frames, time, onTime, isMock }: Props) {
 
   if (!active) {
     return (
-      <div className="flex aspect-video items-center justify-center rounded-lg border border-dashed border-line bg-panel text-sm text-muted">
-        No frame boxes in this result.
-      </div>
+      <Viewfinder label={isMock ? "Simulated camera · mock" : "Simulated camera"}>
+        <div className="flex aspect-video items-center justify-center px-6 text-center text-sm text-[#d7e0d8]">
+          No frame boxes in this result.
+        </div>
+      </Viewfinder>
     );
   }
 
@@ -63,7 +66,7 @@ export function FrameStage({ frames, time, onTime, isMock }: Props) {
 
   return (
     <div className="space-y-2">
-      <div className="relative overflow-hidden rounded-lg border border-line bg-black">
+      <Viewfinder label={isMock ? "Simulated camera · mock" : "Simulated camera"}>
         <svg viewBox={`0 0 ${size.w} ${size.h}`} className="block aspect-video w-full" role="img" aria-label="Tracked boxes on the current frame">
           <rect width={size.w} height={size.h} fill="#0b100e" />
           {active.objects.map((object) => {
@@ -87,10 +90,10 @@ export function FrameStage({ frames, time, onTime, isMock }: Props) {
             Mock
           </span>
         )}
-        <span className="absolute bottom-2 right-2 rounded bg-black/70 px-2 py-0.5 font-display text-sm">
+        <span className="absolute bottom-2 right-2 bg-black/70 px-2 py-0.5 font-facts text-sm text-[#f3f6f1]">
           {active.t_s.toFixed(1)}s
         </span>
-      </div>
+      </Viewfinder>
       <div className="flex items-center gap-3">
         <button
           type="button"

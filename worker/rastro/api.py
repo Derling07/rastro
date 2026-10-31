@@ -786,6 +786,11 @@ def reset_state() -> None:
     with _lock:
         _jobs.clear()
         _results.clear()
+    from .feeds import reset_feeds
+    from .field_note import reset_field_notes
+
+    reset_field_notes()
+    reset_feeds()
 
 
 def hydrate() -> None:
@@ -855,8 +860,11 @@ class Handler(BaseHTTPRequestHandler):
 
     def _send(self, code: int, payload: dict[str, Any]) -> None:
         raw = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        self._send_raw(code, raw, "application/json; charset=utf-8")
+
+    def _send_raw(self, code: int, raw: bytes, content_type: str) -> None:
         self.send_response(code)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(raw)))
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
@@ -884,6 +892,51 @@ class Handler(BaseHTTPRequestHandler):
             from .peaks import open_peak_hours
 
             self._send(200, open_peak_hours())
+            return
+        if path == "/api/open/events":
+            from .feeds import cifs_feed
+
+            self._send(200, cifs_feed())
+            return
+        if path == "/api/open/events.xml":
+            from .feeds import cifs_xml
+
+            self._send_raw(200, cifs_xml().encode("utf-8"), "application/xml; charset=utf-8")
+            return
+        if path == "/api/open/waze-link":
+            from .feeds import waze_ul
+
+            self._send(
+                200,
+                {
+                    "waze_ul": waze_ul(),
+                    "example_data": True,
+                    "not_verified": True,
+                    "note": "Deep link only. It does not publish an incident.",
+                },
+            )
+            return
+        if path == "/api/field-note":
+            from .field_note import get_note, note_dscf0112, note_for_camera
+
+            query = parse_qs(parsed.query)
+            clip = (query.get("clip") or [""])[0]
+            camera_id = (query.get("camera") or [""])[0]
+            if clip:
+                note = get_note(f"clip:{clip}")
+            elif camera_id:
+                note = note_for_camera(camera_id)
+            else:
+                note = note_dscf0112()
+            if note is None:
+                self._send(404, {"error": "note not found"})
+                return
+            self._send(200, {"note": note})
+            return
+        if path == "/api/webhooks":
+            from .feeds import list_webhooks
+
+            self._send(200, list_webhooks())
             return
         if path == "/api/peaks":
             from .peaks import peak_view
@@ -965,6 +1018,15 @@ class Handler(BaseHTTPRequestHandler):
         if len(parts) >= 3 and parts[0] == "api" and parts[1] == "cameras":
             self._camera_post(parts)
             return
+        if path == "/api/field-note":
+            self._field_note_post()
+            return
+        if path == "/api/webhooks":
+            self._webhook_post()
+            return
+        if path == "/api/streams":
+            self._stream_post()
+            return
         if path != "/api/jobs":
             self._send(404, {"error": "not found"})
             return
@@ -1019,6 +1081,69 @@ class Handler(BaseHTTPRequestHandler):
             self._send(400, {"error": "invalid JSON"})
             return
         self._send(201, {k: v for k, v in job.items() if k not in {"video_path", "voice_path"}})
+
+    def _json_body(self) -> dict[str, Any] | None:
+        try:
+            data = json.loads((self._read_body(64_000) or b"{}").decode("utf-8"))
+        except json.JSONDecodeError:
+            self._send(400, {"error": "invalid JSON"})
+            return None
+        if not isinstance(data, dict):
+            self._send(400, {"error": "invalid JSON"})
+            return None
+        return data
+
+    def _field_note_post(self) -> None:
+        from .field_note import decide_note
+
+        data = self._json_body()
+        if data is None:
+            return
+        note_id = data.get("id")
+        action = data.get("action")
+        if not isinstance(note_id, str) or not isinstance(action, str):
+            self._send(400, {"error": "id and action required"})
+            return
+        try:
+            note = decide_note(note_id, action)
+        except ValueError as exc:
+            self._send(400, {"error": str(exc)})
+            return
+        self._send(200, {"note": note})
+
+    def _webhook_post(self) -> None:
+        from .feeds import subscribe_webhook
+
+        data = self._json_body()
+        if data is None:
+            return
+        url = data.get("url")
+        if not isinstance(url, str):
+            self._send(400, {"error": "url required"})
+            return
+        try:
+            row = subscribe_webhook(url)
+        except ValueError as exc:
+            self._send(400, {"error": str(exc)})
+            return
+        self._send(201, row)
+
+    def _stream_post(self) -> None:
+        from .streams import classify_stream
+
+        data = self._json_body()
+        if data is None:
+            return
+        url = data.get("url")
+        if not isinstance(url, str):
+            self._send(400, {"error": "url required"})
+            return
+        try:
+            row = classify_stream(url)
+        except ValueError as exc:
+            self._send(400, {"error": str(exc)})
+            return
+        self._send(200, row)
 
 
 def serve(host: str | None = None, port: int | None = None) -> None:
