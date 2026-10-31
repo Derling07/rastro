@@ -40,7 +40,7 @@ The field-notebook redesign, the Muse Spark field note, and the open export land
 
 ## In-memory demo state
 
-Field-note statuses, webhook subscriptions, and the webhook outbox live in process memory only. Each list is capped at 50 entries. They disappear when the process stops. They are not written to Supabase or to disk. Webhook delivery stays off: a confirm records a payload and does not POST it. `RASTRO_WRITE_TOKEN` is unset in this demo, so those write routes accept localhost only.
+Field-note statuses, webhook subscriptions, and the webhook outbox live in process memory only. Each list is capped at 50 entries. They disappear when the process stops. They are not written to Supabase or to disk. Webhook delivery stays off: a confirm records a payload and does not POST it. `RASTRO_WRITE_TOKEN` may be unset. Those write routes then accept localhost or a matching token.
 
 ## Meta models in this repo
 

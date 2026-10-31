@@ -1,5 +1,6 @@
 "use client";
 
+import { clipLabel } from "@/lib/labels";
 import type { ReportSection } from "@/lib/result";
 
 type Props = { report: ReportSection; empty?: boolean };
@@ -19,14 +20,14 @@ export function ReportView({ report, empty }: Props) {
         id="report-title"
         className="font-display text-2xl font-semibold text-pack"
       >
-        {report.titulo || "Report"}
+        {clipLabel(report.titulo || "Report")}
       </h2>
       {report.gancho_demo && (
         <p className="mt-1 font-display text-lg text-[var(--text)]">
-          {report.gancho_demo}
+          {clipLabel(report.gancho_demo)}
         </p>
       )}
-      <p className="mt-2 text-sm leading-relaxed">{report.resumen}</p>
+      <p className="mt-2 text-sm leading-relaxed">{clipLabel(report.resumen || "")}</p>
 
       {report.especies && report.especies.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-2">

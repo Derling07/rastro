@@ -91,7 +91,7 @@ export function PeakHours() {
             </span>
           </div>
           <h3 className="mt-4 text-xs font-bold uppercase tracking-[0.16em] text-muted">Hour × weekday</h3>
-          <div className="mt-2 overflow-x-auto">
+          <div className="mt-2 overflow-x-auto" tabIndex={0} role="region" aria-label="Peak hours table">
             <table className="border-collapse text-[10px]">
               <thead>
                 <tr>

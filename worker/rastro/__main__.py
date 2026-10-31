@@ -1,3 +1,6 @@
-from .cli import main
+"""`python -m rastro` starts the local API."""
 
-raise SystemExit(main())
+from rastro.api import main
+
+if __name__ == "__main__":
+    main()

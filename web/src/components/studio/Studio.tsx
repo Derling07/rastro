@@ -16,6 +16,7 @@ import {
 } from "@/lib/result";
 import { buildTurnMatrix } from "@/lib/transito";
 import { AlertCard, type FieldNote } from "@/components/notebook/AlertCard";
+import { clipLabel, moduleLabel } from "@/lib/labels";
 import { NotebookShell } from "@/components/notebook/Shell";
 import { Viewfinder } from "@/components/notebook/Viewfinder";
 import { FrameStage } from "./FrameStage";
@@ -211,7 +212,7 @@ export function Studio() {
   async function decideNote(action: "confirm" | "dismiss" | "review") {
     if (!note) return;
     setError(null);
-    const res = await fetch("/engine/api/field-note", {
+    const res = await fetch("/api/field-note", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: note.id, action }),
@@ -673,9 +674,9 @@ export function Studio() {
                   className="w-full rounded-lg border border-line bg-panel px-3 py-2 text-left hover:border-pack"
                   onClick={() => void openJob(item)}
                 >
-                  <span className="block text-sm">{item.title || item.original_name}</span>
+                  <span className="block text-sm">{clipLabel(item.title || item.original_name || "Run")}</span>
                   <span className="text-xs text-muted">
-                    {item.pack} · {item.status}
+                    {moduleLabel(item.pack)} · {item.status}
                     {item.is_mock ? " · mock" : ""}
                     {historyCount(item)}
                   </span>

@@ -157,9 +157,7 @@ PACK_ALIASES = {
     "multitudes-densidad": "multitudes",
 }
 
-_lock = threading.Lock()
-_jobs: dict[str, dict[str, Any]] = {}
-_results: dict[str, dict[str, Any]] = {}
+from .state import _jobs, _lock, _results
 
 
 def jobs_dir() -> Path:

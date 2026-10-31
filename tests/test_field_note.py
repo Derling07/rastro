@@ -120,6 +120,21 @@ def test_protected_review_does_not_confirm_and_farm_can_confirm():
     assert confirmed["status"] == "confirmed"
 
 
+def test_inbox_severity_comes_from_each_camera_note():
+    from rastro.cameras import inbox, reset_camera_state
+
+    reset_camera_state()
+    rows = inbox()
+    ids = {row["camera_id"] for row in rows}
+    assert {"gray-fox", "goat-lane", "forest-trail"} <= ids
+    for row in rows:
+        note = note_for_camera(row["camera_id"])
+        assert note is not None
+        assert row["severity"] == note["severity"]
+    forest = next(row for row in rows if row["camera_id"] == "forest-trail")
+    assert forest["severity"] == "not sure"
+
+
 def test_traffic_note_does_not_invent_a_vehicle_total():
     note = note_for_camera("wicker-park")
     assert note is not None
@@ -192,6 +207,21 @@ def test_active_run_note_uses_that_runs_numbers():
     crowd_note = note_for_result(crowd_result, run_id=crowd["id"], pack="multitudes")
     assert crowd_note is not None
     assert crowd_note["engine_count"] == "Peak 5.4 people/m²"
-    assert crowd_note["engine"]["unique_count"] == crowd_result["unique_count"]
+    assert crowd_note["why"]["sam"] == "SAM 3.1 detected people per frame. No re-identification."
+    assert "unique" not in crowd_note["why"]["sam"]
+    assert "135" not in crowd_note["engine_count"]
     assert crowd_note["summary_label"] == "Rules engine note"
+    transit = api.create_sample_job("transito-intersection")
+    for _ in range(200):
+        current = api.get_job(transit["id"])
+        if current and current["status"] in {"done", "failed"}:
+            break
+        time.sleep(0.02)
+    transit_result = api.get_result(transit["id"])["result"]
+    transit_note = note_for_result(transit_result, run_id=transit["id"], pack="transito")
+    assert transit_note is not None
+    assert transit_note["engine_count"] == "No verified vehicle count"
+    assert "3304" not in transit_note["engine_count"]
+    assert "3304" not in transit_note["why"]["sam"]
+    assert transit_note["not_sure"] is True
     assert note_for_result(api.get_result(empty["id"])["result"], run_id=empty["id"], pack="fauna") is None

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { clipLabel } from "@/lib/labels";
 
 export type FieldNote = {
   id: string;
@@ -86,6 +87,7 @@ export function AlertCard({
   const dismiss = note.actions.includes("dismiss");
   const review = note.actions.includes("review");
   const statusRef = useRef<HTMLParagraphElement>(null);
+  const pendingRef = useRef(false);
   const [pending, setPending] = useState(false);
   const decided = useRef(false);
 
@@ -96,12 +98,14 @@ export function AlertCard({
   }, [note.status, pending]);
 
   async function act(action: "confirm" | "dismiss" | "review") {
-    if (pending || !onAction) return;
+    if (pendingRef.current || !onAction) return;
+    pendingRef.current = true;
     setPending(true);
     decided.current = true;
     try {
       await onAction(action);
     } finally {
+      pendingRef.current = false;
       setPending(false);
     }
   }
@@ -123,7 +127,7 @@ export function AlertCard({
         </div>
         <div>
           <h2 id={`note-${note.id}`} className="font-note text-2xl leading-tight">
-            {note.title}
+            {clipLabel(note.title)}
           </h2>
           <p className="mt-2 font-facts text-[11px] uppercase tracking-[0.14em] text-muted">
             Context · {note.context.example_data ? "Example data" : note.context.label}
@@ -134,7 +138,7 @@ export function AlertCard({
             ))}
           </ul>
           <h3 className="mt-4 font-note text-lg italic">{note.summary_label}</h3>
-          <p className="line-clamp-3 font-note text-lg leading-snug">{note.summary}</p>
+          <p className="line-clamp-3 font-note text-lg leading-snug">{clipLabel(note.summary)}</p>
           <p className="mt-2 text-xs text-muted">
             {note.recorded
               ? `Recorded reply from ${note.model || "Muse Spark"}. This page did not call the model.`

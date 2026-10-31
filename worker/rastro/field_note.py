@@ -297,10 +297,19 @@ def note_for_camera(camera_id: str) -> dict[str, Any] | None:
         note["engine_count"] = "Person box. No identity."
     elif module == "traffic":
         note["engine_count"] = "No verified vehicle count"
+        note["why"]["sam"] = "This request did not call SAM. No verified vehicle count."
     elif module == "crowd":
+        note["why"]["sam"] = "SAM 3.1 detected people per frame. No re-identification."
         note["engine_count"] = "No people/m² on this clip"
     note["camera_id"] = camera_id
     return note
+
+
+def _sentence(text: str) -> str:
+    cleaned = text.strip()
+    if not cleaned.endswith((".", "!", "?")):
+        cleaned += "."
+    return cleaned
 
 
 def _local_summary(camera: dict[str, Any], alert: dict[str, Any], low: bool) -> str:
@@ -310,7 +319,7 @@ def _local_summary(camera: dict[str, Any], alert: dict[str, Any], low: bool) -> 
             "Muse Spark was not called. Confidence is low, so the severity is not sure. "
             "A person decides. This note does not add a vehicle total or a density."
         )
-    message = str(alert.get("message") or "No alert on this clip.")
+    message = _sentence(str(alert.get("message") or "No alert on this clip."))
     if low:
         return (
             f"{message} Muse Spark was not called. "
@@ -346,14 +355,13 @@ def _rule_line(camera: dict[str, Any], alert: dict[str, Any]) -> str:
 
 def get_note(note_id: str) -> dict[str, Any] | None:
     if note_id.startswith("run:"):
-        from . import api as api_mod
+        from .state import _jobs, _lock, _results
 
         run_id = note_id.split(":", 1)[1]
-        job = api_mod.get_job(run_id)
-        if not job or job.get("status") != "done":
-            return None
-        envelope = api_mod.get_result(run_id)
-        if not isinstance(envelope, dict):
+        with _lock:
+            job = _jobs.get(run_id)
+            envelope = _results.get(run_id)
+        if not job or job.get("status") != "done" or not isinstance(envelope, dict):
             return None
         return note_for_result(envelope.get("result"), run_id=run_id, pack=job.get("pack"))
     if note_id in {"DSCF0112", "clip:DSCF0112", "camera:trap-dscf0112"}:
@@ -408,7 +416,9 @@ def note_for_result(result: dict[str, Any] | None, *, run_id: str, pack: str | N
     note = assemble_note(
         note_id=f"run:{run_id}",
         module=pack or "fauna",
-        title=str(report.get("titulo") or source_video or "This run"),
+        title={"fauna": "Camera trap clip", "transito": "Intersection clip", "multitudes": "Crowds"}.get(
+            pack or "", "This run"
+        ),
         engine=engine,
         noun=_noun_for(result, pack),
         summary=summary,
@@ -438,11 +448,22 @@ def note_for_result(result: dict[str, Any] | None, *, run_id: str, pack: str | N
     )
     if uncomputed:
         note["engine_count"] = NO_COUNT
+    elif pack == "transito":
+        note["engine_count"] = "No verified vehicle count"
+        note["why"]["sam"] = "This request did not call SAM. No verified vehicle count."
+        note["severity"] = "not sure"
+        note["not_sure"] = True
     elif pack == "multitudes":
+        note["why"]["sam"] = "SAM 3.1 detected people per frame. No re-identification."
         peak = result.get("peak_density") if isinstance(result.get("peak_density"), dict) else {}
         density = peak.get("density_per_m2")
+        persons = peak.get("persons")
         if isinstance(density, (int, float)):
             note["engine_count"] = f"Peak {density:g} people/m²"
+        elif isinstance(persons, int) and persons != result.get("unique_count"):
+            note["engine_count"] = f"Peak {persons} people in one frame"
+        else:
+            note["engine_count"] = NO_COUNT
     note["run_id"] = run_id
     return note
 

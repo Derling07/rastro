@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type MouseEvent } from "react";
 import { AlertCard, type FieldNote } from "@/components/notebook/AlertCard";
+import { placeLabel } from "@/lib/labels";
 import { NotebookShell } from "@/components/notebook/Shell";
 import { Viewfinder } from "@/components/notebook/Viewfinder";
 import { PeakHours } from "@/components/PeakHours";
@@ -147,7 +148,7 @@ export function Cameras() {
   async function decideNote(action: "confirm" | "dismiss" | "review") {
     if (!note) return;
     setError(null);
-    const res = await fetch("/engine/api/field-note", {
+    const res = await fetch("/api/field-note", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: note.id, action }),
@@ -280,7 +281,7 @@ export function Cameras() {
                   onClick={() => setSelected(card.id)}
                 >
                   <span className="block text-xs uppercase tracking-wide text-muted">{card.site}</span>
-                  <span className="block font-display text-xl">{card.name}</span>
+                  <span className="block break-words font-display text-xl">{placeLabel(card.name)}</span>
                   <span className="text-xs text-muted">
                     {card.verification}
                     {card.open_alerts ? ` · ${card.open_alerts} open` : ""}
@@ -436,7 +437,7 @@ export function Cameras() {
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div>
                         <p className="text-xs uppercase tracking-wide text-muted">
-                          {alert.camera_name} · {alert.t_s.toFixed(1)}s · {note && alert.camera_id === note.camera_id ? note.severity : alert.severity}
+                          {placeLabel(alert.camera_name || "Camera")} · {alert.t_s.toFixed(1)}s · {alert.severity}
                           {alert.verification === "NOT VERIFIED" ? " · Not verified" : ""}
                         </p>
                         <p className="mt-1 font-display text-2xl leading-tight">{alert.message}</p>

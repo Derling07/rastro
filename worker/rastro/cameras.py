@@ -292,18 +292,27 @@ def decide(camera_id: str, alert_id: str, action: str) -> dict[str, Any]:
 
 
 def inbox() -> list[dict[str, Any]]:
+    """Every open alert, with severity taken from that camera's field note."""
+    from .field_note import note_for_camera
+
     rows = []
     for camera in camera_catalog():
-        for alert in camera["alerts"]:
-            rows.append(
-                {
-                    "camera_id": camera["id"],
-                    "camera_name": camera["name"],
-                    "site": camera["site"],
-                    "verified": camera["verified"],
-                    "verification": camera["verification"],
-                    **alert,
-                }
-            )
-    rows.sort(key=lambda row: (row.get("status") != "open", row.get("t_s") or 0))
+        open_alerts = [alert for alert in camera["alerts"] if alert.get("status") == "open"]
+        if not open_alerts:
+            continue
+        note = note_for_camera(camera["id"])
+        severity = note["severity"] if note else None
+        for alert in open_alerts:
+            row = {
+                "camera_id": camera["id"],
+                "camera_name": camera["name"],
+                "site": camera["site"],
+                "verified": camera["verified"],
+                "verification": camera["verification"],
+                **alert,
+            }
+            if severity:
+                row["severity"] = severity
+            rows.append(row)
+    rows.sort(key=lambda row: (row.get("t_s") or 0, row.get("camera_id") or ""))
     return rows
