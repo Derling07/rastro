@@ -160,6 +160,17 @@ PACK_ALIASES = {
 from .state import _jobs, _lock, _results
 
 
+def writes_allowed(client_host: str, presented_token: str | None) -> bool:
+    """Loopback is read from the socket address only, never from a forwarded header."""
+    expected = os.environ.get("RASTRO_WRITE_TOKEN")
+    if expected:
+        return secrets.compare_digest(presented_token or "", expected)
+    host = client_host
+    if host.startswith("::ffff:"):
+        host = host.removeprefix("::ffff:")
+    return host in {"127.0.0.1", "::1"}
+
+
 def jobs_dir() -> Path:
     raw = os.environ.get("RASTRO_JOBS_DIR") or str(REPO / "outputs" / "api-jobs")
     path = Path(raw)
@@ -1100,14 +1111,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def _writes_allowed(self) -> bool:
         """Unset RASTRO_WRITE_TOKEN allows localhost only. A set token must match the header."""
-        expected = os.environ.get("RASTRO_WRITE_TOKEN")
-        if expected:
-            got = self.headers.get("X-Rastro-Token") or ""
-            return secrets.compare_digest(got, expected)
-        host = self.client_address[0]
-        if host.startswith("::ffff:"):
-            host = host.removeprefix("::ffff:")
-        return host in {"127.0.0.1", "::1"}
+        return writes_allowed(self.client_address[0], self.headers.get("X-Rastro-Token"))
 
     def _field_note_post(self) -> None:
         from .field_note import decide_note

@@ -27,7 +27,11 @@ def test_dscf0112_uses_engine_counts_and_recorded_prose():
     assert note["engine"]["unique_count"] == result["unique_count"] == 2
     assert note["engine"]["naive_count"] == result["naive_count"] == 2
     assert note["engine_count"] == "90 raw detections → 2 unique coyotes"
-    assert note["summary"] == result["report"]["resumen"]
+    assert "DSCF0112.mp4" in result["report"]["resumen"]
+    assert ".mp4" not in note["summary"]
+    assert "fauna-camtrap" not in note["summary"]
+    assert "2 unique coyotes" in note["summary"]
+    assert note["title"] == "Rastro report — Wildlife camera"
     assert note["summary_label"] == "Muse Spark summary (recorded)"
     assert note["not_sure"] is False
     assert note["severity"] == "info"
@@ -135,6 +139,32 @@ def test_inbox_severity_comes_from_each_camera_note():
     assert forest["severity"] == "not sure"
 
 
+def test_empty_token_allows_loopback_and_rejects_other_hosts(monkeypatch):
+    from rastro.api import writes_allowed
+
+    monkeypatch.delenv("RASTRO_WRITE_TOKEN", raising=False)
+    assert writes_allowed("127.0.0.1", None) is True
+    assert writes_allowed("::1", None) is True
+    assert writes_allowed("172.18.0.5", None) is False
+    route = Path("web/src/app/api/field-note/route.ts").read_text(encoding="utf-8")
+    assert "x-rastro-token" in route
+    assert "if (!token)" not in route
+    card = Path("web/src/components/notebook/AlertCard.tsx").read_text(encoding="utf-8")
+    assert "Could not save:" in card
+
+
+def test_visible_note_hides_filenames_and_pack_ids():
+    fox = note_for_camera("forest-trail")
+    assert fox is not None
+    assert fox["title"] == "Protected area"
+    assert "clip" not in fox["title"].lower()
+    shown = note_dscf0112()
+    visible = shown["title"] + shown["summary"] + shown["engine_count"]
+    assert ".mp4" not in visible
+    assert "fauna-camtrap" not in visible
+    assert "2 unique coyotes" in shown["engine_count"]
+
+
 def test_traffic_note_does_not_invent_a_vehicle_total():
     note = note_for_camera("wicker-park")
     assert note is not None
@@ -223,5 +253,10 @@ def test_active_run_note_uses_that_runs_numbers():
     assert transit_note["engine_count"] == "No verified vehicle count"
     assert "3304" not in transit_note["engine_count"]
     assert "3304" not in transit_note["why"]["sam"]
+    assert "unique" not in (transit_note["summary"] + transit_note["engine_count"] + transit_note["why"]["sam"]).lower()
     assert transit_note["not_sure"] is True
+    visible = crowd_note["summary"] + crowd_note["engine_count"] + crowd_note["why"]["sam"] + crowd_note["title"]
+    assert "unique" not in visible.lower()
+    assert ".mp4" not in visible
+    assert "fauna-camtrap" not in visible
     assert note_for_result(api.get_result(empty["id"])["result"], run_id=empty["id"], pack="fauna") is None

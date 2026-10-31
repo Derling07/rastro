@@ -17,20 +17,17 @@ export async function GET(req: Request): Promise<Response> {
 
 export async function POST(req: Request): Promise<Response> {
   const token = process.env.RASTRO_WRITE_TOKEN;
-  if (!token) {
-    return Response.json({ error: "Set RASTRO_WRITE_TOKEN" }, { status: 401 });
-  }
+  const headers = new Headers({ "content-type": "application/json" });
+  // Empty token: forward as-is so the API can allow localhost. A set token is attached here.
+  if (token) headers.set("x-rastro-token", token);
   const res = await fetch(`${apiBase()}/api/field-note`, {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-rastro-token": token,
-    },
+    headers,
     body: await req.text(),
     cache: "no-store",
   });
   return new Response(await res.arrayBuffer(), {
     status: res.status,
-    headers: { "content-type": "application/json", "cache-control": "no-store" },
+    headers: { "content-type": res.headers.get("content-type") || "application/json", "cache-control": "no-store" },
   });
 }

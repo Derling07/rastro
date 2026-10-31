@@ -12,7 +12,7 @@ services:
       RASTRO_BIND: "0.0.0.0"
       RASTRO_STAGE_SLEEP: "0.4"
       RASTRO_JOBS_DIR: /data/rastro-jobs
-      RASTRO_WRITE_TOKEN: ${RASTRO_WRITE_TOKEN:-}
+      RASTRO_WRITE_TOKEN: ${RASTRO_WRITE_TOKEN:?Set RASTRO_WRITE_TOKEN in .env}
     volumes:
       - rastro-jobs:/data/rastro-jobs
     healthcheck:
@@ -36,7 +36,7 @@ services:
       - "127.0.0.1:43123:3000"
     environment:
       RASTRO_API_URL: http://api:8787
-      RASTRO_WRITE_TOKEN: ${RASTRO_WRITE_TOKEN:-}
+      RASTRO_WRITE_TOKEN: ${RASTRO_WRITE_TOKEN:?Set RASTRO_WRITE_TOKEN in .env}
     depends_on:
       api:
         condition: service_healthy

@@ -1,5 +1,6 @@
 "use client";
 
+import { clipLabel } from "@/lib/labels";
 import type { Alert } from "@/lib/result";
 
 type Props = {
@@ -52,7 +53,7 @@ export function AlertList({ alerts, onSeek }: Props) {
               {severityLabel(a.severity)}
               <span className="ml-2 text-pack">{fmtTime(a.t_s)}</span>
             </span>
-            <p className="text-sm">{a.message}</p>
+            <p className="text-sm">{clipLabel(a.message)}</p>
           </button>
         </li>
       ))}

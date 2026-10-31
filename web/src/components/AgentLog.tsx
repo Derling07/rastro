@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { clipLabel } from "@/lib/labels";
 import type { AgentStep } from "@/lib/result";
 
 type Props = { steps: AgentStep[] };
@@ -35,7 +36,7 @@ export function AgentLog({ steps }: Props) {
                 <span className="ml-2 text-xs text-alta">failed</span>
               )}
               {s.detail && (
-                <p className="text-xs text-muted">{s.detail}</p>
+                <p className="text-xs text-muted">{clipLabel(s.detail)}</p>
               )}
             </li>
           ))}

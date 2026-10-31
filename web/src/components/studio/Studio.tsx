@@ -85,18 +85,6 @@ function busiestTime(frames: { t_s: number; objects: unknown[] }[]): number {
   return best?.t_s ?? 0;
 }
 
-const PEOPLE = new Set(["person", "persona", "people", "pedestrian"]);
-
-function vehicleSplit(byClass: Record<string, number>): { vehicles: number; people: number } {
-  let vehicles = 0;
-  let people = 0;
-  for (const [name, count] of Object.entries(byClass)) {
-    if (PEOPLE.has(name.toLowerCase())) people += count;
-    else vehicles += count;
-  }
-  return { vehicles, people };
-}
-
 function friendlyError(raw: string | null | undefined): string {
   if (!raw || raw.toLowerCase().includes("mock failure")) {
     return "This run failed. Nothing was counted.";
@@ -109,16 +97,19 @@ function densityText(value: number): string {
 }
 
 function transitHeadline(result: RastroResult): string {
-  const { vehicles, people } = vehicleSplit(result.by_class);
-  const personLabel = people === 1 ? "person" : "people";
-  const peoplePart = people > 0 ? ` · ${people} ${personLabel}` : "";
-  return `${result.naive_count} sightings, ${vehicles} unique vehicles${peoplePart} · NOT VERIFIED`;
+  void result;
+  return "No verified vehicle count";
 }
 
 function historyCount(item: Job): string {
   if (item.pack === "multitudes") {
-    const people = item.peak_persons ?? item.unique_count;
-    return typeof people === "number" ? ` · Peak ${people} people` : "";
+    if (typeof item.peak_persons === "number" && item.peak_persons !== item.unique_count) {
+      return ` · Peak ${item.peak_persons} people in one frame`;
+    }
+    if (typeof item.peak_density_per_m2 === "number") {
+      return ` · Peak ${item.peak_density_per_m2} people/m²`;
+    }
+    return "";
   }
   if (item.pack === "transito" && typeof item.naive_count === "number" && typeof item.vehicle_count === "number") {
     return ` · ${item.naive_count} → ${item.vehicle_count} vehicles · not verified`;
@@ -140,10 +131,14 @@ function historyCount(item: Job): string {
 }
 
 function crowdHeadline(result: RastroResult): string {
-  const people = result.peak_density?.persons ?? result.unique_count;
+  const persons = result.peak_density?.persons;
   const density = result.peak_density?.density_per_m2;
-  if (density === null || density === undefined) return `Up to ${people} people at once`;
-  return `Up to ${people} people at once · peak ${densityText(density)} people/m²`;
+  // unique_count is not a headcount. Show a person total only when the peak differs from it.
+  const personPeak = typeof persons === "number" && persons !== result.unique_count ? persons : null;
+  if (personPeak === null && (density === null || density === undefined)) return "No verified person count";
+  if (personPeak === null) return `Peak ${densityText(density as number)} people/m²`;
+  if (density === null || density === undefined) return `Up to ${personPeak} people at once`;
+  return `Up to ${personPeak} people at once · peak ${densityText(density)} people/m²`;
 }
 
 function nounFor(pack: PackKey, byClass?: Record<string, number>): string {
@@ -219,8 +214,7 @@ export function Studio() {
     });
     const body = (await res.json()) as { note?: FieldNote; error?: string };
     if (!res.ok || !body.note) {
-      setError(body.error || "Could not update the field note.");
-      return;
+      throw new Error(body.error || "Could not update the field note.");
     }
     setNote(body.note);
   }

@@ -89,6 +89,7 @@ export function AlertCard({
   const statusRef = useRef<HTMLParagraphElement>(null);
   const pendingRef = useRef(false);
   const [pending, setPending] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const decided = useRef(false);
 
   useEffect(() => {
@@ -101,9 +102,13 @@ export function AlertCard({
     if (pendingRef.current || !onAction) return;
     pendingRef.current = true;
     setPending(true);
+    setSaveError(null);
     decided.current = true;
     try {
       await onAction(action);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not update the field note.";
+      setSaveError(message);
     } finally {
       pendingRef.current = false;
       setPending(false);
@@ -149,7 +154,7 @@ export function AlertCard({
               {note.severity}
             </p>
             <p ref={statusRef} tabIndex={-1} role="status" className="text-sm text-muted">
-              Status: {note.status}
+              {saveError ? `Could not save: ${saveError}` : `Status: ${note.status}`}
             </p>
           </div>
           <p className="mt-2 text-sm text-muted">Saved in this demo session only. No message sent.</p>

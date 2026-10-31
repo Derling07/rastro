@@ -155,8 +155,7 @@ export function Cameras() {
     });
     const body = (await res.json()) as { note?: FieldNote; error?: string };
     if (!res.ok || !body.note) {
-      setError(body.error || "Could not update the field note.");
-      return;
+      throw new Error(body.error || "Could not update the field note.");
     }
     setNote(body.note);
     if (action === "review" || action === "confirm" || action === "dismiss") {

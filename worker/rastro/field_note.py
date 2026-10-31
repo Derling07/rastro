@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .display_names import camera_name, public_copy, report_title
 from .feeds import state_lock
 
 REPO = Path(__file__).resolve().parents[2]
@@ -179,11 +180,11 @@ def note_dscf0112() -> dict[str, Any]:
         "unique_count": result.get("unique_count"),
         "by_class": result.get("by_class") or {},
     }
-    summary = str(report.get("resumen") or "").strip()
+    summary = public_copy(str(report.get("resumen") or "").strip())
     return assemble_note(
         note_id="clip:DSCF0112",
         module="fauna",
-        title="Camera trap",
+        title=report_title("fauna"),
         engine=engine,
         noun="coyotes",
         summary=summary,
@@ -275,7 +276,7 @@ def note_for_camera(camera_id: str) -> dict[str, Any] | None:
     note = assemble_note(
         note_id=f"camera:{camera_id}",
         module=module,
-        title=str(camera.get("name") or camera_id),
+        title=camera_name(camera_id, str(camera.get("site") or camera.get("name") or camera_id)),
         engine=engine,
         noun=noun,
         summary=summary,
@@ -390,6 +391,22 @@ def _noun_for(result: dict[str, Any], pack: str | None) -> str:
     return "individuals"
 
 
+def _frame_peak_persons(result: dict[str, Any]) -> int | None:
+    """Max people in one sampled frame, from the density series. None if that series is absent."""
+    series = result.get("density")
+    if not isinstance(series, list) or not series:
+        return None
+    by_time: dict[float, int] = {}
+    for row in series:
+        if not isinstance(row, dict) or not isinstance(row.get("persons"), int):
+            continue
+        stamp = float(row.get("t_s") or 0)
+        by_time[stamp] = by_time.get(stamp, 0) + int(row["persons"])
+    if not by_time:
+        return None
+    return max(by_time.values())
+
+
 def note_for_result(result: dict[str, Any] | None, *, run_id: str, pack: str | None) -> dict[str, Any] | None:
     """A note for one finished run. Counts are copied from that result."""
     if not isinstance(result, dict) or result.get("empty"):
@@ -404,7 +421,7 @@ def note_for_result(result: dict[str, Any] | None, *, run_id: str, pack: str | N
         "by_class": dict(result.get("by_class") or {}),
     }
     source = "baseten-spark" if recorded else "local-rules"
-    summary = str(report.get("resumen") or "").strip()
+    summary = public_copy(str(report.get("resumen") or "").strip())
     if not summary:
         summary = "The rules engine finished this run. Muse Spark was not called."
     mock = bool(result.get("is_mock"))
@@ -416,9 +433,7 @@ def note_for_result(result: dict[str, Any] | None, *, run_id: str, pack: str | N
     note = assemble_note(
         note_id=f"run:{run_id}",
         module=pack or "fauna",
-        title={"fauna": "Camera trap clip", "transito": "Intersection clip", "multitudes": "Crowds"}.get(
-            pack or "", "This run"
-        ),
+        title=report_title(pack),
         engine=engine,
         noun=_noun_for(result, pack),
         summary=summary,
@@ -450,15 +465,21 @@ def note_for_result(result: dict[str, Any] | None, *, run_id: str, pack: str | N
         note["engine_count"] = NO_COUNT
     elif pack == "transito":
         note["engine_count"] = "No verified vehicle count"
+        note["summary"] = "Traffic counts are not verified. No verified vehicle count."
         note["why"]["sam"] = "This request did not call SAM. No verified vehicle count."
         note["severity"] = "not sure"
         note["not_sure"] = True
     elif pack == "multitudes":
         note["why"]["sam"] = "SAM 3.1 detected people per frame. No re-identification."
+        note["summary"] = "This run measures how many people are in view at once. It does not re-identify them."
         peak = result.get("peak_density") if isinstance(result.get("peak_density"), dict) else {}
         density = peak.get("density_per_m2")
         persons = peak.get("persons")
-        if isinstance(density, (int, float)):
+        frame_peak = _frame_peak_persons(result)
+        # A person total is shown only when the series max is not the same figure as unique_count.
+        if isinstance(frame_peak, int) and frame_peak != result.get("unique_count"):
+            note["engine_count"] = f"Peak {frame_peak} people in one frame"
+        elif isinstance(density, (int, float)):
             note["engine_count"] = f"Peak {density:g} people/m²"
         elif isinstance(persons, int) and persons != result.get("unique_count"):
             note["engine_count"] = f"Peak {persons} people in one frame"
