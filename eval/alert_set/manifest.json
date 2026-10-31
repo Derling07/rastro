@@ -27,7 +27,7 @@
       "status": "PASS",
       "t_s": 3.0,
       "tolerance_s": 1.5,
-      "message": "Person detected in protected zone at 12:47"
+      "message": "Possible person inside the protected area — review needed"
     },
     {
       "id": "crowd_plaza",

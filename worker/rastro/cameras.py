@@ -125,13 +125,9 @@ def _real_camera(spec: dict[str, Any]) -> dict[str, Any]:
             {"id": (zone_spec or {}).get("id") or "zone", "polygon": polygon},
             fps=100,
             sustain_s=float(spec["sustain_s"]),
+            sustain_frames=int(spec.get("sustain_frames") or 3),
             local_hhmm=str(spec.get("local_hhmm") or "12:00"),
         )
-        for alert in alerts:
-            if alert["kind"] == "wild_enters":
-                alert["message"] = f"Wild animal stayed in the marked zone for {float(spec['sustain_s']):g} s"
-            elif alert["kind"] == "farm_leaves":
-                alert["message"] = f"Farm animal left the yard and stayed out {float(spec['sustain_s']):g} s"
     return {
         "id": camera_id,
         "name": spec["name"],

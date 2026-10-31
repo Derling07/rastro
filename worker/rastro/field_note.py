@@ -334,13 +334,15 @@ def _rule_line(camera: dict[str, Any], alert: dict[str, Any]) -> str:
     sustain = camera.get("sustain_s")
     if kind == "person_in_zone":
         return (
-            "Rule: a person who stays inside the zone raises an in-app alert. "
-            "No name, no face id, no notice to authorities. A person presses Review."
+            "Rule: the foot point must stay inside the zone for several frames. "
+            "One frame does not open the alert. No name, no face id, no notice to authorities. "
+            "A person presses Review."
         )
     if kind in {"wild_enters", "farm_leaves"}:
         return (
-            f"Rule: the animal must stay in or out of the zone for {sustain:g} seconds "
-            "before the alert opens. Confirm or dismiss stays in the app."
+            f"Rule: the foot point must stay in or out of the zone for {sustain:g} seconds "
+            "and for more than one frame. A single noisy frame does not open the alert. "
+            "Confirm or dismiss stays in the app."
             if isinstance(sustain, (int, float))
             else "Rule: zone alert after a sustained stay. Confirm or dismiss stays in the app."
         )

@@ -69,7 +69,7 @@ export function FrameStage({ frames, time, onTime, isMock }: Props) {
     <div className="space-y-2">
       <Viewfinder label={isMock ? "Simulated camera · mock" : "Simulated camera"}>
         <svg viewBox={`0 0 ${size.w} ${size.h}`} className="block aspect-video w-full" role="img" aria-label="Tracked boxes on the current frame">
-          <rect width={size.w} height={size.h} fill="#0b100e" />
+          <rect width={size.w} height={size.h} fill="var(--viewfinder)" />
           {active.objects.map((object) => {
             const color = colorForTrack(object.track_id);
             const x = object.bbox[0];

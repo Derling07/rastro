@@ -101,3 +101,23 @@ Lenguaje llano. Cada punto dice qué se hizo, por qué, qué otra opción se mir
 **Otra opción.** Volver a llamar a los modelos en la grabación del pitch. Eso lo decide Derling, con sus créditos, no esta rama.
 
 **Límite.** El historial de git de este clon empieza el 29 oct. No prueba qué había en otra carpeta antes de esa fecha.
+
+## 11. Hoja de levantamiento, no la libreta verde
+
+**Qué.** El fondo pasó de papel gris verdoso a hueso cálido (`#f4efe6`), la tinta a hierro (`#1f1a14`) y el visor a carbón (`#1c1814`) con marcas de latón (`#f2d48a`). Cada módulo tiene un color plano: fauna arcilla, tránsito laguna, multitud azafrán oscuro, granja viña, área protegida azul marino. No hay degradado. La disposición de las páginas no cambió.
+
+**Por qué.** Derling pidió colores distintos de la libreta verde. El diseño del repo (`docs/design/DESIGN.md`) pide un visor de campo, no un panel genérico. Se mantuvo la hoja clara para que el texto siga en AA, y se dejó el marco oscuro solo alrededor del video, que es lo que se recuerda. Los acentos se midieron contra el hueso y contra la tarjeta: todos superan 4.5:1.
+
+**Otra opción.** Volver al visor nocturno de todo el fondo, o un dashboard oscuro con violeta. El primero ya se había descartado porque oscurecía la nota. El segundo se ve igual a cualquier herramienta de analítica.
+
+**Límite.** El contraste se revisó con las fórmulas WCAG y con axe en `/` y `/cameras`. No se rediseñó la tipografía ni el orden de la tarjeta.
+
+## 12. El pie en el polígono, y un frame ruidoso no abre la alerta
+
+**Qué.** La zona es un polígono. El punto que se prueba es el centro inferior de la caja (los pies). Para cambiar de adentro a afuera, o al revés, el lado nuevo tiene que sostenerse: en las cámaras, 3 segundos y 3 muestras. Un solo frame del otro lado no voltea un lado ya confirmado y no dispara solo. Cada alerta lleva una confianza de la regla (no del modelo), el segundo, y el punto del disparo dibujado sobre el video. En Goat lane el texto es “Animal left the safe zone”, con el rastro y un recorte. En Forest trail el texto es “Possible person inside the protected area — review needed”: cara tapada, sin nombre, botón Review, y `authorities: false`. La bandeja muestra severidad alta en la granja y “not sure” en el área protegida.
+
+**Por qué.** Un frame suelto del detector no es una salida ni una persona que se quedó. Decir “posible” evita tratar el cuadro como un hecho de caza. La confianza baja cuando el tramo apenas cumple el mínimo, para no exagerar.
+
+**Otra opción.** Alertar en el primer frame que cae afuera, o subir la severidad del bosque a emergencia. La primera se dispara con ruido. La segunda suena a identificación. No se hizo.
+
+**Límite.** Goat lane y person-trail son clips ya contados, no una llamada nueva a SAM. La confianza es una regla sobre cuántas muestras sostuvieron el lado. No es un porcentaje devuelto por un modelo. No se avisa a autoridades.

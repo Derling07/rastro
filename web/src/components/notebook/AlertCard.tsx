@@ -50,7 +50,7 @@ function Crop({ crop }: { crop: NonNullable<FieldNote["crop"]> }) {
       role="img"
       aria-label={blurred ? "Blurred detection box" : `Detection box for ${crop.class || "object"}`}
     >
-      <rect x={vx} y={vy} width={vw} height={vh} fill="#121816" />
+      <rect x={vx} y={vy} width={vw} height={vh} fill="var(--viewfinder)" />
       {blurred && (
         <defs>
           <filter id="soft-box">
@@ -65,11 +65,11 @@ function Crop({ crop }: { crop: NonNullable<FieldNote["crop"]> }) {
         height={boxH}
         fill={blurred ? "#c9c2b2" : "none"}
         fillOpacity={blurred ? 0.9 : 0}
-        stroke="#e7d3a1"
+        stroke="var(--tick)"
         strokeWidth={Math.max(2, vw / 80)}
         filter={blurred ? "url(#soft-box)" : undefined}
       />
-      <text x={vx + 4} y={vy + Math.max(14, vh / 10)} fill="#e7d3a1" fontSize={Math.max(12, vh / 10)} fontFamily="var(--font-facts)">
+      <text x={vx + 4} y={vy + Math.max(14, vh / 10)} fill="var(--tick)" fontSize={Math.max(12, vh / 10)} fontFamily="var(--font-facts)">
         {crop.class || "object"}
       </text>
     </svg>
@@ -179,7 +179,7 @@ export function AlertCard({
           )}
           {review && (
             <p className="mt-2 text-sm text-muted">
-              Possible intrusion — needs review. Review means a person looked. Rastro does not notify authorities.
+              Possible person inside the protected area — review needed. Review means a person looked. Rastro does not notify authorities.
             </p>
           )}
         </div>

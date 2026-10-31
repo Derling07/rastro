@@ -58,8 +58,9 @@ def test_person_in_zone_has_no_identity_and_is_blurred():
     )
     assert len(alerts) == 1
     alert = alerts[0]
-    assert alert["message"].startswith("Person detected in protected zone at ")
-    assert alert["label"] == "Possible intrusion — needs review"
+    assert alert["message"] == "Possible person inside the protected area — review needed"
+    assert "hunter" not in alert["message"].lower()
+    assert alert["label"] == "Possible. A person reviews. Rastro does not notify authorities."
     assert alert["authorities"] is False
     assert alert["snapshot"]["blurred"] is True
     blob = json.dumps(alert)
@@ -110,8 +111,9 @@ def test_protected_camera_is_review_only_and_stores_no_identity():
     assert camera["actions"] == ["review"]
     assert len(camera["alerts"]) == 1
     alert = camera["alerts"][0]
-    assert alert["message"] == "Person detected in protected zone at 12:47"
-    assert alert["label"] == "Possible intrusion — needs review"
+    assert alert["message"] == "Possible person inside the protected area — review needed"
+    assert "hunter" not in json.dumps(alert).lower()
+    assert alert["label"] == "Possible. A person reviews. Rastro does not notify authorities."
     assert alert["authorities"] is False
     assert alert["snapshot"]["blurred"] is True
     blob = json.dumps(alert)
@@ -125,6 +127,70 @@ def test_protected_camera_is_review_only_and_stores_no_identity():
     updated = decide("forest-trail", alert["id"], "review")
     saved = updated["alerts"][0]
     assert saved["status"] == "reviewed"
+    reset_camera_state()
+
+
+def test_one_frame_does_not_alert_and_a_blip_does_not_flip():
+    lone = track_at("goat-1", "goat", _inside(4) + _outside(1))
+    assert sustained_zone_alerts(
+        [lone], {"id": "pen", "polygon": PEN}, fps=1, sustain_s=0, sustain_frames=3
+    ) == []
+    noisy = track_at("goat-1", "goat", _inside(5) + _outside(1) + _inside(4))
+    assert sustained_zone_alerts(
+        [noisy], {"id": "pen", "polygon": PEN}, fps=1, sustain_s=0, sustain_frames=3
+    ) == []
+    entered = track_at("coyote-1", "coyote", _outside(2) + _inside(4))
+    wild = sustained_zone_alerts(
+        [entered], {"id": "pen", "polygon": PEN}, fps=1, sustain_s=0, sustain_frames=3
+    )
+    assert len(wild) == 1 and wild[0]["kind"] == "wild_enters"
+    assert wild[0]["confidence"] >= 0.7
+    assert "x" in wild[0]["trigger"] and "y" in wild[0]["trigger"]
+    left = track_at("goat-2", "goat", _inside(4) + _outside(4))
+    farm = sustained_zone_alerts(
+        [left], {"id": "pen", "polygon": PEN}, fps=1, sustain_s=0, sustain_frames=3
+    )
+    assert len(farm) == 1
+    assert farm[0]["message"] == "Animal left the safe zone"
+    assert farm[0]["severity"] == "high"
+    assert farm[0]["track_id"] == "goat-2"
+    person = track_at("hidden", "person", _outside(2) + _inside(4))
+    guarded = sustained_zone_alerts(
+        [person], {"id": "ridge", "polygon": PEN}, fps=1, sustain_s=0, sustain_frames=3
+    )
+    assert len(guarded) == 1
+    assert guarded[0]["message"] == "Possible person inside the protected area — review needed"
+    assert guarded[0]["authorities"] is False
+    assert "hidden" not in json.dumps(guarded[0])
+    assert "track_id" not in guarded[0]
+
+
+def test_farm_and_protected_cameras_reach_the_inbox():
+    reset_camera_state()
+    from rastro.cameras import inbox
+
+    goats = get_camera("goat-lane")
+    trail = get_camera("forest-trail")
+    assert goats is not None and trail is not None
+    assert goats["video_url"].endswith("goats.mp4")
+    assert trail["video_url"].endswith("person-trail.mp4")
+    farm_alerts = [alert for alert in goats["alerts"] if alert["kind"] == "farm_leaves"]
+    assert farm_alerts, "Goat lane did not show a sustained exit"
+    assert farm_alerts[0]["message"] == "Animal left the safe zone"
+    assert farm_alerts[0]["severity"] == "high"
+    assert farm_alerts[0]["snapshot"]["boxes"]
+    person_alerts = trail["alerts"]
+    assert len(person_alerts) == 1
+    assert person_alerts[0]["message"] == "Possible person inside the protected area — review needed"
+    assert person_alerts[0]["snapshot"]["blurred"] is True
+    rows = inbox()
+    farm_row = next(row for row in rows if row["camera_id"] == "goat-lane" and row["kind"] == "farm_leaves")
+    person_row = next(row for row in rows if row["camera_id"] == "forest-trail")
+    assert farm_row["severity"] == "high"
+    assert farm_row["message"] == "Animal left the safe zone"
+    assert person_row["severity"] == "not sure"
+    assert person_row["message"].startswith("Possible person")
+    assert "hunter" not in person_row["message"].lower()
     reset_camera_state()
 
 

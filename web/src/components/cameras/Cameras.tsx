@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type MouseEvent } from "react";
 import { AlertCard, type FieldNote } from "@/components/notebook/AlertCard";
-import { placeLabel } from "@/lib/labels";
+import { placeLabel, trackerLabel } from "@/lib/labels";
 import { saveFieldNote } from "@/lib/saveNote";
 import { NotebookShell } from "@/components/notebook/Shell";
 import { Viewfinder } from "@/components/notebook/Viewfinder";
@@ -22,6 +22,10 @@ type AlertRow = {
   status: string;
   zone?: string;
   class?: string;
+  track_id?: string;
+  confidence?: number;
+  trigger?: { x: number; y: number; t_s: number };
+  local_time?: string;
   snapshot?: { t_s: number; blurred: boolean; boxes: BoxRow[] };
   camera_id?: string;
   camera_name?: string;
@@ -332,18 +336,18 @@ export function Cameras() {
                   aria-label="Recorded camera frame"
                   onClick={onStageClick}
                 >
-                  {!camera.video_url && <rect width={SIZE} height={SIZE} fill="#0b100e" />}
+                  {!camera.video_url && <rect width={SIZE} height={SIZE} fill="var(--viewfinder)" />}
                   {polygon.length >= 2 && (
                     <polygon
                       points={polygon.map(([x, y]) => `${x * (camera.frame_width || SIZE)},${y * (camera.frame_height || SIZE)}`).join(" ")}
-                      fill="#e7d3a1"
+                      fill="var(--tick)"
                       fillOpacity={0.12}
-                      stroke="#e7d3a1"
+                      stroke="var(--tick)"
                       strokeWidth={4}
                     />
                   )}
                   {draft.map(([x, y], index) => (
-                    <circle key={index} cx={x * (camera.frame_width || SIZE)} cy={y * (camera.frame_height || SIZE)} r={8} fill="#e7d3a1" />
+                    <circle key={index} cx={x * (camera.frame_width || SIZE)} cy={y * (camera.frame_height || SIZE)} r={8} fill="var(--tick)" />
                   ))}
                   {frame?.objects.map((object, index) => {
                     const [x1, y1, x2, y2] = object.bbox;
@@ -357,15 +361,35 @@ export function Cameras() {
                           height={Math.max(0, y2 - y1)}
                           fill={blurred ? "#c9c2b2" : "none"}
                           fillOpacity={blurred ? 0.8 : 0}
-                          stroke="#e7d3a1"
+                          stroke="var(--tick)"
                           strokeWidth={4}
                         />
-                        <text x={x1} y={Math.max(24, y1 - 8)} fill="#e7d3a1" fontSize={28}>
+                        <text x={x1} y={Math.max(24, y1 - 8)} fill="var(--tick)" fontSize={28}>
                           {blurred ? "blurred" : object.class}
                         </text>
                       </g>
                     );
                   })}
+                  {liveAlert?.trigger && (
+                    <g aria-label="Trigger">
+                      <circle
+                        cx={liveAlert.trigger.x * (camera.frame_width || SIZE)}
+                        cy={liveAlert.trigger.y * (camera.frame_height || SIZE)}
+                        r={18}
+                        fill="none"
+                        stroke="var(--alta)"
+                        strokeWidth={4}
+                      />
+                      <text
+                        x={liveAlert.trigger.x * (camera.frame_width || SIZE) + 22}
+                        y={liveAlert.trigger.y * (camera.frame_height || SIZE)}
+                        fill="var(--tick)"
+                        fontSize={28}
+                      >
+                        Trigger
+                      </text>
+                    </g>
+                  )}
                 </svg>
                 </div>
               </Viewfinder>
@@ -388,15 +412,20 @@ export function Cameras() {
                       }}
                     />
                   </label>
-                  {liveAlert && <span className="text-alta">Now: {liveAlert.message}</span>}
+                  {liveAlert && (
+                    <span className="text-alta">
+                      Now: {liveAlert.message}
+                      {typeof liveAlert.confidence === "number" ? ` · rule confidence ${liveAlert.confidence.toFixed(2)}` : ""}
+                    </span>
+                  )}
                 </div>
 
               {camera.zone_editable && (
                 <div className="rounded-lg border border-dashed border-line p-3 text-sm">
                   <p className="font-bold">Draw the pen</p>
                   <p className="mt-1 text-muted">
-                    Click the corners of the corral on the picture, then apply. Alerts use a {camera.sustain_s} second
-                    wait, so an animal that only passes through does not count. In-app only — no SMS.
+                    Click the corners of the corral on the picture, then apply. The test uses the feet of the box.
+                    The alert waits {camera.sustain_s} seconds and ignores a single noisy frame. In-app only — no SMS.
                   </p>
                   <div className="flex flex-wrap gap-2">
                     <button type="button" className="demo-primary" disabled={draft.length < 3} onClick={() => void applyZone()}>
@@ -429,19 +458,23 @@ export function Cameras() {
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div>
                         <p className="text-xs uppercase tracking-wide text-muted">
-                          {placeLabel(alert.camera_name || "Camera")} · {alert.t_s.toFixed(1)}s · {alert.severity}
+                          {placeLabel(alert.camera_name || "Camera")} · {alert.local_time || `${alert.t_s.toFixed(1)}s`} · {alert.severity}
+                          {typeof alert.confidence === "number" ? ` · rule confidence ${alert.confidence.toFixed(2)}` : ""}
                           {alert.verification === "NOT VERIFIED" ? " · Not verified" : ""}
                         </p>
                         <p className="mt-1 font-display text-2xl leading-tight">{alert.message}</p>
+                        {alert.track_id && (
+                          <p className="text-sm text-muted">{trackerLabel(alert.track_id, alert.class)} · {alert.t_s.toFixed(1)}s</p>
+                        )}
                         {alert.label && <p className="text-sm text-muted">{alert.label}</p>}
                         <p className="text-sm text-muted">Status: {alert.status}</p>
                       </div>
-                      <Snapshot boxes={alert.snapshot?.boxes ?? []} />
+                      <Snapshot boxes={alert.snapshot?.boxes ?? []} blurred={alert.snapshot?.blurred} />
                     </div>
                     {alert.status === "open" && alert.camera_id && alert.kind === "person_in_zone" && (
                       <div>
                         <p className="text-sm text-muted">
-                          Possible intrusion — needs review. A person chooses. Rastro does not notify authorities.
+                          Possible person inside the protected area — review needed. A person chooses. Rastro does not notify authorities.
                         </p>
                         <button type="button" className="demo-primary" onClick={() => void review(alert.id, alert.camera_id!)}>
                           Review
@@ -495,24 +528,30 @@ export function Cameras() {
   );
 }
 
-function Snapshot({ boxes }: { boxes: BoxRow[] }) {
+function Snapshot({ boxes, blurred }: { boxes: BoxRow[]; blurred?: boolean }) {
   if (!boxes.length) return null;
+  const [x1, y1, x2, y2] = boxes[0].bbox;
+  const pad = Math.max(24, (x2 - x1) * 0.35, (y2 - y1) * 0.35);
+  const vx = Math.max(0, x1 - pad);
+  const vy = Math.max(0, y1 - pad);
+  const vw = Math.max(48, x2 - x1 + pad * 2);
+  const vh = Math.max(48, y2 - y1 + pad * 2);
   return (
-    <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="h-24 w-40 rounded border border-line bg-ink" aria-label="Snapshot frame">
-      <rect width={SIZE} height={SIZE} fill="#0b100e" />
+    <svg viewBox={`${vx} ${vy} ${vw} ${vh}`} className="h-24 w-40 rounded border border-line bg-ink" aria-label={blurred ? "Blurred detection crop" : "Detection crop"}>
+      <rect x={vx} y={vy} width={vw} height={vh} fill="var(--viewfinder)" />
       {boxes.map((box, index) => {
-        const [x1, y1, x2, y2] = box.bbox;
+        const [bx1, by1, bx2, by2] = box.bbox;
         return (
           <rect
             key={index}
-            x={x1}
-            y={y1}
-            width={Math.max(1, x2 - x1)}
-            height={Math.max(1, y2 - y1)}
-            fill="#ff6b5b"
-            fillOpacity={0.35}
-            stroke="#ff6b5b"
-            strokeWidth={8}
+            x={bx1}
+            y={by1}
+            width={Math.max(1, bx2 - bx1)}
+            height={Math.max(1, by2 - by1)}
+            fill={blurred ? "#c9c2b2" : "var(--alta)"}
+            fillOpacity={blurred ? 0.9 : 0.35}
+            stroke="var(--tick)"
+            strokeWidth={Math.max(4, vw / 40)}
           />
         );
       })}
