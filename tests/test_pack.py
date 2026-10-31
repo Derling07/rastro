@@ -12,3 +12,7 @@ def test_load_fauna_pack():
     assert "center_dist_factor" in pack.dedup
     assert "person" in pack.privacy["blur"]
     assert pack.privacy.get("identity") is False
+    coyote_alert = next(alert for alert in pack.alerts if alert["id"] == "target_species")
+    assert coyote_alert["message"] == "Coyote recorded (individuals NOT VERIFIED)"
+    assert "{unique_count}" not in coyote_alert["message"]
+    assert "{count}" not in coyote_alert["message"]

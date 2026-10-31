@@ -73,7 +73,7 @@
       "id": "target_species",
       "when": "class == 'coyote' AND unique_count >= 1",
       "severity": "info",
-      "message": "Coyote recorded: {unique_count} individuals"
+      "message": "Coyote recorded (individuals NOT VERIFIED)"
     }
   ],
   "voice": {

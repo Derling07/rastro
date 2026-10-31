@@ -93,3 +93,8 @@ def _assert_transit_text_has_no_count_beside_people_or_vehicles() -> None:
     assert "Heavy car flow detected (NOT VERIFIED)" in blob
     assert "Motorcycles detected (NOT VERIFIED)" in blob
     assert _COUNT_BESIDE.search(blob) is None
+    fauna = json.loads((REPO / "packs" / "fauna.json").read_text(encoding="utf-8"))
+    coyote = next(alert["message"] for alert in fauna["alerts"] if alert["id"] == "target_species")
+    assert coyote == "Coyote recorded (individuals NOT VERIFIED)"
+    assert "{unique_count}" not in coyote
+    assert "{count}" not in coyote
