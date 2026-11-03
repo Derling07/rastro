@@ -64,7 +64,7 @@
       {
         "id": "especie_objetivo",
         "severity": "info",
-        "message": "Coyote recorded: 2 individuals",
+        "message": "Coyote recorded (individuals NOT VERIFIED)",
         "t_s": 1.2
       }
     ],
@@ -91,8 +91,8 @@
     "sam_calls": 1
   },
   "report": {
-    "titulo": "Rastro report — DSCF0112.mp4 — 2 coyotes",
-    "resumen": "DSCF0112.mp4 (5 fps) shows 2 coyotes together from 1.2 seconds, for 9.0 seconds. Tracking confirms 2 unique coyotes.",
+    "titulo": "Rastro report — DSCF0112.mp4 — coyote (individuals NOT VERIFIED)",
+    "resumen": "DSCF0112.mp4 (5 fps) shows a coyote from 1.2 seconds, for 9.0 seconds. 90 raw detections of a coyote (individuals NOT VERIFIED).",
     "especies": [
       {
         "clase": "coyote",
@@ -103,15 +103,15 @@
       {
         "id": "especie_objetivo",
         "severidad": "info",
-        "mensaje": "Coyote recorded: 2 individuals"
+        "mensaje": "Coyote recorded (individuals NOT VERIFIED)"
       }
     ],
     "recomendaciones": [
-      "Keep monitoring this site to see if the pair passes often.",
+      "Keep monitoring this site to see if a coyote passes often.",
       "Check nearby clips from the same time to judge movement.",
       "No immediate action. Log the sighting."
     ],
-    "gancho_demo": "90 raw detections → 2 unique coyotes",
+    "gancho_demo": "90 raw detections of a coyote (individuals NOT VERIFIED)",
     "_spark_model": "meta-models/muse-spark-open-1026",
     "_spark_usage": {
       "prompt_tokens": 769,

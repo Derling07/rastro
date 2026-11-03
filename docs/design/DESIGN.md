@@ -31,7 +31,7 @@ Ver `panel.html` (maqueta navegable, abrir en el navegador) y `wireframes.md`.
 3. **Procesando**: barra por etapas reales del worker (cortar → SAM por concepto → unir pistas → reglas → agente). Cada etapa marca hecho/fallo. Sin porcentajes inventados.
 4. **Resultado** (pantalla principal de la demo):
    - Izquierda: video con cajas/máscaras e ID, sello de hora, línea de tiempo con marcas de eventos (clic = saltar).
-   - Derecha arriba: **contador** `90 → 2` (DSCF0112, detecciones crudas → coyotes únicos, medido) (ingenuo tachado, Rastro grande) + desglose por clase.
+   - Derecha arriba: **contador** `90 raw detections of a coyote (individuals NOT VERIFIED)` (DSCF0112) + desglose por clase. No presentar coyotes únicos como verificados.
    - Derecha medio: **alertas** (severidad, mensaje, segundo del video).
    - Derecha abajo: **nota de voz** (reproductor, transcripción por turno con hablante) y **registro del agente** (herramientas que llamó, plegable).
    - Pestaña **Reporte**: resumen, especies/clases, recomendaciones, exportar PDF/CSV.

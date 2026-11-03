@@ -181,7 +181,7 @@ def note_dscf0112() -> dict[str, Any]:
         "by_class": result.get("by_class") or {},
     }
     summary = public_copy(str(report.get("resumen") or "").strip())
-    return assemble_note(
+    note = assemble_note(
         note_id="clip:DSCF0112",
         module="fauna",
         title=report_title("fauna"),
@@ -207,6 +207,19 @@ def note_dscf0112() -> dict[str, Any]:
         actions=["confirm", "dismiss"],
         crop=_crop(result, "coyote"),
     )
+    # The stored unique_count is not a verified individual count.
+    detections = result.get("detections_total")
+    note["engine_count"] = (
+        f"{detections} raw detections of a coyote (individuals NOT VERIFIED)"
+        if isinstance(detections, int)
+        else "Coyote detections (individuals NOT VERIFIED)"
+    )
+    note["why"]["sam"] = (
+        f"SAM 3.1 saw coyote. The engine count is {note['engine_count']}. "
+        "That number is copied from the engine, not read out of the summary. "
+        "Unique individuals are not verified."
+    )
+    return note
 
 
 def _camera_crop(camera: dict[str, Any]) -> dict[str, Any] | None:

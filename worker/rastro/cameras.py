@@ -189,10 +189,9 @@ def _trap_camera() -> dict[str, Any] | None:
     frames = list(data.get("frames") or [])
     duration = float(frames[-1]["t_s"]) if frames else 0.0
     detections = data.get("detections_total")
-    unique = data.get("unique_count")
     headline = (
-        f"{detections} raw detections → {unique} unique coyotes"
-        if detections is not None and unique is not None
+        f"{detections} raw detections of a coyote (individuals NOT VERIFIED)"
+        if detections is not None
         else "Stored camera-trap count"
     )
     return {
@@ -205,7 +204,7 @@ def _trap_camera() -> dict[str, Any] | None:
         "video_url": None,
         "verified": True,
         "verification": "STORED RUN",
-        "verification_note": "Stored SAM 3.1 run of a Seattle(ish) camera-trap clip. The server did not call the model again. 90 raw detections → 2 unique coyotes.",
+        "verification_note": "Stored SAM 3.1 run of a Seattle(ish) camera-trap clip. The server did not call the model again. 90 raw detections of a coyote (individuals NOT VERIFIED).",
         "headline": headline,
         "duration_s": duration,
         "fps": float((data.get("video") or {}).get("fps") or 5),
@@ -220,7 +219,7 @@ def _trap_camera() -> dict[str, Any] | None:
                     "id": "coyote-recorded",
                     "kind": "count",
                     "severity": "info",
-                    "message": "Coyote recorded: 2 individuals",
+                    "message": "Coyote recorded (individuals NOT VERIFIED)",
                     "t_s": 1.2,
                     "notify": "in_app",
                     "snapshot": {"t_s": 1.2, "blurred": False, "boxes": []},

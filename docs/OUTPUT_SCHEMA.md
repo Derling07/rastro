@@ -57,7 +57,7 @@ Campos **aditivos opcionales** 1.1: multitudes (`density`, `peak_density`, `pers
 {
   "id": "especie_objetivo",
   "severity": "info",
-  "message": "Registro de coyote: 2 individuos",
+  "message": "Coyote recorded (individuals NOT VERIFIED)",
   "t_s": 0.2
 }
 ```

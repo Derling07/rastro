@@ -4,6 +4,10 @@ Meta Global AI Developer Hackathon 2026. Kickoff is **26 Oct 2026, 12:00 noon US
 
 Rule used here: work shown in the demo should be built during the event. Any commit dated before kickoff must be called out. This file lists the git history of this repository.
 
+## Provenance
+
+Source started Oct 26, 2026 (after the hackathon start, 12:00 ET) on a scratch machine and imported to Origin on Oct 29 in commit 2ea5568 ('Add Rastro source as the project home'). Everything shown was built during the event.
+
 ## Commits before kickoff
 
 **None.** `git log --until=2026-10-26T16:00:00Z` is empty.
@@ -44,6 +48,6 @@ Field-note statuses, webhook subscriptions, and the webhook outbox live in proce
 
 ## Meta models in this repo
 
-- **SAM 3.1** produced the stored DSCF0112 run (90 raw detections → 2 unique coyotes, `is_mock` false). The app replays that file. It does not call SAM again on page load.
+- **SAM 3.1** produced the stored DSCF0112 run (90 raw detections of a coyote, individuals NOT VERIFIED, `is_mock` false). The app replays that file. It does not call SAM again on page load.
 - **Muse Spark Open** (`meta-models/muse-spark-open-1026`) wrote the stored report in that same run. The field note shows that recorded reply. Page load does not call Baseten.
 - With no API keys, new samples use the mock tracker and a local report. That is the no-cost path for local development.

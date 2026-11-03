@@ -122,8 +122,8 @@ Each file below allows redistribution. Confirmed from the file page, not from a 
 |---|---|---|---|
 | `/cameras/gray-fox.mp4` | https://commons.wikimedia.org/wiki/File:Gray_fox_(Urocyon_cinereoargenteus)_in_New_Mexico.webm | Andy | CC BY 3.0 — https://creativecommons.org/licenses/by/3.0/ |
 | `/cameras/goats.mp4` | https://commons.wikimedia.org/wiki/File:A_video_on_goats_going_to_home.ogv | Thamizhpparithi Maari | CC BY-SA 3.0 — https://creativecommons.org/licenses/by-sa/3.0/ |
-| `/cameras/person-trail.mp4` | https://lila.science/datasets/seattleish-camera-traps/ file `DSCF0004.MP4` | Dan Morris | CDLA permissive variant. Face blurred before publish. Daytime, not night. |
+| `/cameras/person-trail.mp4` | [`DSCF0004.MP4`](https://lila.science/datasets/seattleish-camera-traps/) from Seattle(ish) Camera Traps | Dan Morris | [CDLA-Permissive-2.0](https://cdla.dev/permissive-2-0/). Face and body blurred before publish: a strong ffmpeg boxblur covers the tracked person in every frame, so the person is not identifiable. Daytime, not night. |
 | `/cameras/plaza.mp4` | https://commons.wikimedia.org/wiki/File:Plaza_Mayor_(Madrid).ogv | Michiel1972 (M.M. Minderhoud) | CC BY-SA 3.0 — https://creativecommons.org/licenses/by-sa/3.0/ |
 | `/cameras/wicker.mp4` | https://commons.wikimedia.org/wiki/File:Wicker_Park_intersection_changes.webm | Steven Vance | CC BY 3.0 — https://creativecommons.org/licenses/by/3.0/ |
 
-DSCF0112 (the 90 → 2 coyote proof) stays the stored Seattle(ish) run from section 1. It is not re-analyzed here.
+DSCF0112 stays the stored Seattle(ish) run from section 1: 90 raw detections of a coyote (individuals NOT VERIFIED). It is not re-analyzed here.

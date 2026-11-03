@@ -2,7 +2,7 @@
   "runs": [
     {
       "id": "demo-real-coyote-0112",
-      "label": "Coyote DSCF0112 real (90→2)",
+      "label": "Coyote DSCF0112 real (90 raw detections, individuals NOT VERIFIED)",
       "pack": "fauna",
       "pack_file": "fauna.json",
       "source_video_id": "DSCF0112",

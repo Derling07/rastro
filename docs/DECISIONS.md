@@ -24,7 +24,7 @@ Lenguaje llano. Cada punto dice qué se hizo, por qué, qué otra opción se mir
 
 ## 3. DSCF0112 es el flujo héroe, y no se vuelve a llamar al modelo
 
-**Qué.** La nota de la trampa lee el `result.json` ya guardado: 90 detecciones, 2 coyotes, y el párrafo que Muse Spark Open escribió en esa corrida (`meta-models/muse-spark-open-1026`). Abrir la página no llama a SAM ni a Baseten. `paid_call` queda en falso.
+**Qué.** La nota de la trampa lee el `result.json` ya guardado: 90 detecciones de un coyote (individuos NOT VERIFIED) y el párrafo que Muse Spark Open escribió en esa corrida (`meta-models/muse-spark-open-1026`). Abrir la página no llama a SAM ni a Baseten. `paid_call` queda en falso.
 
 **Por qué.** Hay que mostrar Meta de verdad, y a la vez no gastar créditos en esta pasada. Esa corrida ya existe y el eval la marca PASS. El número grande sale del motor. Aunque el texto dijera otra cifra, la UI no la usa.
 

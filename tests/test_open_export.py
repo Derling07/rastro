@@ -157,7 +157,7 @@ def test_http_open_endpoints():
     try:
         with urllib.request.urlopen(f"{base}/api/field-note?clip=DSCF0112", timeout=5) as res:
             note = json.loads(res.read().decode())["note"]
-        assert note["engine_count"] == "90 raw detections → 2 unique coyotes"
+        assert note["engine_count"] == "90 raw detections of a coyote (individuals NOT VERIFIED)"
         assert note["paid_call"] is False
         req = urllib.request.Request(
             f"{base}/api/field-note",

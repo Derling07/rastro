@@ -10,7 +10,7 @@ La libreta de campo, la nota de campo y el export ya están en una rama (no en u
 2. **Calcular más o menos cuántos m² se ven en el clip.** Sin ese número la densidad por m² no se puede verificar. Hoy la cámara de ejemplo no inventa gente/m².
 3. **(Opcional) Grabar una intersección de San José** para tránsito. Hoy el tránsito dice que no está verificado.
 4. **Decidir si hay demo pública** (ver decisiones). Esta rama no hace deploy.
-5. **Grabar el video del pitch y la demo** (guion en `docs/pitch/demo_script.md`). El flujo más claro para abrir es la trampa: 90 detecciones → 2 coyotes, nota grabada de Muse Spark, y vos confirmás en pantalla.
+5. **Grabar el video del pitch y la demo** (guion en `docs/pitch/demo_script.md`). El flujo más claro para abrir es la trampa: 90 detecciones de un coyote (individuos NOT VERIFIED), nota grabada de Muse Spark, y vos confirmás en pantalla.
 6. **Subir la entrega** en la plataforma de la hackathon. Es con tu cuenta.
 7. **(Opcional) Reclamar los $150 de créditos de Meta** en Discord. No se gastan sin tu permiso. Esta pasada no llamó a SAM ni a Baseten.
 

@@ -641,7 +641,11 @@ export function Cameras() {
         <ul className="mt-2 space-y-1">
           <li>Gray fox in New Mexico by Andy, CC BY 3.0, Wikimedia Commons.</li>
           <li>Goats going home by Thamizhpparithi Maari, CC BY-SA 3.0, Wikimedia Commons.</li>
-          <li>DSCF0004 and DSCF0112, Seattle(ish) Camera Traps by Dan Morris, LILA BC, CDLA permissive. Faces in the published person clip are blurred.</li>
+          <li>
+            DSCF0004 (<code>person-trail.mp4</code>) and DSCF0112, Seattle(ish) Camera Traps by Dan Morris, LILA BC.{" "}
+            <a href="https://lila.science/datasets/seattleish-camera-traps/">Dataset</a>.{" "}
+            <a href="https://cdla.dev/permissive-2-0/">CDLA-Permissive-2.0</a>. The published person clip blurs the face and body in every frame.
+          </li>
           <li>Plaza Mayor (Madrid) by Michiel1972, CC BY-SA 3.0, Wikimedia Commons.</li>
           <li>Wicker Park intersection changes by Steven Vance, CC BY 3.0, Wikimedia Commons. Traffic count not verified.</li>
         </ul>

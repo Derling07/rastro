@@ -26,11 +26,14 @@ def test_dscf0112_uses_engine_counts_and_recorded_prose():
     assert note["engine"]["detections_total"] == result["detections_total"] == 90
     assert note["engine"]["unique_count"] == result["unique_count"] == 2
     assert note["engine"]["naive_count"] == result["naive_count"] == 2
-    assert note["engine_count"] == "90 raw detections → 2 unique coyotes"
+    assert note["engine_count"] == "90 raw detections of a coyote (individuals NOT VERIFIED)"
     assert "DSCF0112.mp4" in result["report"]["resumen"]
     assert ".mp4" not in note["summary"]
     assert "fauna-camtrap" not in note["summary"]
-    assert "2 unique coyotes" in note["summary"]
+    assert "individuals NOT VERIFIED" in note["summary"]
+    assert "2 unique coyotes" not in note["summary"]
+    assert "2 unique coyotes" not in note["engine_count"]
+    assert "2 unique coyotes" not in note["why"]["sam"]
     assert note["title"] == "Rastro report — Wildlife camera"
     assert note["summary_label"] == "Muse Spark summary (recorded)"
     assert note["not_sure"] is False
@@ -49,7 +52,7 @@ def test_summary_text_cannot_replace_the_engine_count():
         module="fauna",
         title="Test",
         engine={"detections_total": 90, "naive_count": 2, "unique_count": 2, "by_class": {"coyote": 2}},
-        noun="coyotes",
+        noun="animals",
         summary="The model thinks there are 9 coyotes.",
         source="baseten-spark",
         model="meta-models/muse-spark-open-1026",
@@ -64,7 +67,7 @@ def test_summary_text_cannot_replace_the_engine_count():
         crop=None,
     )
     assert note["engine"]["unique_count"] == 2
-    assert note["engine_count"] == "90 raw detections → 2 unique coyotes"
+    assert note["engine_count"] == "90 raw detections → 2 unique animals"
     assert "9 coyotes" not in note["engine_count"]
     assert note["summary"].startswith("The model thinks")
 
@@ -162,7 +165,8 @@ def test_visible_note_hides_filenames_and_pack_ids():
     visible = shown["title"] + shown["summary"] + shown["engine_count"]
     assert ".mp4" not in visible
     assert "fauna-camtrap" not in visible
-    assert "2 unique coyotes" in shown["engine_count"]
+    assert shown["engine_count"] == "90 raw detections of a coyote (individuals NOT VERIFIED)"
+    assert "2 unique coyotes" not in visible
 
 
 def test_traffic_note_does_not_invent_a_vehicle_total():

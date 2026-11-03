@@ -9,7 +9,7 @@ const dest = join(root, "public", "runs");
 const outputs = join(root, "..", "outputs");
 
 const DEMOS = [
-  ["demo-real-coyote-0112", "Coyote DSCF0112 real (90→2)"],
+  ["demo-real-coyote-0112", "Coyote DSCF0112 real (90 raw detections, individuals NOT VERIFIED)"],
   ["demo-real-coyote", "Coyote DSCF0104 real"],
   ["demo-mock-coyote", "Coyote · datos de ejemplo"],
   ["demo-mock-persona", "Persona noche · datos de ejemplo"],

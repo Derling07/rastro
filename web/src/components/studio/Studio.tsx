@@ -687,9 +687,13 @@ export function Studio() {
           .
         </p>
         <p className="mt-1">
-          DSCF camera-trap clips, including the person on the forest trail: Seattle(ish) Camera
-          Traps, Dan Morris, LILA BC. License: Community Data License Agreement (permissive
-          variant). The published person clip has the face blurred.{" "}
+          DSCF camera-trap clips, including person-trail.mp4 (DSCF0004.MP4): Seattle(ish) Camera
+          Traps, Dan Morris, LILA BC. License:{" "}
+          <a className="underline" href="https://cdla.dev/permissive-2-0/">
+            CDLA-Permissive-2.0
+          </a>
+          . The published person clip blurs the face and body in every frame so the person is not
+          identifiable.{" "}
           <a className="underline" href="https://lila.science/datasets/seattleish-camera-traps/">
             Dataset page
           </a>

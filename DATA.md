@@ -46,7 +46,7 @@ No se versionan en git (mismo criterio que los MP4 originales).
 | Clip | GT visual | Mejor prompt | Conteo Rastro |
 |------|-----------|--------------|---------------|
 | DSCF0104 | 1 coyote | `coyote` ( `animal` → 0) | 1 |
-| DSCF0112 | 2 coyotes | `animal` | 2 |
+| DSCF0112 | coyote (individuals NOT VERIFIED) | `animal` | 2 |
 | DSCF0840 | 1–2 (niebla) | `animal` | 1 |
 | DSCF0004 | 1 persona | `person` | 1 |
 

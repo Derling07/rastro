@@ -10,7 +10,7 @@ Swap the **JSON pack** → the engine counts something else. No code change.
 
 <!-- [PENDIENTE: GIF/MP4 — annotated fauna + honest pack switch showing «sin corrida»] -->
 
-**Demo hook (verified):** **90 detecciones → 2 coyotes** on LILA DSCF0112 — run `outputs/demo-real-coyote-0112` (schema 1.1, `is_mock=false`, `cost_usd=0.0102`). Counter field: **`detections_total`** (90 on 0112; **34** on `demo-real-coyote` / DSCF0104). Not a naive count (`naive_count` is 2 / 1). Values written by the engine (regenerated at `586a9a1`).  
+**Demo hook:** **90 raw detections of a coyote (individuals NOT VERIFIED)** on LILA DSCF0112 — run `outputs/demo-real-coyote-0112` (schema 1.1, `is_mock=false`, `cost_usd=0.0102`). Counter field: **`detections_total`** (90 on 0112; **34** on `demo-real-coyote` / DSCF0104). Not a naive count (`naive_count` is 2 / 1). The stored unique figures are not a verified individual count. Values written by the engine (regenerated at `586a9a1`).  
 Do **not** claim “11 → 3” — that contrast is not in `eval/`.
 
 ---
@@ -203,7 +203,7 @@ Usage-based Meta API (plan figures: SAM video ≈ \$0.20 / 1000 frames, min 50 f
 
 **Rastro** sigue objetos en video sin contarlos dos veces, une notas de voz **públicas solo con consentimiento** (`voice.is_public`) y deja que un agente arme reporte y alertas. Cada sector es un **paquete JSON**.
 
-Corrida demo por defecto: `outputs/demo-real-coyote-0112` (SAM real). Gancho: **90 detecciones → 2 coyotes** (`detections_total`; 90 ≠ conteo ingenuo; `naive_count=2`). `detections_total` lo escribe el motor desde `586a9a1`. Tránsito: clip público Wicker Park (Steven Vance, CC BY 3.0); conteo aún no verificado. Multitudes: una alerta a 6 pers/m² (riesgo de aplastamiento); clip a grabar por Derling en San José. Eval fauna Round 2: **MAE 0**, **3/3 exactos** (muestra chica: 3 clips); tests eval 12/12, repo 24/24. Arquitectura: Supabase (ORION) + `queue_worker.py`, bucket privado `videos`.
+Corrida demo por defecto: `outputs/demo-real-coyote-0112` (SAM real). Gancho: **90 raw detections of a coyote (individuals NOT VERIFIED)** (`detections_total`; 90 ≠ conteo ingenuo; `naive_count=2`). `detections_total` lo escribe el motor desde `586a9a1`. Tránsito: clip público Wicker Park (Steven Vance, CC BY 3.0); conteo aún no verificado. Multitudes: una alerta a 6 pers/m² (riesgo de aplastamiento); clip a grabar por Derling en San José. Eval fauna Round 2: **MAE 0**, **3/3 exactos** (muestra chica: 3 clips); tests eval 12/12, repo 24/24. Arquitectura: Supabase (ORION) + `queue_worker.py`, bucket privado `videos`.
 
 No publiques claves ni uses `probe_jfk.wav` / `probe_animal.png` en materiales públicos. Licencias: ver `eval/LICENSES.md`.
 

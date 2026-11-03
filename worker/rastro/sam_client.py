@@ -31,7 +31,7 @@ Respuesta (probada):
 Hallazgo de prompts (IR nocturno LILA, oct 2026):
   - El prompt óptimo es FRAME-DEPENDIENTE.
   - DSCF0104: "animal"/"dog"=0, "coyote"/"fox"=1 en el mismo frame.
-  - DSCF0112: "animal" → 2 individuos (video).
+  - DSCF0112: "animal" → tracks in the stored run (individuals NOT VERIFIED).
   - Probar "coyote" y "animal" como fallback; no asumir uno solo.
 
 SIN CLAVE o mock=True: detecciones sintéticas para el motor/tests.

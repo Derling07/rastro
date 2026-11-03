@@ -1,6 +1,6 @@
 # Rastro
 
-Rastro is a field notebook for cameras, not a one-off image analyzer. A module (camera trap, farm, crowd, or traffic) decides what matters. SAM 3.1 tracks objects through the video, the rules engine stitches a re-entry into the same individual, and Muse Spark writes one field note without changing those numbers. A person confirms or dismisses the note in the app. The proof is the stored DSCF0112 run: **90 raw detections → 2 unique coyotes**.
+Rastro is a field notebook for cameras, not a one-off image analyzer. A module (camera trap, farm, protected area, crowd, or traffic) decides what matters. SAM 3.1 tracks objects through the video, the rules engine owns every count and alert, and Muse Spark Open writes one field note without changing those numbers. A person confirms or dismisses every alert in the app. The stored DSCF0112 camera-trap run shows **90 raw detections of a coyote (individuals NOT VERIFIED)**.
 
 A sector is defined by a JSON pack.
 
@@ -47,7 +47,7 @@ Naive counting treats every tracker id as a new individual, including an animal 
 
 On the mock camera-trap sample the engine’s own contract (covered by `tests/test_tracking.py` and `tests/test_api.py`) is: the coyote script produces **more sightings than individuals**, and at least one track holds two tracker ids. A person in the same pack is a separate individual. The UI prints those counts, for example “5 sightings, 4 unique individuals”, only after the job finishes.
 
-A separate **stored** clip, DSCF0112, is a previous SAM 3.1 run checked into `web/public/runs/demo-real-coyote-0112`: **90 raw detections, naive_count 2, unique_count 2, is_mock false**. The app replays that file. It does not call SAM again. 90 is `detections_total`, not the naive count.
+A separate **stored** clip, DSCF0112, is a previous SAM 3.1 run checked into `web/public/runs/demo-real-coyote-0112`: **90 raw detections of a coyote (individuals NOT VERIFIED)**. The file still has `naive_count` 2, `unique_count` 2, and `is_mock` false. Those unique figures are not a verified individual count. The app replays that file. It does not call SAM again. 90 is `detections_total`, not the naive count.
 
 ## Sectors
 
@@ -64,7 +64,7 @@ A sector is defined by a JSON pack.
 
 A camera in this app is not a live stream. It is a clip counted once, cached, and played back on a loop. Alerts are tied to `t_s`. Every camera is labeled **Simulated camera**.
 
-Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **Organ Mountains** is a camera trap (a gray fox at a bait station, not a livestock pen). **Goat lane** is the farm example: the feet must stay outside the pen, then the alert is “Animal left the safe zone”, and a person confirms or dismisses. **Forest trail** is a protected area: the alert is “Possible person inside the protected area — review needed”, the person box is blurred, and nothing identifies the person. The ranger presses **Review**. Rastro does not notify authorities. **Trap line** replays DSCF0112 (90 → 2). **Wicker Park** stays **NOT VERIFIED**. The inbox stays in the app: no SMS and no push. PASS on a camera means a local detector matched a hand label (`eval/alert_set/`). It is not a new paid SAM call.
+Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **Organ Mountains** is a camera trap (a gray fox at a bait station, not a livestock pen). **Goat lane** is the farm example: the feet must stay outside the pen, then the alert is “Animal left the safe zone”, and a person confirms or dismisses. **Forest trail** is a protected area: the alert is “Possible person inside the protected area — review needed”, the person box is blurred, and nothing identifies the person. The ranger presses **Review**. Rastro does not notify authorities. **Trap line** replays DSCF0112 (90 raw detections of a coyote, individuals NOT VERIFIED). **Wicker Park** stays **NOT VERIFIED**. The inbox stays in the app: no SMS and no push. PASS on a camera means a local detector matched a hand label (`eval/alert_set/`). It is not a new paid SAM call.
 
 ## Peak hours
 
@@ -130,11 +130,11 @@ From `eval/last_score_outputs.json` and `eval/ROUND2_NOTES.md`:
 | Clip | Ground truth | Prediction | Status |
 |---|---|---|---|
 | DSCF0104 | 1 | 1 | PASS. 34 raw detections in the stored run. |
-| DSCF0112 | 2 | 2 | PASS. 90 raw detections in the stored run. |
+| DSCF0112 | 2 | 2 | Stored score. 90 raw detections of a coyote. Individuals NOT VERIFIED. |
 | DSCF0004 | 1 | 1 | PASS |
 | DSCF0840 | — | — | SKIPPED. Ground truth not verified. |
 
-**3 scored clips, MAE 0, exact match 3/3.** Small sample. On those scored runs, `naive_count` matches the unique ground truth. The measured gap versus raw boxes is `detections_total` (90 and 34) versus unique individuals (2 and 1).
+**3 scored clips, MAE 0, exact match 3/3.** Small sample. On those scored runs, `naive_count` matches the stored ground-truth file. The measured gap versus raw boxes is `detections_total` (90 and 34). The unique figures in that file (2 and 1) are not a verified individual count for DSCF0112.
 
 Wicker Park (`eval/WICKER_COUNT.md`): the engine comparison (car 56, motorcycle 1, bus 1) is **NOT VERIFIED**. No MAE.
 
@@ -162,7 +162,8 @@ eval/              scores and fixtures
 ## Data and credits
 
 - **Wicker Park intersection changes** by Steven Vance, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Wicker_Park_intersection_changes.webm).
-- **DSCF camera-trap clips:** Seattle(ish) Camera Traps, Dan Morris, LILA BC. License: Community Data License Agreement (permissive variant). [Dataset page](https://lila.science/datasets/seattleish-camera-traps/). The person clip published in the app has the face blurred.
+- **DSCF camera-trap clips:** Seattle(ish) Camera Traps, Dan Morris, LILA BC. License: [CDLA-Permissive-2.0](https://cdla.dev/permissive-2-0/). [Dataset page](https://lila.science/datasets/seattleish-camera-traps/).
+- **person-trail.mp4** is `DSCF0004.MP4` from that set (Dan Morris, [CDLA-Permissive-2.0](https://cdla.dev/permissive-2-0/), [dataset page](https://lila.science/datasets/seattleish-camera-traps/)). The published clip blurs the person’s face and body in every frame so they are not identifiable.
 - **Gray fox in New Mexico** by Andy, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Gray_fox_(Urocyon_cinereoargenteus)_in_New_Mexico.webm). Night trail camera.
 - **Goats going home** by Thamizhpparithi Maari, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:A_video_on_goats_going_to_home.ogv).
 - **Plaza Mayor (Madrid)** by Michiel1972, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Plaza_Mayor_(Madrid).ogv).

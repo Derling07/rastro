@@ -15,7 +15,7 @@ Contrato de datos: **`docs/OUTPUT_SCHEMA.md` v1.1** → `outputs/<run_id>/result
 Corrida por defecto del panel: **`outputs/demo-real-coyote-0112`** (`is_mock=false`, `source_video_id=DSCF0112`, schema 1.1).  
 Mocks (`demo-mock-*`): decir en voz alta **«ejemplo»** (UI también marca `ejemplo`).
 
-**Prohibido decir «11 → 3».** Número wow verificado: **90 detecciones → 2 coyotes** (`detections_total=90` en `demo-real-coyote-0112`; 90 ≠ `naive_count`). `detections_total` lo escribe el motor desde `586a9a1`.
+**Prohibido decir «11 → 3» o «2 unique coyotes».** Número que sí se puede decir: **90 raw detections of a coyote (individuals NOT VERIFIED)** (`detections_total=90` en `demo-real-coyote-0112`; 90 ≠ `naive_count`). `detections_total` lo escribe el motor desde `586a9a1`.
 
 ---
 
@@ -61,7 +61,7 @@ cd web && npm install && npm run sync-runs && npm run dev
 | | |
 |---|---|
 | **Pantalla** | Player de `artifacts.annotated_video` (máscaras solo ahí). Contador desde `detections_total` / `naive_count` / `unique_count`. Hover opcional con `frames[].objects[].bbox`. |
-| **Decís** | «SAM 3.1 tracks across frames. On DSCF0112: **90 detections → 2 unique coyotes** — real API (`demo-real-coyote-0112`).» |
+| **Decís** | «SAM 3.1 tracks across frames. On DSCF0112: **90 raw detections of a coyote (individuals NOT VERIFIED)** — real API (`demo-real-coyote-0112`).» |
 | **Números** | `detections_total=90` (0112) / `34` (`demo-real-coyote` / DSCF0104); `unique_count=2`, `naive_count=2`, `cost_usd=0.0102`, `is_mock=false`. 90/34 are **not** naive_count. Written by engine since `586a9a1`. Score PASS (`eval/last_score_outputs.json`). |
 | **Corrida en panel** | Default = `demo-real-coyote-0112` (DSCF0112). |
 | **Eval honesta** | Round 2: **MAE 0**, **3/3 exact** on 3 clips (**small sample**): DSCF0104 1=1 (`demo-real-coyote`), DSCF0112 2=2 (`demo-real-coyote-0112`), DSCF0004 1=1. DSCF0840 SKIPPED. Tests: eval **12/12**, repo **24/24** (`eval/ROUND2_NOTES.md`). |
@@ -96,7 +96,7 @@ cd web && npm install && npm run sync-runs && npm run dev
 |---|---|
 | **Pantalla** | `agent_log[]` (herramientas); `alerts[]` con **`t_s`**; `report`; `cost_usd`. |
 | **Decís** | «The rules engine owns the counts. The agent logs tools, can verify frames, raises alerts, writes the report.» |
-| **Ejemplo alerta** | En `demo-real-coyote-0112`: `especie_objetivo` con `t_s: 1.2` («Registro de coyote: 2 individuos»). |
+| **Ejemplo alerta** | En `demo-real-coyote-0112`: `especie_objetivo` con `t_s: 1.2` («Coyote recorded (individuals NOT VERIFIED)»). |
 | **Spark** | Baseten Muse Spark Open probado (`docs/baseten_probe.json`); bitácora en schema. |
 
 ---
@@ -116,7 +116,7 @@ cd web && npm install && npm run sync-runs && npm run dev
 |---|---|
 | **Impacto 30 %** | Problema campo; packs por sector; honestidad «sin corrida» |
 | **Meta 25 %** | SAM 3.1 + annotated video; Voice (si pública); Spark / `agent_log` |
-| **Demo 25 %** | Flujo panel; 90 detecciones → 2 coyotes; pack switch honesto |
+| **Demo 25 %** | Flujo panel; 90 raw detections of a coyote (individuals NOT VERIFIED); pack switch honesto |
 | **Profundidad 20 %** | Schema v1.1; dedup/fallback; eval MAE; reglas ≠ LLM |
 
 ---

@@ -27,7 +27,7 @@ Rules: eval/ only; no push/deploy; no API/Supabase; no web/ edits.
 | demo-real-coyote | 34 | 34 (1 SAM) | 1 | false | false | sam.segment_video + tracking.count_unique |
 | demo-real-coyote-0112 | 90 | 90 (1 SAM) | 2 | false | false | same |
 
-UI counter data from `result.json`: **90→2** and **34→1**. Match run.json SAM sums; not mock.
+UI counter data from `result.json`: **90 raw detections of a coyote (individuals NOT VERIFIED)** and **34→1**. Match run.json SAM sums; not mock. The stored unique_count is not a verified individual count.
 
 ## Transit view (fb0238f)
 

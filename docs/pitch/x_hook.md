@@ -12,7 +12,7 @@ Números solo desde `eval/`, `outputs/real/`, `outputs/demo-real-coyote-0112` o 
 
 | Premio | Ángulo |
 |---|---|
-| **Más viral (X)** | **90 detecciones → 2 coyotes** (`demo-real-coyote-0112`, SAM real) + cambio de pack que muestra **sin corrida** en tránsito/multitudes (honestidad) |
+| **Más viral (X)** | **90 raw detections of a coyote (individuals NOT VERIFIED)** (`demo-real-coyote-0112`, SAM real) + cambio de pack que muestra **sin corrida** en tránsito/multitudes (honestidad) |
 | **Voto comunidad** | Panel local (`web/`) con `demo-real-coyote-0112` precargado; mocks marcados **ejemplo** |
 | **Mejor uso de agentes** | `agent_log` en `result.json` v1.1 + Spark (Baseten) |
 | **Creatividad** | Sector = JSON; mismo motor |
@@ -23,7 +23,7 @@ Números solo desde `eval/`, `outputs/real/`, `outputs/demo-real-coyote-0112` o 
 
 ### A — Contraste verificado (usar este)
 
-> 90 detecciones → 2 coyotes.
+> 90 raw detections of a coyote (individuals NOT VERIFIED).
 >
 > SAM 3.1 tracks identity. Rastro counts individuals, not frames.
 >
@@ -68,7 +68,7 @@ Números solo desde `eval/`, `outputs/real/`, `outputs/demo-real-coyote-0112` o 
 | t | Pantalla | Texto |
 |---|---|---|
 | 0:00–0:04 | Cámara trampa / clips sin revisar | «Hours of trap video. Nobody reviews it all.» |
-| 0:04–0:12 | `artifacts.annotated_video` + contador | «**90 detecciones → 2 coyotes.** DSCF0112.» |
+| 0:04–0:12 | `artifacts.annotated_video` + contador | «**90 raw detections of a coyote (individuals NOT VERIFIED).** DSCF0112.» |
 | 0:12–0:20 | Pack switch: fauna (real) → tránsito **· sin corrida** | «Same engine. No fake transit run.» |
 | 0:20–0:26 | Nota de voz **solo si** `voice.is_public` (Derling) | «Field note, consented.» Si no hay nota pública: saltar o mostrar solo `report`. |
 | 0:26–0:30 | CTA | «Open source · pack = JSON» |
