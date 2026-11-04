@@ -1,173 +1,220 @@
 # Rastro
 
-Rastro is a field notebook for cameras, not a one-off image analyzer. A module (camera trap, farm, protected area, crowd, or traffic) decides what matters. SAM 3.1 tracks objects through the video, the rules engine owns every count and alert, and Muse Spark Open writes one field note without changing those numbers. A person confirms or dismisses every alert in the app. The stored DSCF0112 camera-trap run shows **90 raw detections of a coyote (individuals NOT VERIFIED)**.
+A field notebook for a camera clip: a zone, a count the rules engine owns, and a note a person confirms.
 
-A sector is defined by a JSON pack.
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)](pyproject.toml)
+[![TypeScript](https://img.shields.io/badge/typescript-Next.js-3178C6)](web/package.json)
+[![tests](https://img.shields.io/badge/tests-126%20passed-3fb950)](#testing)
+[![CI](https://img.shields.io/badge/CI-pytest-blue)](.github/workflows/ci.yml)
 
-Meta Global AI Developer Hackathon 2026 · Indie track. Submission deadline **4 Nov 2026, 8:00 p.m. Costa Rica**.
+| | |
+| --- | --- |
+| Demo video | coming soon |
+| Repository | [derling-torres-campos/rastro](https://cursor.com/codebase/derling-torres-campos/rastro) |
+| Decisions | [`docs/DECISIONS.md`](docs/DECISIONS.md) |
+| Result schema | [`docs/OUTPUT_SCHEMA.md`](docs/OUTPUT_SCHEMA.md) |
+| Design | [`docs/design/DESIGN.md`](docs/design/DESIGN.md) |
+| Architecture notes | [`docs/design/arquitectura.md`](docs/design/arquitectura.md) |
+| Wireframes | [`docs/design/wireframes.md`](docs/design/wireframes.md) |
+| Crowd pack notes | [`docs/design/pack_multitudes.md`](docs/design/pack_multitudes.md) |
+| Hackathon disclosure | [`HACKATHON.md`](HACKATHON.md) |
 
-The code in this repository was written during the event (from 26 Oct 2026). License: MIT. Copyright 2026 Derling Torres Campos. See `LICENSE`.
+[`HACKATHON.md`](HACKATHON.md) records commit `2ea5568` ('Add Rastro source as the project home') and states that everything shown was built during the event.
 
-## Run it
+## The problem
 
-Docker is the path that serves the app and the worker together. The server stays in **mock** mode unless `RASTRO_LIVE=1`. Without that flag, a run stays on the mock tracker even if `META_API_KEY` or `BASETEN_API_KEY` is set. Sample clips never call a paid API. With `RASTRO_LIVE=1`, an uploaded video uses SAM when `META_API_KEY` is set, and Muse Spark when `BASETEN_API_KEY` is set.
+A camera writes a box on every frame. Those boxes are not a census. A tracker id that appears, leaves, and comes back can look like a new animal. A person-shaped box is not a name. A vehicle total without a labeled survey is not a traffic count. People per square metre without a measured area is not a density.
+
+Someone still has to see the clip, read one number, and decide what to do with the alert. Rastro keeps that decision in the app.
+
+## What Rastro adds
+
+Four pieces, each wired in this repository.
+
+**1. Farm and wildlife cameras, with zones and sustained alerts.**
+A zone is a polygon. The point that is tested is the bottom center of the box, the feet. An alert opens only after that side has held for `sustain_s` (3 seconds on the farm pack, and on Organ Mountains, Goat lane, and Forest trail) and for more than one frame. One frame on the other side does not flip a side that already held, and it does not fire alone. Goat lane says "Animal left the safe zone". A wild animal inside the pen says "Wild animal entered the pen and stayed {n} s". Confirm and dismiss stay in the app (`notify` is `in_app`). Organ Mountains is a bait station with a gray fox, not a livestock pen. PASS on those cameras means a local detector matched a hand label in `eval/alert_set/`. It is not a new SAM call.
+
+**2. A protected-area review that never notifies authorities.**
+Forest trail raises one alert: "Possible person inside the protected area — review needed". The only action is Review. Confirm is rejected (`this note does not use that action`). The alert stores `authorities: false`, the person box is marked blurred, and identity fields (`name`, `face_id`, `track_id`, and the rest of `IDENTITY_KEYS` in `worker/rastro/zones.py`) are not kept. The pack sets `identity` and `notify_authorities` to false. The field note says "Person box. No identity." Severity on that note is `not sure`.
+
+**3. Peak-hour and density charts.**
+Crowd and traffic runs can be summed by hour and weekday. Until the process has stored 7 real runs (`is_mock` is false) for that pack, the chart badge is **Example data**. After that it is **Your data**. Traffic stays `not_verified` either way. Only the aggregate row is kept (station, hour, weekday, count). The crowd UI prints `(NOT VERIFIED: area not calibrated)` next to a density. The crush-risk rule is 6 people/m², and it runs only when a zone has `area_m2`. The plaza camera has no area, so that alert is not raised and the note says "No people/m² on this clip."
+
+**4. A traffic file in a CIFS shape. Not a partnership.**
+`GET /api/open/events` returns JSON whose incidents use the public Closure and Incident Feed fields (`id`, `type`, `street`, `polyline`, `direction`, `starttime`, `description`). The file is in a standard format compatible with Waze for Cities. It is not a partnership. `GET /api/open/events.xml` is the same content in XML. `GET /api/open/peak-hours` is a read-only list of peak hours. `GET /api/open/waze-link` returns `https://www.waze.com/ul?ll=...` and only opens a map. The feed sets `partnership` to false, `not_verified` to true, and `submit_to_waze` to false. The street is "Example road" and the point is an example in San José (9.928069, -84.090725). The server does not send the file anywhere.
+
+## Where you'd use it
+
+Each case below is a path this repository already runs.
+
+- **A pen.** Goat lane watches a yard. The animal has to stay outside the polygon, then the app asks you to confirm or dismiss. Nothing is texted.
+- **A bait station.** Organ Mountains replays a night trail clip. The fox stays in the bait polygon. The verification note is a hand label plus a local infrared detector.
+- **A trail in a protected area.** Forest trail asks for Review. The note does not name the person and does not notify authorities.
+- **A stored camera-trap run.** Trap line replays DSCF0112: 90 raw detections of a coyote (individuals NOT VERIFIED), with the Muse Spark paragraph already saved in that run. Opening it does not call SAM or Baseten.
+- **A week of counts.** The cameras page charts hour and weekday. With fewer than 7 real runs the chart is Example data. Traffic keeps the not-verified mark.
+- **A file a mobility program could read later.** The open endpoints above build a CIFS-shaped example. Joining Waze for Cities is still required before any ingestion. This server does not submit the file.
+
+## Try it
+
+Mock is the default. The API stays on the mock tracker unless `RASTRO_LIVE` is exactly `1` and a Meta or Baseten key is set. Without that flag, a run stays on the mock tracker even if `META_API_KEY` or `BASETEN_API_KEY` is set. Sample clips stay on the mock tracker when the flag is set.
+
+With Docker, the app is published on [http://127.0.0.1:43123](http://127.0.0.1:43123) and the worker on `127.0.0.1:8787`. Inside Compose the app calls `http://api:8787`.
 
 ```bash
+curl -s http://127.0.0.1:8787/health
+curl -s http://127.0.0.1:8787/api/open/peak-hours
+curl -s http://127.0.0.1:8787/api/open/events
+```
+
+`/health` reports `mock_mode`. The open routes answer without a write token.
+
+## Quick start
+
+Docker Compose refuses to start until `RASTRO_WRITE_TOKEN` is set. The message in `docker-compose.yml` is `Set RASTRO_WRITE_TOKEN in .env`. Put the same value on the web service and the API. The browser never receives it. `.env.example` lists the names and leaves the values empty.
+
+```bash
+cp .env.example .env
 docker compose up --build
 ```
 
-Open [http://127.0.0.1:43123](http://127.0.0.1:43123). Inside Compose the app calls the worker at `http://api:8787`. On the host, that port is published only on `127.0.0.1:8787`.
-
-```bash
-cp .env.example .env   # names only; leave values blank for mock
-```
-
-In the app: pick a sector, run a sample (or drop an MP4/MOV plus an optional voice note), watch the stages, then read the count. **Camera trap** is the sample where a coyote leaves and returns under a new tracker id. The result says how many sightings were stitched into how many individuals, and the timeline shows the merged bars. Mock runs are labeled **Mock**.
-
-### Without Docker
+Without Docker, two processes:
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 PYTHONPATH=worker RASTRO_STAGE_SLEEP=0 python -m rastro.api
+```
 
-# another shell
+```bash
 cd web && npm install && RASTRO_API_URL=http://127.0.0.1:8787 npm run dev
 ```
 
-Tests (no network, no keys):
+`python -m rastro.api` runs `worker/rastro/api.py` (`worker/rastro/__main__.py` is `python -m rastro`, which starts the same server). `npm run dev` is Next.js (`web/package.json`), on Next's default port. Point `RASTRO_API_URL` at the worker.
 
-```bash
-pytest -q tests eval/tests
-```
+Leave `RASTRO_LIVE` unset for mock. A live upload needs `RASTRO_LIVE=1`. With that flag, an upload uses SAM when `META_API_KEY` or `MODEL_API_KEY` is set, and Muse Spark when `BASETEN_API_KEY` is set. Do not commit those values.
 
-## What the count means
+In the app, pick a sector and run a sample, or drop an MP4 or MOV (optional voice note). Uploads are MP4 or MOV, at most 50 MB and 120 seconds. A live voice note must be WAV.
 
-Naive counting treats every tracker id as a new individual, including an animal that left the frame and came back. Rastro groups detections into sightings, then **stitches a re-entry** when the gap, the edge, and the overlap say it is the same body (`worker/rastro/tracking.py`). The number on screen is that result. It is not typed in by hand.
-
-On the mock camera-trap sample the engine’s own contract (covered by `tests/test_tracking.py` and `tests/test_api.py`) is: the coyote script produces **more sightings than individuals**, and at least one track holds two tracker ids. A person in the same pack is a separate individual. The UI prints those counts, for example “5 sightings, 4 unique individuals”, only after the job finishes.
-
-A separate **stored** clip, DSCF0112, is a previous SAM 3.1 run checked into `web/public/runs/demo-real-coyote-0112`: **90 raw detections of a coyote (individuals NOT VERIFIED)**. The file still has `naive_count` 2, `unique_count` 2, and `is_mock` false. Those unique figures are not a verified individual count. The app replays that file. It does not call SAM again. 90 is `detections_total`, not the naive count.
-
-## Sectors
-
-A sector is defined by a JSON pack.
-
-| Sector | File | What the result shows |
-|---|---|---|
-| Fauna | `packs/fauna.json` | Unique animals, re-entry stitch, alerts |
-| Transit | `packs/transito.json` | Vehicles and a turn matrix. **Not a verified traffic count.** |
-| Crowd | `packs/multitudes.json` | People per zone and density. **No re-identification.** One alert: 6 people/m² (high / crush risk). |
-| Farm | `packs/farm.json` | A pen the owner draws. Wild animal inside, or farm animal outside, only after it stays that way for 3 seconds. In-app confirm or dismiss. The camera replays are a local detector against a hand label, not a new SAM survey. |
-
-## Cameras
-
-A camera in this app is not a live stream. It is a clip counted once, cached, and played back on a loop. Alerts are tied to `t_s`. Every camera is labeled **Simulated camera**.
-
-Open [http://127.0.0.1:43123/cameras](http://127.0.0.1:43123/cameras). **Organ Mountains** is a camera trap (a gray fox at a bait station, not a livestock pen). **Goat lane** is the farm example: the feet must stay outside the pen, then the alert is “Animal left the safe zone”, and a person confirms or dismisses. **Forest trail** is a protected area: the alert is “Possible person inside the protected area — review needed”, the person box is blurred, and nothing identifies the person. The ranger presses **Review**. Rastro does not notify authorities. **Trap line** replays DSCF0112 (90 raw detections of a coyote, individuals NOT VERIFIED). **Wicker Park** stays **NOT VERIFIED**. The inbox stays in the app: no SMS and no push. PASS on a camera means a local detector matched a hand label (`eval/alert_set/`). It is not a new paid SAM call.
-
-## Peak hours
-
-Crowd and traffic counts can be added up by hour and weekday. The chart on the Cameras page is one component for both. Until the server has seen 7 real runs, the chart is labeled **Example data**. After that it switches to **Your data**. Traffic keeps the **Not verified** badge. Only the aggregate row is stored (station, hour, weekday, count) — see `supabase/peak_aggregates.sql`. That table is meant for the Supabase free tier (500 MB). Video stays out of it.
-
-## Open peak-hour feed
-
-`GET /api/open/peak-hours` (through the app: `/engine/api/open/peak-hours`) is a read-only JSON list of peak hours per camera. Exports in a standard format compatible with Waze for Cities live at `GET /api/open/events` (JSON) and `GET /api/open/events.xml`. This is not a partnership. The server does not send the file to Waze. Real ingestion requires joining Waze for Cities. The incidents use an example coordinate in San José and are labeled **Example data** and **NOT VERIFIED**. A deep link (`GET /api/open/waze-link`, `https://www.waze.com/ul?ll=...`) only opens a map. It does not publish an incident.
-
-```bash
-curl -s http://127.0.0.1:8787/api/open/peak-hours
-curl -s http://127.0.0.1:8787/api/open/events
-```
-
-`POST /api/webhooks` stores a subscriber URL in memory. Delivery is off: confirming a field note queues a payload and does not POST it. `POST /api/streams` with an `rtsp`, HLS (`.m3u8`), or MJPEG URL classifies the address and stays on a **simulated** clip. The stream is not opened.
-
-Camera MP4s are optional. `scripts/fetch_open_clips.py` downloads only openly licensed clips (Wicker Park CC BY 3.0, and the other CC BY / CC BY-SA files listed in that script). It checks that each download is complete and writes `web/public/cameras/CREDITS.md`. It does not download Chiang Mai. If a clip file is missing, the page says **Clip not available**.
-
-Without `RASTRO_WRITE_TOKEN`, field-note writes work only when the API sees localhost (`client_address`, not a forwarded header). The Next route forwards with no token in that case. Compose, or any deploy, must set `RASTRO_WRITE_TOKEN` to the same value on the web service and the API. The browser never sees it. Subscriptions, the outbox, and note statuses stay in memory, 50 entries each. `GET /api/webhooks` masks URLs.
-
-`GET /api/field-note?clip=DSCF0112` returns the hero field note. The counts are the stored engine numbers. The prose is the Muse Spark reply already saved in that run. Opening the note does not call SAM or Muse Spark.
-
-## Meta models
-
-| Model | Role | When |
-|---|---|---|
-| **SAM 3.1** | Video tracking, one concept per request | Meta Model API (`META_API_KEY`). Mock client unless `RASTRO_LIVE=1` and the key is set, and always for sample clips. |
-| **Muse Voice Transcribe 1.0** | Field note → text, speaker per turn | Meta Model API. Mock note if the key is absent. Live notes must be WAV. |
-| **Muse Spark Open** | One field note: severity, a short why, and “not sure” when confidence is low. It cannot change the engine count. | Baseten, `meta-models/muse-spark-open-1026` (`BASETEN_API_KEY`). The DSCF0112 card replays a recorded reply. Local rules cover the other modules. No paid call on page load. |
-
-Counts come from the rules engine. The UI prints that engine number beside the note. The summary is interpretation, not a second count. With no keys, samples stay on the mock tracker. See `HACKATHON.md` for what was committed during the event.
-
-## Architecture
+## How it works
 
 ```mermaid
 flowchart LR
-  subgraph Web
-    UI[Next.js app]
-  end
-  subgraph Worker
-    API[Python API]
-    ENG[Pack plus tracking plus rules]
-  end
-  subgraph Models
-    SAM[SAM 3.1]
-    VOICE[Muse Voice Transcribe]
-    SPARK[Muse Spark Open on Baseten]
-  end
-  UI -->|sample or upload| API
-  API --> ENG
-  ENG -->|real video and key| SAM
-  ENG -->|note and key| VOICE
-  ENG -->|key and not a mock sample| SPARK
-  ENG -->|naive vs unique, report| UI
+  clip["Clip or upload"]
+  gate{"Live upload?"}
+  sam["SAM 3.1 tracking"]
+  mock["Mock tracker"]
+  rules["Rules engine"]
+  spark["Recorded Muse Spark note"]
+  local["Rules-engine note"]
+  api["Python API"]
+  ui["Next.js UI"]
+
+  clip --> gate
+  gate -->|"RASTRO_LIVE is 1, Meta key set, not a sample"| sam
+  gate -->|"otherwise"| mock
+  sam --> rules
+  mock --> rules
+  rules -->|"DSCF0112 stored report"| spark
+  rules -->|"every other note"| local
+  spark --> api
+  local --> api
+  api --> ui
 ```
 
-Supabase (`supabase/`) is the schema for a hosted queue. This compose stack does not start a database. `worker/queue_worker.py` still drains that queue when `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are set. The demo uses the local API instead.
+`worker/rastro/pipeline.py` runs pack, then SAM or the mock client, then `count_unique`, then alerts, zones, and density. The API (`python -m rastro.api`) stores the job and the Next.js app reads it.
 
-## Evaluation, only what is in the repo
+A live upload with `RASTRO_LIVE=1`, a Meta key, and `BASETEN_API_KEY` can also ask Muse Spark to write the pipeline report (`use_spark` in `worker/rastro/api.py`). If that call fails, the report source is `local-fallback`. Opening a field note does not call SAM or Baseten (`paid_call` is false).
 
-From `eval/last_score_outputs.json` and `eval/ROUND2_NOTES.md`:
+The field note labeled as a recorded Muse Spark summary is only DSCF0112 (`_source` is `baseten-spark` and the source video is DSCF0112, model `meta-models/muse-spark-open-1026`). Every other note is `local-rules` and the card says Muse Spark was not called. Checked-in report files for DSCF0104 (`web/public/runs/demo-real-coyote`) and `web/mock/fauna-demo` also contain `_source: baseten-spark`. The note builder does not replay those as the recorded summary.
 
-| Clip | Ground truth | Prediction | Status |
-|---|---|---|---|
-| DSCF0104 | 1 | 1 | PASS. 34 raw detections in the stored run. |
-| DSCF0112 | 2 | 2 | Stored score. 90 raw detections of a coyote. Individuals NOT VERIFIED. |
-| DSCF0004 | 1 | 1 | PASS |
-| DSCF0840 | — | — | SKIPPED. Ground truth not verified. |
+`supabase/` is a schema. This Compose file does not start a database. `worker/queue_worker.py` drains a queue when `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are set. The local demo uses the API.
 
-**3 scored clips, MAE 0, exact match 3/3.** Small sample. On those scored runs, `naive_count` matches the stored ground-truth file. The measured gap versus raw boxes is `detections_total` (90 and 34). The unique figures in that file (2 and 1) are not a verified individual count for DSCF0112.
+## Design decisions worth reading
 
-Wicker Park (`eval/WICKER_COUNT.md`): the engine comparison (car 56, motorcycle 1, bus 1) is **NOT VERIFIED**. No MAE.
+**The DSCF0112 line is 90 raw detections, and the unique figure is not a verified census.**
+`web/public/runs/demo-real-coyote-0112/result.json` stores `detections_total` 90, `naive_count` 2, `unique_count` 2, and `is_mock` false. Two tracks (`coyote-1`, `coyote-2`) hold 45 detections each. `tracking_line` in `worker/rastro/agent.py` can format that as "90 raw detections → 2 unique coyotes". `note_dscf0112` replaces the public line with "90 raw detections of a coyote (individuals NOT VERIFIED)" and says unique individuals are not verified. The page replays the file. It does not call SAM again. 90 is `detections_total`, not `naive_count`.
 
-## Limits
+**The write token is checked on the server, from the socket.**
+`writes_allowed` compares `X-Rastro-Token` with `RASTRO_WRITE_TOKEN` using `secrets.compare_digest`. When the variable is unset, only `127.0.0.1` and `::1` may write, read from `client_address`, not from a forwarded header. The Next route `web/src/app/api/field-note/route.ts` attaches the token on the server. A mismatch returns `write token required` (401). Compose will not boot without the variable (`Set RASTRO_WRITE_TOKEN in .env`).
 
-- No facial recognition. Packs ask for a blur box, not an identity. Crowd does not track people.
-- Sample clips are synthetic or stored. They are labeled. They are not a new field survey.
-- SAM video, as used by this project: about 15,000 frames per request, at most 16 objects per frame, one concept per request.
-- Uploads: MP4 or MOV, up to 50 MB. Product target is also at most 120 seconds at 720p.
-- Annotated masks need ffmpeg and a real video. This demo draws the tracker’s boxes from `frames[]` instead.
-- Voice transcripts stay hidden unless the upload is marked public.
-- No deploy in this repository. No secrets in git.
+**Mock is the default.**
+`mock_mode` is true unless `RASTRO_LIVE` is exactly `1` and a Meta or Baseten key is set. Sample clips stay on the mock tracker. An upload without the flag, or without a Meta key, is stored as an uncomputed result rather than a fake count.
 
-## Layout
+**Traffic and density stay labeled.**
+Traffic notes say "No verified vehicle count" and severity `not sure`. Density text includes `(NOT VERIFIED: area not calibrated)`. Peak charts stay on Example data until 7 real runs, and traffic stays not verified after that switch.
 
+**A noisy frame does not open a zone alert.**
+The feet have to hold. Farm and protected cameras use that rule. Forest trail exposes Review and rejects Confirm. `authorities` stays false.
+
+**Webhooks and stream URLs are recorded, not opened.**
+`POST /api/webhooks` stores an `http` or `https` URL in memory (50 entries) and returns `delivery: off`. Confirming or reviewing a note queues a payload and does not POST it. `POST /api/streams` accepts `rtsp`, `rtsps`, HLS (`.m3u8`), or MJPEG, responds with `connected: false` and `mode: simulated`, and does not open the URL.
+
+## When something goes wrong
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Compose prints `Set RASTRO_WRITE_TOKEN in .env` | `docker-compose.yml` requires the variable on `api` and `web` | Set the same value in `.env` for both services. Leave it out of git. |
+| The card says `Could not save: write token required` | The API saw a non-loopback client, and the token was missing or did not match | On the host, leave the token unset so loopback writes work, or set the same token on Next and the API. The browser does not send it. |
+| `Could not save: server error (0)` | The browser could not reach `/api/field-note` | Start the API and `npm run dev`, with `RASTRO_API_URL` pointing at the API. |
+| `Could not save: this note does not use that action` | Confirm was sent to Forest trail | That note accepts Review only. |
+| `Could not save: unknown note` | The id is not a known clip, camera, or finished run | Use the id the note returned. |
+| `Only .mp4 or .mov files are accepted.` or `file exceeds 50 MB` or `Video is longer than 120 seconds.` | Upload checks in `worker/rastro/api.py` | Send an MP4 or MOV inside those limits. |
+| `Live voice notes must be WAV.` | `RASTRO_LIVE=1` rejects other audio | Send WAV, or stay in mock. |
+| `ffprobe is not installed; cannot check duration.` | The duration check shells out to ffprobe | Install ffprobe, then upload again. |
+| The engine proxy returns `Can't reach the analysis server, try again` | Next could not fetch `RASTRO_API_URL` | Start `python -m rastro.api` and match the URL. |
+| A job's `error` is `interrupted` | The API restarted while the job was queued or processing | Run the job again. Finished results stay on disk under `RASTRO_JOBS_DIR`. |
+| Keys are set and the run is still mock | `RASTRO_LIVE` is missing or not exactly `1` | Set `RASTRO_LIVE=1`. Samples still use the mock tracker. |
+| `webhook host is not allowed` or `webhook url must not include a secret` | The URL is local, private, or contains a user or password | Use a public `http` or `https` URL. Delivery stays off. |
+| `url is not rtsp, hls, or mjpeg` | `POST /api/streams` did not recognize the address | The recognized forms stay simulated. The stream is not opened. |
+
+## Testing
+
+`pytest -q tests eval/tests` reported **126 passed** when this README was written. No network and no API keys. `.github/workflows/ci.yml` runs that same command on push and pull request (Python 3.12).
+
+```bash
+pytest -q tests eval/tests
+cd web && npx tsc --noEmit
+cd web && npm run lint
+cd web && npm run build
+python eval/score.py --alerts
 ```
-packs/             fauna, transito, multitudes
-worker/rastro/     tracker, rules, SAM, voice, Spark, local API
-worker/queue_worker.py
-web/               the app
-supabase/          schema only
-eval/              scores and fixtures
-```
 
-## Data and credits
+`npx tsc --noEmit`, `npm run lint`, and `npm run build` are the TypeScript check, `next lint`, and `next build` in `web/`. `tsc` is not an npm script; `web/tsconfig.json` is what `tsc` reads.
 
-- **Wicker Park intersection changes** by Steven Vance, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), via [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Wicker_Park_intersection_changes.webm).
-- **DSCF camera-trap clips:** Seattle(ish) Camera Traps, Dan Morris, LILA BC. License: [CDLA-Permissive-2.0](https://cdla.dev/permissive-2-0/). [Dataset page](https://lila.science/datasets/seattleish-camera-traps/).
-- **person-trail.mp4** is `DSCF0004.MP4` from that set (Dan Morris, [CDLA-Permissive-2.0](https://cdla.dev/permissive-2-0/), [dataset page](https://lila.science/datasets/seattleish-camera-traps/)). The published clip blurs the person’s face and body in every frame so they are not identifiable.
-- **Gray fox in New Mexico** by Andy, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Gray_fox_(Urocyon_cinereoargenteus)_in_New_Mexico.webm). Night trail camera.
-- **Goats going home** by Thamizhpparithi Maari, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:A_video_on_goats_going_to_home.ogv).
-- **Plaza Mayor (Madrid)** by Michiel1972, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Plaza_Mayor_(Madrid).ogv).
+`eval/score.py` scores clips under `outputs/real` by default (that directory is not in git; a missing directory yields no payload). `--alerts` then compares `eval/alert_set/` with the recorded cameras. PASS there means the local detector matched a hand label. Spend recorded on that manifest is 0. The script does not call Meta or Baseten.
 
-Local analysis used OpenCV Zoo YOLOX (COCO) and, for the infrared fox, a difference from the first frame. Spend on Meta and Baseten: **$0**. The SAM cap was not used.
+## What it does not do
 
-Heavy videos were left out of git. See `DATA.md` and `eval/LICENSES.md` before redistributing clips.
+- It does not identify a person or re-identify people. Crowd results set `reidentifies` to false. Person alerts drop identity keys and blur the box. The fauna tracker can stitch an animal that left and came back. That stitch is not a person id.
+- It does not notify authorities. Forest trail stores `authorities: false`. Alerts use `notify: in_app`. Webhook delivery stays off.
+- It does not produce a verified vehicle count. Traffic text says "No verified vehicle count".
+- It does not calibrate density. The mark is `(NOT VERIFIED: area not calibrated)`. Without `area_m2`, people/m² is not computed.
+- It labels Example data where the series is still the built-in sample (peak charts under 7 real runs, the CIFS file, mock runs).
+- It does not deploy. Compose binds the app and the API to `127.0.0.1`. There is no hosted release in this repository.
+- It does not send the CIFS file to Waze, and it does not claim a partnership.
+- It does not open RTSP, HLS, or MJPEG URLs. Those routes classify the address and stay on a simulated clip.
+- It does not treat the DSCF0112 `unique_count` of 2 as a verified count of coyotes. The public line is "90 raw detections of a coyote (individuals NOT VERIFIED)".
+- It does not call Muse Spark for the notes other than DSCF0112. Those notes come from the rules engine. Page load does not call SAM or Baseten.
+
+## Roadmap
+
+These items are already written in the repo as unfinished work, not as results.
+
+| Where it is written | What is still open |
+| --- | --- |
+| `PENDIENTES-DERLING.md`, `eval/GAPS.md` | A crowd clip recorded in San José, plus an approximate area in square metres. Without that area, people/m² on a real plaza clip stays unverified. |
+| `PENDIENTES-DERLING.md`, `eval/GAPS.md` | An optional San José intersection for traffic. The current traffic numbers stay NOT VERIFIED. |
+| `PENDIENTES-DERLING.md` | A public demo is undecided. The note there says video plus this repo remains the choice while nothing else is selected. A keyed deploy is described as not recommended. This repository does not deploy. |
+| `docs/pitch/demo_script.md`, `PENDIENTES-DERLING.md` | The pitch video is not recorded. The demo-video cell above stays "coming soon" until a URL exists in the repo. |
+| `docs/DECISIONS.md`, `worker/rastro/feeds.py` | Real Waze ingestion requires joining Waze for Cities. The example file is not for upload. |
+| `docs/DECISIONS.md`, `HACKATHON.md` | Webhook URLs can be stored. Delivery is off until a real POST is built. |
+| `docs/DECISIONS.md`, `worker/rastro/streams.py` | A licensed public camera URL is not wired. RTSP, HLS, and MJPEG stay simulated. |
+| `docs/DECISIONS.md` | Weather and a map (Open-Meteo, Nominatim) were not added. The decision note says they would be context, not a new count. |
+| `eval/GAPS.md`, `DATA.md` | More hand-labeled clips. DSCF0840 is NOT VERIFIED. A Costa Rica coati clip is not in the set; `packs/fauna.json` still prompts for coyote. |
+
+## License
+
+MIT. Copyright (c) 2026 Derling Torres Campos. See [LICENSE](LICENSE).
+
+Clip licenses and download notes are in [`DATA.md`](DATA.md) and [`eval/LICENSES.md`](eval/LICENSES.md). Heavy videos are not stored in git.
